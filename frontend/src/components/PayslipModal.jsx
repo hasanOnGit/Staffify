@@ -1,8 +1,19 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Printer, X, Building2, CheckCircle2 } from "lucide-react";
 
 function PayslipModal({ payslip, onClose }) {
   const printRef = useRef(null);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   if (!payslip) return null;
 
@@ -19,60 +30,81 @@ function PayslipModal({ payslip, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-[#091E42]/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
-      {/* Modal Container */}
-      <div className="bg-white rounded-lg shadow-2xl border border-[#DFE1E6] w-full max-w-3xl overflow-hidden my-8">
-        {/* Action Header (Hidden in Print) */}
-        <div className="px-5 py-3.5 bg-[#F4F5F7] border-b border-[#DFE1E6] flex items-center justify-between print:hidden">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 bg-[#091E42]/70 backdrop-blur-xs flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto"
+    >
+      {/* Modal Container: constrained to 92vh, flex column, header always pinned on top */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-lg shadow-2xl border border-[#DFE1E6] w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden my-auto relative animate-in fade-in zoom-in-95 duration-150"
+      >
+        {/* Sticky Action Header (Always Visible at Top of Modal) */}
+        <div className="sticky top-0 z-30 px-4 sm:px-5 py-3 bg-[#F4F5F7] border-b border-[#DFE1E6] flex items-center justify-between shrink-0 shadow-2xs print:hidden">
           <div className="flex items-center gap-2">
-            <Building2 size={16} className="text-[#0052CC]" />
-            <span className="text-xs font-bold text-[#172B4D] uppercase tracking-wide">
-              greytHR Official Payslip Preview
-            </span>
+            <div className="w-6 h-6 rounded bg-[#0052CC] text-white flex items-center justify-center">
+              <Building2 size={13} />
+            </div>
+            <div>
+              <span className="text-xs font-bold text-[#172B4D] uppercase tracking-wide block leading-tight">
+                Payslip Preview
+              </span>
+              <span className="text-[10px] text-[#6B778C] block leading-tight">
+                {payslip.periodString} • {payslip.employeeId}
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="px-3 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+              className="px-3 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+              title="Print or Save as PDF"
             >
               <Printer size={13} />
-              <span>Print / Download PDF</span>
+              <span className="hidden sm:inline">Print / Download PDF</span>
+              <span className="sm:hidden">Print</span>
             </button>
+
             <button
               onClick={onClose}
-              className="p-1.5 text-[#6B778C] hover:text-[#172B4D] hover:bg-[#EBECF0] rounded transition cursor-pointer"
+              className="px-2.5 py-1.5 text-[#172B4D] bg-white hover:bg-[#EBECF0] border border-[#DFE1E6] rounded text-xs font-semibold flex items-center gap-1 transition cursor-pointer shadow-2xs"
+              title="Close Modal (Esc)"
             >
-              <X size={16} />
+              <X size={14} />
+              <span>Close</span>
             </button>
           </div>
         </div>
 
         {/* ========================================================
-            PRINTABLE PAYSLIP DOCUMENT (greytHR Standard Format)
+            SCROLLABLE PRINTABLE PAYSLIP DOCUMENT (greytHR Format)
             ======================================================== */}
-        <div ref={printRef} className="p-8 space-y-6 text-[#172B4D] bg-white print:p-0">
+        <div
+          ref={printRef}
+          className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-5 text-[#172B4D] bg-white print:p-0 print:overflow-visible"
+        >
           {/* 1. Company Letterhead */}
-          <div className="border-b-2 border-[#172B4D] pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div className="border-b-2 border-[#172B4D] pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded bg-[#0052CC] text-white flex items-center justify-center font-bold text-sm">
+                <div className="w-7 h-7 rounded bg-[#0052CC] text-white flex items-center justify-center font-bold text-xs">
                   S
                 </div>
-                <h1 className="text-lg font-bold tracking-tight text-[#172B4D]">
+                <h1 className="text-base sm:text-lg font-bold tracking-tight text-[#172B4D]">
                   STAFFIFY ENTERPRISE TECHNOLOGIES PVT. LTD.
                 </h1>
               </div>
-              <p className="text-[11px] text-[#6B778C] mt-1">
+              <p className="text-[11px] text-[#6B778C] mt-1 leading-snug">
                 DLF Cyber City, Tower B, Level 8, Gurugram, Haryana - 122002, India
               </p>
-              <p className="text-[11px] text-[#6B778C]">
+              <p className="text-[11px] text-[#6B778C] leading-snug">
                 CIN: U72200HR2024PTC098765 • Email: payroll@staffify.com
               </p>
             </div>
 
-            <div className="sm:text-right">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#0052CC] block">
+            <div className="sm:text-right shrink-0">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#0052CC] block">
                 Payslip For The Month Of
               </span>
               <span className="text-base font-bold text-[#172B4D] block mt-0.5">
@@ -333,7 +365,7 @@ function PayslipModal({ payslip, onClose }) {
               </p>
             </div>
 
-            <div className="sm:text-right">
+            <div className="sm:text-right shrink-0">
               <span className="text-2xl font-bold text-[#006644] tracking-tight">
                 {formatCurrency(payslip.netPay)}
               </span>
@@ -344,7 +376,7 @@ function PayslipModal({ payslip, onClose }) {
           </div>
 
           {/* 6. Signature & Legal Disclaimer */}
-          <div className="pt-6 border-t border-[#DFE1E6] flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 text-[11px] text-[#6B778C]">
+          <div className="pt-4 border-t border-[#DFE1E6] flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 text-[11px] text-[#6B778C]">
             <div>
               <p className="flex items-center gap-1 text-[#00875A] font-semibold">
                 <CheckCircle2 size={13} />
@@ -357,7 +389,7 @@ function PayslipModal({ payslip, onClose }) {
             </div>
 
             <div className="text-right shrink-0">
-              <div className="h-10 border-b border-[#172B4D] w-36 mb-1" />
+              <div className="h-8 border-b border-[#172B4D] w-32 mb-1" />
               <p className="font-semibold text-[#172B4D]">Authorised Signatory</p>
               <p className="text-[10px]">Staffify Enterprise HR</p>
             </div>
