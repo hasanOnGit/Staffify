@@ -10,6 +10,8 @@ import {
   Briefcase,
   Circle,
   FolderKanban,
+  FileText,
+  CreditCard,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -57,6 +59,11 @@ function Sidebar() {
             <User size={15} />
             <span>My Profile</span>
           </NavLink>
+
+          <NavLink to="/payslips" className={getNavLinkClass}>
+            <FileText size={15} />
+            <span>Payslips & Salary</span>
+          </NavLink>
         </div>
 
         {/* MSS - Manager Self Service */}
@@ -98,6 +105,11 @@ function Sidebar() {
             <NavLink to="/teams" className={getNavLinkClass}>
               <FolderKanban size={15} />
               <span>Teams & Structure</span>
+            </NavLink>
+
+            <NavLink to="/payroll" className={getNavLinkClass}>
+              <CreditCard size={15} />
+              <span>Payroll Processing</span>
             </NavLink>
           </div>
         )}

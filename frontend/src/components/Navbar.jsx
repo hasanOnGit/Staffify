@@ -19,6 +19,8 @@ import {
   UserPlus,
   Clock,
   X,
+  FileText,
+  CreditCard,
 } from "lucide-react";
 
 function Navbar() {
@@ -212,6 +214,15 @@ function Navbar() {
                   >
                     Leave Approvals
                   </button>
+                  <button
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      navigate("/payslips");
+                    }}
+                    className="w-full text-left px-3.5 py-2 hover:bg-[#F4F5F7] transition cursor-pointer"
+                  >
+                    My Payslips & Salary
+                  </button>
                 </div>
 
                 <div className="border-t border-[#DFE1E6] pt-1 mt-1">
@@ -293,6 +304,28 @@ function Navbar() {
                     </h4>
                     <p className="text-[11px] text-[#6B778C]">
                       Add new staff member, job profile, and statutory details
+                    </p>
+                  </div>
+                </button>
+              )}
+
+              {isAdmin && (
+                <button
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    navigate("/payroll");
+                  }}
+                  className="w-full text-left p-3 rounded-lg border border-[#DFE1E6] hover:border-[#0052CC] hover:bg-[#DEEBFF]/20 transition flex items-center gap-3 group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-md bg-[#E3FCEF] text-[#00875A] flex items-center justify-center shrink-0">
+                    <CreditCard size={16} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-[#172B4D] group-hover:text-[#0052CC]">
+                      Run Monthly Payroll
+                    </h4>
+                    <p className="text-[11px] text-[#6B778C]">
+                      Process employee salaries, statutory deductions & payslips
                     </p>
                   </div>
                 </button>

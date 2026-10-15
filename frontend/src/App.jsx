@@ -8,6 +8,8 @@ import TeamDetails from "./pages/TeamDetails";
 import Attendance from "./pages/Attendance";
 import Employees from "./pages/Employees";
 import Profile from "./pages/Profile";
+import Payroll from "./pages/Payroll";
+import Payslips from "./pages/Payslips";
 
 /* ============================
    Auth & RBAC Helpers
@@ -118,6 +120,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/payslips"
+          element={
+            <ProtectedRoute>
+              <Payslips />
+            </ProtectedRoute>
+          }
+        />
 
         {/* =========================================
             Manager & Admin Only (MSS)
@@ -147,6 +157,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Admin"]}>
               <Employees />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/payroll"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <Payroll />
             </ProtectedRoute>
           }
         />
