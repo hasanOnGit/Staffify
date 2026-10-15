@@ -100,6 +100,11 @@ function Sidebar() {
               <Users2 size={15} />
               <span>Squads & Rosters</span>
             </NavLink>
+
+            <NavLink to="/recruitment" className={getNavLinkClass}>
+              <Briefcase size={15} />
+              <span>Recruitment & ATS</span>
+            </NavLink>
           </div>
         )}
 
@@ -118,6 +123,11 @@ function Sidebar() {
             <NavLink to="/employees" className={getNavLinkClass}>
               <Users size={15} />
               <span>Employee Directory</span>
+            </NavLink>
+
+            <NavLink to="/recruitment" className={getNavLinkClass}>
+              <Briefcase size={15} />
+              <span>Recruitment & ATS</span>
             </NavLink>
 
             <NavLink to="/teams" className={getNavLinkClass}>

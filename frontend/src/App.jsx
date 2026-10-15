@@ -13,6 +13,7 @@ import Payslips from "./pages/Payslips";
 import Performance from "./pages/Performance";
 import Roster from "./pages/Roster";
 import Helpdesk from "./pages/Helpdesk";
+import Recruitment from "./pages/Recruitment";
 
 /* ============================
    Auth & RBAC Helpers
@@ -164,6 +165,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
               <Teams />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recruitment"
+          element={
+            <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
+              <Recruitment />
             </ProtectedRoute>
           }
         />

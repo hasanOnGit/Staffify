@@ -362,6 +362,28 @@ function Navbar() {
                 </button>
               )}
 
+              {(isAdmin || isManager) && (
+                <button
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    navigate("/recruitment");
+                  }}
+                  className="w-full text-left p-3 rounded-lg border border-[#DFE1E6] hover:border-[#0052CC] hover:bg-[#DEEBFF]/20 transition flex items-center gap-3 group cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-md bg-[#DEEBFF] text-[#0052CC] flex items-center justify-center shrink-0">
+                    <Briefcase size={16} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-[#172B4D] group-hover:text-[#0052CC]">
+                      Publish Job Opening
+                    </h4>
+                    <p className="text-[11px] text-[#6B778C]">
+                      Create new job requisition and recruit squad talent
+                    </p>
+                  </div>
+                </button>
+              )}
+
               <button
                 onClick={() => {
                   setShowCreateModal(false);
