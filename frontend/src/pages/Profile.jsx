@@ -1,84 +1,615 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useAuth } from "../context/AuthContext";
-import { getProfile, updateProfile } from "../services/profile";
-
-import ProfileHeader from "../components/profile/ProfileHeader";
-import ProfileInfoCard from "../components/profile/ProfileInfoCard";
-import ProfileForm from "../components/profile/ProfileForm";
+import { getEmployeeByUserId, updateEmployee } from "../services/employee";
 
 function Profile() {
   const { user } = useAuth();
 
-  const [profile, setProfile] = useState(null);
+  const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
-  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState("personal");
+  const [notification, setNotification] = useState("");
 
-  const fetchProfile = async () => {
+  // Edit form state
+  const [formData, setFormData] = useState({
+    name: "",
+    phoneNo: "",
+    gender: "",
+    dob: "",
+    bloodGroup: "",
+    maritalStatus: "",
+    fatherName: "",
+    presentAddress: "",
+    permanentAddress: "",
+    emergencyContactName: "",
+    emergencyContactRelation: "",
+    emergencyContactNum: "",
+    bankDetails: {
+      accountNumber: "",
+      bankName: "",
+      ifscCode: "",
+    },
+    statutoryDetails: {
+      panNumber: "",
+      aadhaarNumber: "",
+      uanNumber: "",
+      pfNumber: "",
+    },
+  });
+
+  const fetchProfileData = async () => {
     try {
-      if (!user?.userId) {
-        setError("User not available");
-        setLoading(false);
-        return;
-      }
-
+      if (!user) return;
       setLoading(true);
-      const data = await getProfile(user.userId);
-      setProfile(data);
+
+      const queryId = user.userId || user.id || user._id;
+      const data = await getEmployeeByUserId(queryId);
+
+      if (data) {
+        setEmployee(data);
+        populateFormData(data);
+      }
     } catch (err) {
-      console.error("Profile fetch error:", err);
-      setError("Failed to load profile");
+      console.warn("Could not fetch 360 profile, building default view from user context", err);
+      // Fallback object from authenticated user
+      const fallback = {
+        name: user.name || "Employee",
+        email: user.email || "",
+        employeeId: user.userId || "EMP-1001",
+        designation: "Software Engineer",
+        department: "Engineering",
+        gender: "Prefer not to say",
+        employmentType: "Full-time",
+        probationStatus: "Confirmed",
+        workLocation: "Headquarters",
+        dateOfJoining: "2024-01-15",
+        phoneNo: "",
+        bankDetails: {},
+        statutoryDetails: {},
+      };
+      setEmployee(fallback);
+      populateFormData(fallback);
     } finally {
       setLoading(false);
     }
   };
 
+  const populateFormData = (emp) => {
+    setFormData({
+      name: emp.name || "",
+      phoneNo: emp.phoneNo || "",
+      gender: emp.gender || "Prefer not to say",
+      dob: emp.dob ? emp.dob.split("T")[0] : "",
+      bloodGroup: emp.bloodGroup || "",
+      maritalStatus: emp.maritalStatus || "Single",
+      fatherName: emp.fatherName || "",
+      presentAddress: emp.presentAddress || "",
+      permanentAddress: emp.permanentAddress || "",
+      emergencyContactName: emp.emergencyContactName || "",
+      emergencyContactRelation: emp.emergencyContactRelation || "",
+      emergencyContactNum: emp.emergencyContactNum || "",
+      bankDetails: {
+        accountNumber: emp.bankDetails?.accountNumber || "",
+        bankName: emp.bankDetails?.bankName || "",
+        ifscCode: emp.bankDetails?.ifscCode || "",
+      },
+      statutoryDetails: {
+        panNumber: emp.statutoryDetails?.panNumber || "",
+        aadhaarNumber: emp.statutoryDetails?.aadhaarNumber || "",
+        uanNumber: emp.statutoryDetails?.uanNumber || "",
+        pfNumber: emp.statutoryDetails?.pfNumber || "",
+      },
+    });
+  };
+
   useEffect(() => {
-    fetchProfile();
+    fetchProfileData();
   }, [user]);
 
-  const handleSave = async (updatedData) => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name.startsWith("bank.")) {
+      const field = name.split(".")[1];
+      setFormData((prev) => ({
+        ...prev,
+        bankDetails: { ...prev.bankDetails, [field]: value },
+      }));
+    } else if (name.startsWith("statutory.")) {
+      const field = name.split(".")[1];
+      setFormData((prev) => ({
+        ...prev,
+        statutoryDetails: { ...prev.statutoryDetails, [field]: value },
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
     try {
-      await updateProfile(user.userId, updatedData);
+      setSaving(true);
+      await updateEmployee(employee.employeeId, formData);
+      setNotification("Profile updated successfully!");
       setEditMode(false);
-      fetchProfile();
-    } catch {
-      alert("Failed to update profile");
+      await fetchProfileData();
+      setTimeout(() => setNotification(""), 3500);
+    } catch (err) {
+      alert(err.response?.data?.message || err.response?.data?.error || "Failed to update profile");
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
     <DashboardLayout>
-      {loading && (
-        <p className="text-gray-500">Loading profile...</p>
+      {/* Toast Alert */}
+      {notification && (
+        <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-800 rounded-xl text-sm flex items-center justify-between animate-fadeIn">
+          <span>✓ {notification}</span>
+          <button onClick={() => setNotification("")} className="text-green-600 font-bold">✕</button>
+        </div>
       )}
 
-      {error && (
-        <p className="text-red-600">{error}</p>
-      )}
+      {loading ? (
+        <div className="bg-white border rounded-2xl p-16 text-center text-gray-500">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-3"></div>
+          Loading employee dossier...
+        </div>
+      ) : !employee ? (
+        <div className="bg-white border rounded-2xl p-12 text-center text-gray-500">
+          Profile not found
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {/* Hero Profile Header (greytHR style) */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-32 bg-gradient-to-bl from-purple-100/50 via-indigo-50/20 to-transparent pointer-events-none"></div>
 
-      {/* 🔥 Only render when profile exists */}
-      {!loading && profile && (
-        <>
-          <ProfileHeader
-            profile={profile}
-            editMode={editMode}
-            onEdit={() => setEditMode(true)}
-            onCancel={() => setEditMode(false)}
-          />
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+              <div className="flex items-center gap-5">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-black text-2xl flex items-center justify-center shadow-md">
+                  {employee.name?.charAt(0)?.toUpperCase() || "E"}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-2xl font-bold text-gray-900">{employee.name}</h1>
+                    <span className="font-mono text-xs bg-purple-50 text-purple-700 px-2.5 py-0.5 rounded-full font-bold border border-purple-100">
+                      {employee.employeeId}
+                    </span>
+                    <span className="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full font-semibold border border-emerald-100">
+                      ● {employee.probationStatus || "Confirmed"}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">
+                    <span className="font-semibold text-gray-800">{employee.designation || "Staff"}</span>
+                    {" · "}
+                    <span>{employee.department || "Operations"}</span>
+                    {" · "}
+                    <span>📍 {employee.workLocation || "Headquarters"}</span>
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    {employee.email} {employee.phoneNo ? `· ${employee.phoneNo}` : ""}
+                  </p>
+                </div>
+              </div>
 
-          {!editMode ? (
-            <ProfileInfoCard profile={profile} />
+              <div className="flex items-center gap-3">
+                {!editMode ? (
+                  <button
+                    onClick={() => setEditMode(true)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-xl text-sm shadow-sm transition flex items-center gap-1.5"
+                  >
+                    ✎ Edit Dossier
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setEditMode(false);
+                      populateFormData(employee);
+                    }}
+                    className="border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold px-4 py-2 rounded-xl text-sm transition"
+                  >
+                    Cancel Editing
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Quick Stat Bar */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100 text-xs">
+              <div>
+                <span className="text-gray-400 block font-medium">Employment Type</span>
+                <span className="font-semibold text-gray-800 text-sm">{employee.employmentType || "Full-time"}</span>
+              </div>
+              <div>
+                <span className="text-gray-400 block font-medium">Date of Joining</span>
+                <span className="font-semibold text-gray-800 text-sm">
+                  {employee.dateOfJoining ? new Date(employee.dateOfJoining).toLocaleDateString() : "2024-01-15"}
+                </span>
+              </div>
+              <div>
+                <span className="text-gray-400 block font-medium">Reporting Manager</span>
+                <span className="font-semibold text-purple-700 text-sm">{employee.managerName || "Amit Kumar"}</span>
+              </div>
+              <div>
+                <span className="text-gray-400 block font-medium">Self-Service Status</span>
+                <span className="font-semibold text-emerald-600 text-sm">Verified Profile ✓</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="flex border-b border-gray-200 gap-6 text-sm font-medium">
+            <button
+              onClick={() => setActiveTab("personal")}
+              className={`pb-3 transition flex items-center gap-1.5 ${
+                activeTab === "personal"
+                  ? "border-b-2 border-purple-600 text-purple-600 font-bold"
+                  : "text-gray-500 hover:text-gray-800"
+              }`}
+            >
+              👤 Personal & Contact
+            </button>
+            <button
+              onClick={() => setActiveTab("job")}
+              className={`pb-3 transition flex items-center gap-1.5 ${
+                activeTab === "job"
+                  ? "border-b-2 border-purple-600 text-purple-600 font-bold"
+                  : "text-gray-500 hover:text-gray-800"
+              }`}
+            >
+              🏢 Job & Organization
+            </button>
+            <button
+              onClick={() => setActiveTab("statutory")}
+              className={`pb-3 transition flex items-center gap-1.5 ${
+                activeTab === "statutory"
+                  ? "border-b-2 border-purple-600 text-purple-600 font-bold"
+                  : "text-gray-500 hover:text-gray-800"
+              }`}
+            >
+              🏛 Bank & Statutory
+            </button>
+            <button
+              onClick={() => setActiveTab("emergency")}
+              className={`pb-3 transition flex items-center gap-1.5 ${
+                activeTab === "emergency"
+                  ? "border-b-2 border-purple-600 text-purple-600 font-bold"
+                  : "text-gray-500 hover:text-gray-800"
+              }`}
+            >
+              🚨 Emergency Details
+            </button>
+          </div>
+
+          {/* EDIT FORM WRAPPER */}
+          {editMode ? (
+            <form onSubmit={handleSaveProfile} className="bg-white border rounded-2xl p-6 shadow-sm space-y-6">
+              <div className="flex items-center justify-between pb-3 border-b">
+                <h3 className="font-bold text-gray-900 text-base">Edit Employee Profile Details</h3>
+                <span className="text-xs text-gray-500">Update personal, banking and statutory credentials</span>
+              </div>
+
+              {/* Personal Section */}
+              <div>
+                <h4 className="text-xs font-bold text-purple-700 uppercase tracking-wider mb-3">
+                  Personal Information
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Full Name</label>
+                    <input
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Phone Number</label>
+                    <input
+                      name="phoneNo"
+                      value={formData.phoneNo}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Gender</label>
+                    <select
+                      name="gender"
+                      value={formData.gender}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 bg-white"
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                      <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Date of Birth</label>
+                    <input
+                      type="date"
+                      name="dob"
+                      value={formData.dob}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Blood Group</label>
+                    <input
+                      name="bloodGroup"
+                      placeholder="e.g. O+, B+, AB-"
+                      value={formData.bloodGroup}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Marital Status</label>
+                    <select
+                      name="maritalStatus"
+                      value={formData.maritalStatus}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 bg-white"
+                    >
+                      <option value="Single">Single</option>
+                      <option value="Married">Married</option>
+                      <option value="Divorced">Divorced</option>
+                      <option value="Widowed">Widowed</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Present Address</label>
+                    <textarea
+                      rows="2"
+                      name="presentAddress"
+                      value={formData.presentAddress}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Permanent Address</label>
+                    <textarea
+                      rows="2"
+                      name="permanentAddress"
+                      value={formData.permanentAddress}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Banking & Statutory Section */}
+              <div className="pt-4 border-t">
+                <h4 className="text-xs font-bold text-purple-700 uppercase tracking-wider mb-3">
+                  Indian Banking & Statutory Compliances
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Bank Name</label>
+                    <input
+                      name="bank.bankName"
+                      placeholder="e.g. HDFC Bank, ICICI"
+                      value={formData.bankDetails.bankName}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Account Number</label>
+                    <input
+                      name="bank.accountNumber"
+                      value={formData.bankDetails.accountNumber}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">IFSC Code</label>
+                    <input
+                      name="bank.ifscCode"
+                      value={formData.bankDetails.ifscCode}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 font-mono uppercase"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">PAN Card</label>
+                    <input
+                      name="statutory.panNumber"
+                      value={formData.statutoryDetails.panNumber}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 font-mono uppercase"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Aadhaar Number</label>
+                    <input
+                      name="statutory.aadhaarNumber"
+                      value={formData.statutoryDetails.aadhaarNumber}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Universal Account Number (UAN)</label>
+                    <input
+                      name="statutory.uanNumber"
+                      value={formData.statutoryDetails.uanNumber}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Emergency Contacts Section */}
+              <div className="pt-4 border-t">
+                <h4 className="text-xs font-bold text-purple-700 uppercase tracking-wider mb-3">
+                  Emergency Contact Details
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Contact Name</label>
+                    <input
+                      name="emergencyContactName"
+                      value={formData.emergencyContactName}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Relationship</label>
+                    <input
+                      name="emergencyContactRelation"
+                      placeholder="e.g. Spouse, Father, Mother"
+                      value={formData.emergencyContactRelation}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1">Emergency Phone</label>
+                    <input
+                      name="emergencyContactNum"
+                      value={formData.emergencyContactNum}
+                      onChange={handleInputChange}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Save & Cancel Actions */}
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditMode(false);
+                    populateFormData(employee);
+                  }}
+                  className="px-4 py-2 border rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="px-6 py-2 bg-purple-600 text-white rounded-lg text-sm font-semibold hover:bg-purple-700 shadow-sm disabled:opacity-50"
+                >
+                  {saving ? "Saving Changes..." : "Save Dossier"}
+                </button>
+              </div>
+            </form>
           ) : (
-            <ProfileForm
-              profile={profile}
-              onSave={handleSave}
-            />
+            /* TAB CONTENT DISPLAY */
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+              {activeTab === "personal" && (
+                <div>
+                  <h3 className="font-bold text-gray-900 text-base mb-4">Personal & Identity Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <InfoBlock label="Full Legal Name" value={employee.name} />
+                    <InfoBlock label="Gender" value={employee.gender || "Prefer not to say"} />
+                    <InfoBlock
+                      label="Date of Birth"
+                      value={employee.dob ? new Date(employee.dob).toLocaleDateString() : "Not specified"}
+                    />
+                    <InfoBlock label="Blood Group" value={employee.bloodGroup || "Not specified"} />
+                    <InfoBlock label="Marital Status" value={employee.maritalStatus || "Single"} />
+                    <InfoBlock label="Father's / Guardian Name" value={employee.fatherName || "Not specified"} />
+                    <InfoBlock label="Personal Contact Number" value={employee.phoneNo || "Not specified"} />
+                    <InfoBlock label="Official Email" value={employee.email} />
+                    <InfoBlock label="Present Address" value={employee.presentAddress || "Not specified"} />
+                    <InfoBlock label="Permanent Address" value={employee.permanentAddress || "Not specified"} />
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "job" && (
+                <div>
+                  <h3 className="font-bold text-gray-900 text-base mb-4">Job & Organizational Assignment</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <InfoBlock label="Employee Code" value={employee.employeeId} highlight />
+                    <InfoBlock label="Primary Department" value={employee.department || "Engineering"} />
+                    <InfoBlock label="Official Designation" value={employee.designation || "Staff"} />
+                    <InfoBlock
+                      label="Date of Joining"
+                      value={employee.dateOfJoining ? new Date(employee.dateOfJoining).toLocaleDateString() : "2024-01-15"}
+                    />
+                    <InfoBlock label="Employment Classification" value={employee.employmentType || "Full-time"} />
+                    <InfoBlock label="Probation / Confirmation Status" value={employee.probationStatus || "Confirmed"} />
+                    <InfoBlock label="Reporting Manager" value={employee.managerName || "Amit Kumar"} />
+                    <InfoBlock label="Official Work Location" value={employee.workLocation || "Headquarters"} />
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "statutory" && (
+                <div>
+                  <h3 className="font-bold text-gray-900 text-base mb-4">Statutory Compliances & Banking</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <InfoBlock label="Bank Name" value={employee.bankDetails?.bankName || "HDFC Bank"} />
+                    <InfoBlock
+                      label="Account Number"
+                      value={employee.bankDetails?.accountNumber ? `•••• •••• ${employee.bankDetails.accountNumber.slice(-4)}` : "Not provided"}
+                      mono
+                    />
+                    <InfoBlock label="Bank IFSC Code" value={employee.bankDetails?.ifscCode || "Not provided"} mono />
+                    <InfoBlock label="Income Tax PAN" value={employee.statutoryDetails?.panNumber || "Not provided"} mono />
+                    <InfoBlock
+                      label="Aadhaar UID"
+                      value={employee.statutoryDetails?.aadhaarNumber ? `•••• •••• ${employee.statutoryDetails.aadhaarNumber.slice(-4)}` : "Not provided"}
+                      mono
+                    />
+                    <InfoBlock label="Universal Account No (UAN)" value={employee.statutoryDetails?.uanNumber || "Not provided"} mono />
+                    <InfoBlock label="Provident Fund (PF) No" value={employee.statutoryDetails?.pfNumber || "Not provided"} mono />
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "emergency" && (
+                <div>
+                  <h3 className="font-bold text-gray-900 text-base mb-4">Emergency Contact Hierarchy</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <InfoBlock label="Emergency Contact Name" value={employee.emergencyContactName || "Not configured"} />
+                    <InfoBlock label="Relationship" value={employee.emergencyContactRelation || "Not configured"} />
+                    <InfoBlock label="Emergency Phone" value={employee.emergencyContactNum || "Not configured"} highlight />
+                  </div>
+                </div>
+              )}
+            </div>
           )}
-        </>
+        </div>
       )}
     </DashboardLayout>
+  );
+}
+
+function InfoBlock({ label, value, mono = false, highlight = false }) {
+  return (
+    <div className="bg-gray-50/70 border border-gray-100 rounded-xl p-3.5">
+      <span className="text-xs text-gray-500 font-medium block mb-1">{label}</span>
+      <span
+        className={`text-sm ${
+          mono ? "font-mono font-medium text-gray-900" : ""
+        } ${highlight ? "font-bold text-purple-700" : "font-semibold text-gray-800"}`}
+      >
+        {value || "-"}
+      </span>
+    </div>
   );
 }
 

@@ -5,5 +5,6 @@ require('./controllers/employees.controller')(app);
 require('./controllers/leaves.controller')(app);
 require('./controllers/attendance.controller')(app);
 require('./controllers/holiday.controller')(app);
+require('./controllers/team.controller')(app);
 
 }

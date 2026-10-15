@@ -12,6 +12,12 @@ export const getEmployeeById = async (employeeId) => {
   return res.data;
 };
 
+// GET by userId (for self service)
+export const getEmployeeByUserId = async (userId) => {
+  const res = await api.get(`/getEmployeeByUserId/${userId}`);
+  return res.data;
+};
+
 // CREATE
 export const createEmployee = async (employeeData) => {
   const res = await api.post("/createEmployee", employeeData);
