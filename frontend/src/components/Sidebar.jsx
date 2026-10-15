@@ -7,6 +7,8 @@ import {
   Clock,
   Users2,
   Sparkles,
+  ShieldCheck,
+  CheckSquare,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -21,7 +23,7 @@ const getNavLinkClass = ({ isActive }) =>
   }`;
 
 function Sidebar() {
-  const { isManager } = useAuth();
+  const { role, isAdmin, isManager } = useAuth();
 
   return (
     <aside className="fixed left-0 top-0 w-64 h-screen bg-white border-r border-gray-200 hidden md:flex flex-col z-40">
@@ -44,11 +46,18 @@ function Sidebar() {
 
       {/* Navigation Modules */}
       <nav className="flex-1 px-3 py-5 space-y-6 overflow-y-auto">
-        {/* ESS - Employee Self Service */}
+        {/* ========================================================
+            1. ESS - Employee Self Service (Available to ALL users)
+            ======================================================== */}
         <div className="space-y-1">
-          <p className="px-3 pb-1 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
-            Employee Self Service (ESS)
-          </p>
+          <div className="flex items-center justify-between px-3 pb-1">
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+              Self Service (ESS)
+            </p>
+            <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+              All
+            </span>
+          </div>
 
           <NavLink to="/dashboard" className={getNavLinkClass}>
             <LayoutDashboard size={18} />
@@ -71,35 +80,70 @@ function Sidebar() {
           </NavLink>
         </div>
 
-        {/* MSS / HR Administration */}
-        <div className="space-y-1">
-          <div className="flex items-center justify-between px-3 pb-1">
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
-              Manager & HR (MSS)
-            </p>
-            {isManager && (
-              <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded">
-                Admin
+        {/* ========================================================
+            2. MSS - Manager Self Service (Managers & Admins only)
+            ======================================================== */}
+        {isManager && (
+          <div className="space-y-1 pt-2 border-t border-gray-100">
+            <div className="flex items-center justify-between px-3 pb-1">
+              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                Manager Self Service (MSS)
+              </p>
+              <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100">
+                Manager
               </span>
-            )}
+            </div>
+
+            <NavLink to="/teams" className={getNavLinkClass}>
+              <Users2 size={18} />
+              <span>Squads & Rosters</span>
+            </NavLink>
+
+            <NavLink to="/leaves" className={getNavLinkClass}>
+              <CheckSquare size={18} />
+              <span>Approvals Hub</span>
+            </NavLink>
           </div>
+        )}
 
-          <NavLink to="/employees" className={getNavLinkClass}>
-            <Users size={18} />
-            <span>Employee Directory</span>
-          </NavLink>
+        {/* ========================================================
+            3. HR & System Administration (Admins only)
+            ======================================================== */}
+        {isAdmin && (
+          <div className="space-y-1 pt-2 border-t border-gray-100">
+            <div className="flex items-center justify-between px-3 pb-1">
+              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                HR & Administration
+              </p>
+              <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-100">
+                👑 Admin
+              </span>
+            </div>
 
-          <NavLink to="/teams" className={getNavLinkClass}>
-            <Users2 size={18} />
-            <span>Teams & Structure</span>
-          </NavLink>
-        </div>
+            <NavLink to="/employees" className={getNavLinkClass}>
+              <Users size={18} />
+              <span>Employee Directory (360)</span>
+            </NavLink>
+
+            <NavLink to="/teams" className={getNavLinkClass}>
+              <ShieldCheck size={18} />
+              <span>Organization Setup</span>
+            </NavLink>
+          </div>
+        )}
       </nav>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-xs text-gray-400">
-        <span>v1.2.0 • Active</span>
-        <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
+      {/* Role Indicator Footer */}
+      <div className="p-4 border-t border-gray-100 bg-gray-50/70 flex items-center justify-between text-xs">
+        <div>
+          <span className="text-gray-400 block text-[10px] uppercase font-bold tracking-wider">Active Role</span>
+          <span className="font-bold text-gray-800 capitalize">
+            {role === "Admin" ? "👑 Administrator" : role === "Manager" ? "👔 Manager" : "👤 Employee"}
+          </span>
+        </div>
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">
+          ● Online
+        </span>
       </div>
     </aside>
   );

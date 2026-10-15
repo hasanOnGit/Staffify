@@ -1,6 +1,4 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -12,16 +10,36 @@ import Employees from "./pages/Employees";
 import Profile from "./pages/Profile";
 
 /* ============================
-   Auth Helpers
+   Auth & RBAC Helpers
 ============================ */
 const isAuthenticated = () => {
   return !!localStorage.getItem("token") || !!localStorage.getItem("user");
 };
 
-function ProtectedRoute({ children }) {
+const getCurrentUser = () => {
+  try {
+    const stored = localStorage.getItem("user");
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+};
+
+function ProtectedRoute({ children, allowedRoles }) {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
+
+  if (allowedRoles && allowedRoles.length > 0) {
+    const user = getCurrentUser();
+    const userRole = (user?.role || "Employee").toLowerCase();
+    const normalizedAllowed = allowedRoles.map((r) => r.toLowerCase());
+
+    if (!normalizedAllowed.includes(userRole)) {
+      return <Navigate to="/dashboard" replace />;
+    }
+  }
+
   return children;
 }
 
@@ -65,7 +83,9 @@ function App() {
           }
         />
 
-        {/* Protected greytHR Routes */}
+        {/* =========================================
+            All Roles (ESS)
+           ========================================= */}
         <Route
           path="/dashboard"
           element={
@@ -75,10 +95,10 @@ function App() {
           }
         />
         <Route
-          path="/employees"
+          path="/attendance"
           element={
             <ProtectedRoute>
-              <Employees />
+              <Attendance />
             </ProtectedRoute>
           }
         />
@@ -98,10 +118,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* =========================================
+            Manager & Admin Only (MSS)
+           ========================================= */}
         <Route
           path="/teams"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
               <Teams />
             </ProtectedRoute>
           }
@@ -109,16 +133,20 @@ function App() {
         <Route
           path="/teams/:teamId"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
               <TeamDetails />
             </ProtectedRoute>
           }
         />
+
+        {/* =========================================
+            Admin Only (HR Administration)
+           ========================================= */}
         <Route
-          path="/attendance"
+          path="/employees"
           element={
-            <ProtectedRoute>
-              <Attendance />
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <Employees />
             </ProtectedRoute>
           }
         />
