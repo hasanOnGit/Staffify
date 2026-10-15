@@ -21,6 +21,7 @@ import {
   X,
   FileText,
   CreditCard,
+  Target,
 } from "lucide-react";
 
 function Navbar() {
@@ -245,9 +246,15 @@ function Navbar() {
 
       {/* Jira "+ Create" Quick Action Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-[#091E42]/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl border border-[#DFE1E6] w-full max-w-md overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-[#DFE1E6] flex items-center justify-between">
+        <div
+          onClick={() => setShowCreateModal(false)}
+          className="fixed inset-0 bg-[#091E42]/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-lg shadow-xl border border-[#DFE1E6] w-full max-w-md max-h-[92vh] flex flex-col overflow-hidden my-auto"
+          >
+            <div className="px-5 py-3.5 border-b border-[#DFE1E6] flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded bg-[#0052CC] text-white flex items-center justify-center">
                   <Plus size={14} />
@@ -262,7 +269,7 @@ function Navbar() {
               </button>
             </div>
 
-            <div className="p-4 space-y-2">
+            <div className="p-4 space-y-2 overflow-y-auto">
               <p className="text-xs text-[#6B778C] mb-3">
                 Select an item to quickly create or request in Staffify:
               </p>
@@ -369,6 +376,26 @@ function Navbar() {
                   </h4>
                   <p className="text-[11px] text-[#6B778C]">
                     Submit punch correction request for missed swipes
+                  </p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowCreateModal(false);
+                  navigate("/performance");
+                }}
+                className="w-full text-left p-3 rounded-lg border border-[#DFE1E6] hover:border-[#0052CC] hover:bg-[#DEEBFF]/20 transition flex items-center gap-3 group cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-md bg-[#DEEBFF] text-[#0052CC] flex items-center justify-center shrink-0">
+                  <Target size={16} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[#172B4D] group-hover:text-[#0052CC]">
+                    New Goal & OKR
+                  </h4>
+                  <p className="text-[11px] text-[#6B778C]">
+                    Define measurable key results and performance targets
                   </p>
                 </div>
               </button>

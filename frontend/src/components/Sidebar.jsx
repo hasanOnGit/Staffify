@@ -12,6 +12,7 @@ import {
   FolderKanban,
   FileText,
   CreditCard,
+  Target,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -63,6 +64,11 @@ function Sidebar() {
           <NavLink to="/payslips" className={getNavLinkClass}>
             <FileText size={15} />
             <span>Payslips & Salary</span>
+          </NavLink>
+
+          <NavLink to="/performance" className={getNavLinkClass}>
+            <Target size={15} />
+            <span>Performance & OKRs</span>
           </NavLink>
         </div>
 

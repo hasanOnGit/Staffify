@@ -7,6 +7,8 @@ require('./controllers/attendance.controller')(app);
 require('./controllers/holiday.controller')(app);
 require('./controllers/team.controller')(app);
 require('./controllers/payroll.controller')(app);
+require('./controllers/performance.controller')(app);
 
 }
+
 
