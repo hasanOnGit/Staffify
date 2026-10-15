@@ -13,6 +13,13 @@ const punchSchema = new mongoose.Schema({
     enum: ["IN", "OUT"],
     required: true,
   },
+  location: {
+    latitude: Number,
+    longitude: Number,
+    zoneName: String,
+    distanceMeters: Number,
+    isWithinGeofence: Boolean,
+  },
 });
 
 const attendanceSchema = new mongoose.Schema(

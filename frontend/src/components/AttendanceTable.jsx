@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle2, Clock, XCircle, AlertCircle, Eye, X } from "lucide-react";
+import { CheckCircle2, Clock, XCircle, AlertCircle, Eye, X, MapPin } from "lucide-react";
 import { reviewRegularization } from "../services/attendance";
 import toast from "react-hot-toast";
 
@@ -45,7 +45,7 @@ function AttendanceTable({ records, isManager, onRefresh }) {
               <th className="px-4 py-3 text-left">First In</th>
               <th className="px-4 py-3 text-left">Last Out</th>
               <th className="px-4 py-3 text-left">Total Hours</th>
-              <th className="px-4 py-3 text-left">Punch Swipes</th>
+              <th className="px-4 py-3 text-left">Punch Swipes & Location</th>
               <th className="px-4 py-3 text-right">Regularize</th>
             </tr>
           </thead>
@@ -85,13 +85,29 @@ function AttendanceTable({ records, isManager, onRefresh }) {
 
                   <td className="px-4 py-3">
                     {row.punches && row.punches.length > 0 ? (
-                      <button
-                        onClick={() => setSelectedPunches(row)}
-                        className="flex items-center gap-1 text-[11px] text-[#0052CC] hover:text-[#0747A6] font-medium bg-[#DEEBFF] hover:bg-[#B3D4FF]/40 px-2 py-0.5 rounded border border-[#B3D4FF] transition cursor-pointer"
-                      >
-                        <Eye size={12} />
-                        <span>{row.punches.length} swipes</span>
-                      </button>
+                      <div className="flex flex-col gap-1 items-start">
+                        <button
+                          onClick={() => setSelectedPunches(row)}
+                          className="flex items-center gap-1 text-[11px] text-[#0052CC] hover:text-[#0747A6] font-medium bg-[#DEEBFF] hover:bg-[#B3D4FF]/40 px-2 py-0.5 rounded border border-[#B3D4FF] transition cursor-pointer"
+                        >
+                          <Eye size={12} />
+                          <span>{row.punches.length} swipes</span>
+                        </button>
+                        {row.punches[row.punches.length - 1]?.location?.zoneName && (
+                          <span
+                            className={`inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded border ${
+                              row.punches[row.punches.length - 1].location.isWithinGeofence
+                                ? "bg-[#E3FCEF] text-[#006644] border-[#ABF5D1]"
+                                : "bg-[#FFEBE6] text-[#DE350B] border-[#FFBDAD]"
+                            }`}
+                          >
+                            <MapPin size={9} />
+                            <span className="truncate max-w-[95px]">
+                              {row.punches[row.punches.length - 1].location.zoneName}
+                            </span>
+                          </span>
+                        )}
+                      </div>
                     ) : (
                       <span className="text-[11px] text-[#6B778C]">No swipes</span>
                     )}
@@ -158,11 +174,11 @@ function AttendanceTable({ records, isManager, onRefresh }) {
               </button>
             </div>
 
-            <div className="py-3.5 space-y-2 max-h-60 overflow-y-auto">
+            <div className="py-3.5 space-y-2 max-h-64 overflow-y-auto">
               {selectedPunches.punches.map((p, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between text-xs px-3 py-1.5 rounded bg-[#F4F5F7] border border-[#DFE1E6]"
+                  className="flex items-center justify-between text-xs px-3 py-2 rounded bg-[#F4F5F7] border border-[#DFE1E6]"
                 >
                   <div className="flex items-center gap-2">
                     <span
@@ -178,9 +194,31 @@ function AttendanceTable({ records, isManager, onRefresh }) {
                       {formatTime(p.time)}
                     </span>
                   </div>
-                  <span className="text-[10px] text-[#6B778C]">
-                    Swipe #{idx + 1}
-                  </span>
+
+                  <div className="flex items-center gap-2">
+                    {p.location ? (
+                      <span
+                        className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded border ${
+                          p.location.isWithinGeofence
+                            ? "bg-[#E3FCEF] text-[#006644] border-[#ABF5D1]"
+                            : "bg-[#FFEBE6] text-[#DE350B] border-[#FFBDAD]"
+                        }`}
+                        title={`GPS Coordinates: ${p.location.latitude?.toFixed(4)}, ${p.location.longitude?.toFixed(4)}`}
+                      >
+                        <MapPin size={10} />
+                        <span>{p.location.zoneName || "Office"}</span>
+                        <span className="font-mono">
+                          ({p.location.distanceMeters < 1000
+                            ? `${p.location.distanceMeters}m`
+                            : `${(p.location.distanceMeters / 1000).toFixed(1)}km`})
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-[#6B778C]">
+                        Swipe #{idx + 1}
+                      </span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

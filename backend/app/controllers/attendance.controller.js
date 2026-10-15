@@ -2,6 +2,7 @@ const express = require("express");
 const apiRoutes = express.Router();
 const Attendance = require("../models/attendance.model");
 const newEmployee = require("../models/employees.model");
+const Geofence = require("../models/geofence.model");
 
 // Helper to get local YYYY-MM-DD
 const getTodayStr = () => {
@@ -23,10 +24,64 @@ module.exports = function (app) {
      ========================================================== */
   apiRoutes.post("/punch", async (req, res) => {
     try {
-      const { employeeId, employeeName, type } = req.body;
+      const { employeeId, employeeName, type, latitude, longitude } = req.body;
 
       if (!employeeId || !type) {
         return res.status(400).json({ error: "employeeId and type (IN/OUT) are required" });
+      }
+
+      // Geofence Verification
+      const emp = await newEmployee.findOne({ employeeId });
+      const department = emp ? emp.department : "All";
+      const zones = await Geofence.find({ isActive: true });
+
+      let matchedZone = zones.find(
+        (z) => z.targetScope === "Specific Employees" && z.targetEmployeeIds.includes(employeeId)
+      );
+      if (!matchedZone && department) {
+        matchedZone = zones.find(
+          (z) => z.targetScope === "Department" && z.targetDepartment === department
+        );
+      }
+      if (!matchedZone) {
+        matchedZone = zones.find((z) => z.targetScope === "All Employees");
+      }
+
+      let locationData = null;
+      if (matchedZone) {
+        if (latitude !== undefined && longitude !== undefined && latitude !== null && longitude !== null) {
+          const R = 6371e3;
+          const toRad = (deg) => (deg * Math.PI) / 180;
+          const φ1 = toRad(Number(latitude));
+          const φ2 = toRad(matchedZone.latitude);
+          const Δφ = toRad(matchedZone.latitude - Number(latitude));
+          const Δλ = toRad(matchedZone.longitude - Number(longitude));
+          const a =
+            Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+            Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          const distanceMeters = Math.round(R * c);
+          const isWithin = distanceMeters <= matchedZone.radiusMeters;
+
+          if (matchedZone.isStrict && !isWithin) {
+            const distKm = (distanceMeters / 1000).toFixed(2);
+            return res.status(403).json({
+              error: `Swipe Rejected: You are outside your assigned office perimeter (${distKm} km from ${matchedZone.name}). Authorized radius is ${matchedZone.radiusMeters}m.`
+            });
+          }
+
+          locationData = {
+            latitude: Number(latitude),
+            longitude: Number(longitude),
+            zoneName: matchedZone.name,
+            distanceMeters,
+            isWithinGeofence: isWithin,
+          };
+        } else if (matchedZone.isStrict) {
+          return res.status(403).json({
+            error: `Swipe Rejected: GPS location verification is required for ${matchedZone.name}. Please enable location services in your browser.`
+          });
+        }
       }
 
       const today = getTodayStr();
@@ -61,11 +116,12 @@ module.exports = function (app) {
         record.lastOut = now;
       }
 
-      // Add punch
+      // Add punch with location metadata
       record.punches.push({
         time: now,
         timeStr,
         type,
+        location: locationData,
       });
 
       // Compute total hours

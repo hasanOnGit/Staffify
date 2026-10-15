@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AttendanceTable from "../components/AttendanceTable";
+import GeofenceModal from "../components/GeofenceModal";
 import { getAttendanceByDate, requestRegularization } from "../services/attendance";
+import { getGeofenceZones } from "../services/geofence";
 import { useAuth } from "../context/AuthContext";
-import { Calendar, Clock, RefreshCw, PlusCircle, AlertCircle, X } from "lucide-react";
+import { Clock, RefreshCw, PlusCircle, AlertCircle, X, MapPin, SlidersHorizontal } from "lucide-react";
 import toast from "react-hot-toast";
 
 function Attendance() {
@@ -14,6 +16,10 @@ function Attendance() {
     new Date().toISOString().slice(0, 10)
   );
   const [statusFilter, setStatusFilter] = useState("All");
+
+  // Geofence Modal & Zones
+  const [showGeofenceModal, setShowGeofenceModal] = useState(false);
+  const [activeZones, setActiveZones] = useState([]);
 
   // Regularization Modal State
   const [showRegModal, setShowRegModal] = useState(false);
@@ -38,9 +44,21 @@ function Attendance() {
     }
   }, [selectedDate]);
 
+  const loadActiveZones = useCallback(async () => {
+    try {
+      const res = await getGeofenceZones();
+      if (res?.success && Array.isArray(res.data)) {
+        setActiveZones(res.data);
+      }
+    } catch {
+      // Non-critical background fetch
+    }
+  }, []);
+
   useEffect(() => {
     fetchRecords();
-  }, [fetchRecords]);
+    loadActiveZones();
+  }, [fetchRecords, loadActiveZones]);
 
   // Re-fetch when topbar punch updates
   useEffect(() => {
@@ -57,9 +75,9 @@ function Attendance() {
   const summary = useMemo(() => {
     return {
       Present: attendance.filter((a) => a.status === "Present").length,
-      Absent: attendance.filter((a) => a.status === "Absent").length,
       Late: attendance.filter((a) => a.status === "Late").length,
       HalfDay: attendance.filter((a) => a.status === "Half Day").length,
+      Absent: attendance.filter((a) => a.status === "Absent").length,
       WFH: attendance.filter((a) => a.status === "WFH").length,
     };
   }, [attendance]);
@@ -108,13 +126,13 @@ function Attendance() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gray-800">Attendance & Swipes</h1>
-            <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2 py-0.5 rounded-full">
+            <h1 className="text-2xl font-bold text-[#172B4D]">Attendance & Swipes</h1>
+            <span className="text-xs bg-[#EAE6FF] text-[#403294] font-semibold px-2 py-0.5 rounded-full">
               Live Register
             </span>
           </div>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Real-time daily punch logs, swipe history, and regularization requests
+          <p className="text-sm text-[#6B778C] mt-0.5">
+            Real-time daily punch logs, GPS geofencing radius validation, and regularization
           </p>
         </div>
 
@@ -125,27 +143,79 @@ function Attendance() {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-1.5 text-xs font-medium text-gray-700 bg-white focus:outline-purple-600 shadow-2xs"
+              className="border border-[#DFE1E6] rounded px-3 py-1.5 text-xs font-medium text-[#172B4D] bg-white focus:outline-[#0052CC] shadow-2xs"
             />
           </div>
 
           {/* Refresh Button */}
           <button
             onClick={fetchRecords}
-            className="p-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-lg text-gray-600 transition shadow-2xs"
+            className="p-2 border border-[#DFE1E6] bg-white hover:bg-[#F4F5F7] rounded text-[#6B778C] transition shadow-2xs cursor-pointer"
             title="Refresh Records"
           >
             <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
           </button>
 
+          {/* Office Geofences Settings (Managers/Admins) */}
+          {isManager && (
+            <button
+              onClick={() => setShowGeofenceModal(true)}
+              className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer"
+              title="Configure Office Geofence Perimeters"
+            >
+              <MapPin size={14} className="text-[#0052CC]" />
+              <span>Office Geofences</span>
+            </button>
+          )}
+
           {/* Regularize Button */}
           <button
             onClick={() => setShowRegModal(true)}
-            className="flex items-center gap-1.5 bg-white border border-purple-200 text-purple-700 hover:bg-purple-50 text-xs font-semibold px-3 py-2 rounded-lg transition shadow-2xs"
+            className="flex items-center gap-1.5 bg-[#0052CC] text-white hover:bg-[#0747A6] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer"
           >
             <PlusCircle size={14} />
             <span>Regularize</span>
           </button>
+        </div>
+      </div>
+
+      {/* Geofence Perimeter Status Card */}
+      <div className="bg-[#FAFBFC] border border-[#DFE1E6] rounded p-3 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-[#DEEBFF] text-[#0052CC] rounded border border-[#B3D4FF] shrink-0">
+            <MapPin size={18} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-xs font-bold text-[#172B4D] uppercase tracking-wide">
+                GPS Geofence Perimeter Protection
+              </h3>
+              <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1]">
+                Active Enforcement
+              </span>
+            </div>
+            <p className="text-xs text-[#6B778C] mt-0.5">
+              Clock-In and Clock-Out swipe buttons are automatically verified against assigned office boundaries. Punches outside authorized perimeter are locked.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="text-right hidden sm:block">
+            <p className="text-[11px] font-semibold text-[#172B4D]">
+              {activeZones.length > 0 ? `${activeZones.length} Office Zone${activeZones.length > 1 ? "s" : ""} Active` : "Bangalore HQ Active"}
+            </p>
+            <p className="text-[10px] text-[#6B778C]">Standard Radius: 300m</p>
+          </div>
+          {isManager && (
+            <button
+              onClick={() => setShowGeofenceModal(true)}
+              className="text-xs font-medium bg-white text-[#0052CC] hover:bg-[#DEEBFF] border border-[#B3D4FF] px-2.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1"
+            >
+              <SlidersHorizontal size={13} />
+              <span>Configure Radii</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -161,18 +231,18 @@ function Attendance() {
       {/* Filter Toolbar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <div className="flex items-center gap-2">
-          <Clock size={16} className="text-gray-500" />
-          <h2 className="text-sm font-bold text-gray-800 uppercase tracking-wide">
+          <Clock size={16} className="text-[#6B778C]" />
+          <h2 className="text-sm font-bold text-[#172B4D] uppercase tracking-wide">
             Attendance Log ({filteredAttendance.length})
           </h2>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500 font-medium">Filter by Status:</span>
+          <span className="text-xs text-[#6B778C] font-medium">Filter by Status:</span>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-1.5 text-xs bg-white text-gray-700 focus:outline-purple-600 shadow-2xs"
+            className="border border-[#DFE1E6] rounded px-3 py-1.5 text-xs bg-white text-[#172B4D] focus:outline-[#0052CC] shadow-2xs"
           >
             <option value="All">All Statuses</option>
             <option value="Present">Present</option>
@@ -186,8 +256,8 @@ function Attendance() {
 
       {/* Attendance Table */}
       {loading ? (
-        <div className="bg-white border rounded-xl p-12 text-center text-gray-400">
-          <RefreshCw size={24} className="animate-spin mx-auto mb-2 text-purple-600" />
+        <div className="bg-white border border-[#DFE1E6] rounded p-12 text-center text-[#6B778C]">
+          <RefreshCw size={24} className="animate-spin mx-auto mb-2 text-[#0052CC]" />
           <p className="text-sm font-medium">Loading live attendance records...</p>
         </div>
       ) : (
@@ -198,14 +268,23 @@ function Attendance() {
         />
       )}
 
+      {/* Geofence Management Modal */}
+      <GeofenceModal
+        isOpen={showGeofenceModal}
+        onClose={() => {
+          setShowGeofenceModal(false);
+          loadActiveZones();
+        }}
+      />
+
       {/* Regularization Modal */}
       {showRegModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-gray-100 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+          <div className="bg-white rounded max-w-md w-full p-6 shadow-xl border border-[#DFE1E6] animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-[#DFE1E6]">
               <div className="flex items-center gap-2">
-                <AlertCircle size={20} className="text-purple-600" />
-                <h3 className="text-base font-semibold text-gray-800">
+                <AlertCircle size={20} className="text-[#0052CC]" />
+                <h3 className="text-base font-semibold text-[#172B4D]">
                   Attendance Regularization
                 </h3>
               </div>
@@ -217,13 +296,13 @@ function Attendance() {
               </button>
             </div>
 
-            <p className="text-xs text-gray-500 mt-2">
-              Forgot to swipe or faced device issues? Submit a regularization request to your manager.
+            <p className="text-xs text-[#6B778C] mt-2">
+              Forgot to swipe or faced device GPS issues? Submit a regularization request to your manager.
             </p>
 
             <form onSubmit={handleRegularizeSubmit} className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                <label className="block text-xs font-semibold text-[#172B4D] mb-1">
                   Date to Regularize
                 </label>
                 <input
@@ -231,13 +310,13 @@ function Attendance() {
                   value={regDate}
                   onChange={(e) => setRegDate(e.target.value)}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
+                  className="w-full border border-[#DFE1E6] rounded px-3 py-2 text-xs text-[#172B4D]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  <label className="block text-xs font-semibold text-[#172B4D] mb-1">
                     Proposed In Time
                   </label>
                   <input
@@ -245,11 +324,11 @@ function Attendance() {
                     value={regIn}
                     onChange={(e) => setRegIn(e.target.value)}
                     required
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
+                    className="w-full border border-[#DFE1E6] rounded px-3 py-2 text-xs text-[#172B4D]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                  <label className="block text-xs font-semibold text-[#172B4D] mb-1">
                     Proposed Out Time
                   </label>
                   <input
@@ -257,22 +336,22 @@ function Attendance() {
                     value={regOut}
                     onChange={(e) => setRegOut(e.target.value)}
                     required
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
+                    className="w-full border border-[#DFE1E6] rounded px-3 py-2 text-xs text-[#172B4D]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                <label className="block text-xs font-semibold text-[#172B4D] mb-1">
                   Reason for Regularization
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="e.g., Biometric system offline, On-duty client meeting..."
+                  placeholder="e.g., GPS signal delay, On-duty client meeting, Biometric sync issue..."
                   value={regReason}
                   onChange={(e) => setRegReason(e.target.value)}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
+                  className="w-full border border-[#DFE1E6] rounded px-3 py-2 text-xs text-[#172B4D]"
                 />
               </div>
 
