@@ -8,7 +8,6 @@ import {
   Users2,
   Sparkles,
   ShieldCheck,
-  CheckSquare,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -47,16 +46,13 @@ function Sidebar() {
       {/* Navigation Modules */}
       <nav className="flex-1 px-3 py-5 space-y-6 overflow-y-auto">
         {/* ========================================================
-            1. ESS - Employee Self Service (Available to ALL users)
+            1. ESS - Employee Self Service (Common to All)
             ======================================================== */}
         <div className="space-y-1">
           <div className="flex items-center justify-between px-3 pb-1">
             <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
               Self Service (ESS)
             </p>
-            <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
-              All
-            </span>
           </div>
 
           <NavLink to="/dashboard" className={getNavLinkClass}>
@@ -81,10 +77,10 @@ function Sidebar() {
         </div>
 
         {/* ========================================================
-            2. MSS - Manager Self Service (Managers & Admins only)
+            2. MSS - Manager Self Service (Managers ONLY, not Admin)
             ======================================================== */}
-        {isManager && (
-          <div className="space-y-1 pt-2 border-t border-gray-100">
+        {isManager && !isAdmin && (
+          <div className="space-y-1 pt-3 border-t border-gray-100">
             <div className="flex items-center justify-between px-3 pb-1">
               <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
                 Manager Self Service (MSS)
@@ -98,19 +94,14 @@ function Sidebar() {
               <Users2 size={18} />
               <span>Squads & Rosters</span>
             </NavLink>
-
-            <NavLink to="/leaves" className={getNavLinkClass}>
-              <CheckSquare size={18} />
-              <span>Approvals Hub</span>
-            </NavLink>
           </div>
         )}
 
         {/* ========================================================
-            3. HR & System Administration (Admins only)
+            3. HR & System Administration (Admins ONLY)
             ======================================================== */}
         {isAdmin && (
-          <div className="space-y-1 pt-2 border-t border-gray-100">
+          <div className="space-y-1 pt-3 border-t border-gray-100">
             <div className="flex items-center justify-between px-3 pb-1">
               <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
                 HR & Administration
@@ -127,7 +118,7 @@ function Sidebar() {
 
             <NavLink to="/teams" className={getNavLinkClass}>
               <ShieldCheck size={18} />
-              <span>Organization Setup</span>
+              <span>Organization & Teams</span>
             </NavLink>
           </div>
         )}

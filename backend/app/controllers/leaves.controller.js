@@ -6,7 +6,10 @@ const LeaveBalance = require("../models/employeeLeaveBalance.model");
 // Helper to get or initialize yearly balance
 const getOrCreateBalance = async (employeeId, year = new Date().getFullYear()) => {
   let balance = await LeaveBalance.findOne({ employeeId, year });
-  if (!balance) {
+  if (!balance || !balance.leaveAllocation) {
+    if (balance) {
+      await LeaveBalance.deleteOne({ _id: balance._id });
+    }
     balance = await LeaveBalance.create({
       employeeId,
       year,
@@ -231,8 +234,8 @@ module.exports = function (app) {
      ========================================================== */
   const handleGetBalance = async (req, res) => {
     try {
-      const employeeId = req.query.employeeId || req.body.employeeId;
-      const year = Number(req.query.year || req.body.year) || new Date().getFullYear();
+      const employeeId = req.query?.employeeId || req.body?.employeeId;
+      const year = Number(req.query?.year || req.body?.year) || new Date().getFullYear();
 
       if (!employeeId) {
         return res.status(400).json({ error: "employeeId is required" });
@@ -242,12 +245,13 @@ module.exports = function (app) {
 
       // Structure nicely with remaining counts
       const formatted = {};
-      Object.keys(balance.leaveAllocation).forEach((type) => {
-        const alloc = balance.leaveAllocation[type];
+      const allocMap = balance?.leaveAllocation || {};
+      Object.keys(allocMap).forEach((type) => {
+        const alloc = allocMap[type] || { totalAllocated: 0, used: 0 };
         formatted[type] = {
-          total: alloc.totalAllocated,
-          used: alloc.used,
-          available: Math.max(0, alloc.totalAllocated - alloc.used),
+          total: alloc.totalAllocated || 0,
+          used: alloc.used || 0,
+          available: Math.max(0, (alloc.totalAllocated || 0) - (alloc.used || 0)),
         };
       });
 
