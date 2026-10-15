@@ -6,134 +6,144 @@ import {
   CalendarCheck,
   Clock,
   Users2,
-  Sparkles,
+  Building2,
   ShieldCheck,
+  Briefcase,
+  Circle,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const baseLinkClasses =
-  "flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-150";
+  "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150";
 
 const getNavLinkClass = ({ isActive }) =>
   `${baseLinkClasses} ${
     isActive
-      ? "bg-purple-600 text-white shadow-sm shadow-purple-200"
-      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+      ? "bg-[#DEEBFF] text-[#0052CC] font-semibold"
+      : "text-[#42526E] hover:bg-[#EBECF0] hover:text-[#172B4D]"
   }`;
 
 function Sidebar() {
   const { role, isAdmin, isManager } = useAuth();
 
   return (
-    <aside className="fixed left-0 top-0 w-64 h-screen bg-white border-r border-gray-200 hidden md:flex flex-col z-40">
-      {/* Brand */}
-      <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-700 to-purple-500 flex items-center justify-center text-white shadow-xs">
-            <Sparkles size={18} />
+    <aside className="fixed left-0 top-0 w-64 h-screen bg-white border-r border-[#DFE1E6] hidden md:flex flex-col z-40">
+      {/* Brand Header */}
+      <div className="px-5 py-4 border-b border-[#DFE1E6] flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-md bg-[#0052CC] flex items-center justify-center text-white">
+            <Building2 size={18} />
           </div>
           <div>
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-base font-bold text-[#172B4D] tracking-tight">
               Staffify
             </span>
-            <p className="text-[10px] text-gray-400 font-medium tracking-wide uppercase">
-              greytHR Edition
+            <p className="text-[10px] text-[#6B778C] font-semibold tracking-wider uppercase">
+              greytHR Portal
             </p>
           </div>
         </div>
       </div>
 
       {/* Navigation Modules */}
-      <nav className="flex-1 px-3 py-5 space-y-6 overflow-y-auto">
-        {/* ========================================================
-            1. ESS - Employee Self Service (Common to All)
-            ======================================================== */}
-        <div className="space-y-1">
-          <div className="flex items-center justify-between px-3 pb-1">
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+      <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
+        {/* ESS - Employee Self Service */}
+        <div className="space-y-0.5">
+          <div className="px-3 pb-1.5">
+            <p className="text-[11px] font-bold text-[#6B778C] uppercase tracking-wider">
               Self Service (ESS)
             </p>
           </div>
 
           <NavLink to="/dashboard" className={getNavLinkClass}>
-            <LayoutDashboard size={18} />
+            <LayoutDashboard size={17} />
             <span>Dashboard</span>
           </NavLink>
 
           <NavLink to="/attendance" className={getNavLinkClass}>
-            <Clock size={18} />
+            <Clock size={17} />
             <span>Attendance & Swipes</span>
           </NavLink>
 
           <NavLink to="/leaves" className={getNavLinkClass}>
-            <CalendarCheck size={18} />
+            <CalendarCheck size={17} />
             <span>Leave & Balances</span>
           </NavLink>
 
           <NavLink to="/profile" className={getNavLinkClass}>
-            <User size={18} />
+            <User size={17} />
             <span>My Profile</span>
           </NavLink>
         </div>
 
-        {/* ========================================================
-            2. MSS - Manager Self Service (Managers ONLY, not Admin)
-            ======================================================== */}
+        {/* MSS - Manager Self Service */}
         {isManager && !isAdmin && (
-          <div className="space-y-1 pt-3 border-t border-gray-100">
-            <div className="flex items-center justify-between px-3 pb-1">
-              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
-                Manager Self Service (MSS)
+          <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6]">
+            <div className="flex items-center justify-between px-3 pb-1.5">
+              <p className="text-[11px] font-bold text-[#6B778C] uppercase tracking-wider">
+                Manager Services (MSS)
               </p>
-              <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100">
+              <span className="text-[10px] font-semibold text-[#0747A6] bg-[#DEEBFF] px-1.5 py-0.5 rounded border border-[#B3D4FF]">
                 Manager
               </span>
             </div>
 
             <NavLink to="/teams" className={getNavLinkClass}>
-              <Users2 size={18} />
+              <Users2 size={17} />
               <span>Squads & Rosters</span>
             </NavLink>
           </div>
         )}
 
-        {/* ========================================================
-            3. HR & System Administration (Admins ONLY)
-            ======================================================== */}
+        {/* HR & System Administration */}
         {isAdmin && (
-          <div className="space-y-1 pt-3 border-t border-gray-100">
-            <div className="flex items-center justify-between px-3 pb-1">
-              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+          <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6]">
+            <div className="flex items-center justify-between px-3 pb-1.5">
+              <p className="text-[11px] font-bold text-[#6B778C] uppercase tracking-wider">
                 HR & Administration
               </p>
-              <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-100">
-                👑 Admin
+              <span className="text-[10px] font-semibold text-[#403294] bg-[#EAE6FF] px-1.5 py-0.5 rounded border border-[#C0B6F2]">
+                Admin
               </span>
             </div>
 
             <NavLink to="/employees" className={getNavLinkClass}>
-              <Users size={18} />
-              <span>Employee Directory (360)</span>
+              <Users size={17} />
+              <span>Employee Directory</span>
             </NavLink>
 
             <NavLink to="/teams" className={getNavLinkClass}>
-              <ShieldCheck size={18} />
-              <span>Organization & Teams</span>
+              <ShieldCheck size={17} />
+              <span>Teams & Structure</span>
             </NavLink>
           </div>
         )}
       </nav>
 
       {/* Role Indicator Footer */}
-      <div className="p-4 border-t border-gray-100 bg-gray-50/70 flex items-center justify-between text-xs">
-        <div>
-          <span className="text-gray-400 block text-[10px] uppercase font-bold tracking-wider">Active Role</span>
-          <span className="font-bold text-gray-800 capitalize">
-            {role === "Admin" ? "👑 Administrator" : role === "Manager" ? "👔 Manager" : "👤 Employee"}
-          </span>
+      <div className="p-3.5 border-t border-[#DFE1E6] bg-[#F4F5F7] flex items-center justify-between text-xs">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded bg-white border border-[#DFE1E6] flex items-center justify-center text-[#42526E]">
+            {role === "Admin" ? (
+              <ShieldCheck size={14} className="text-[#403294]" />
+            ) : role === "Manager" ? (
+              <Briefcase size={14} className="text-[#0747A6]" />
+            ) : (
+              <User size={14} className="text-[#0052CC]" />
+            )}
+          </div>
+          <div>
+            <span className="text-[#6B778C] block text-[10px] uppercase font-bold tracking-wider leading-none">
+              Active Role
+            </span>
+            <span className="font-semibold text-[#172B4D] capitalize text-xs leading-tight">
+              {role === "Admin" ? "Administrator" : role === "Manager" ? "Manager" : "Employee"}
+            </span>
+          </div>
         </div>
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">
-          ● Online
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <Circle size={6} className="fill-emerald-500 text-emerald-500" />
+          Online
         </span>
       </div>
     </aside>

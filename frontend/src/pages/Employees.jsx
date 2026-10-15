@@ -217,35 +217,35 @@ function Employees() {
               setFormTab("personal");
               setShowFormModal(true);
             }}
-            className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow-xs"
+            className="flex items-center gap-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white text-xs font-medium px-3.5 py-1.5 rounded transition cursor-pointer"
           >
-            <PlusCircle size={15} />
+            <PlusCircle size={14} />
             <span>Add Employee</span>
           </button>
         </div>
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6 shadow-2xs space-y-3">
-        <div className="flex flex-col sm:flex-row gap-3">
+      <div className="bg-white border border-[#DFE1E6] rounded p-3.5 mb-5 space-y-3">
+        <div className="flex flex-col sm:flex-row gap-2.5">
           <div className="relative flex-1">
-            <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
+            <Search size={14} className="absolute left-3 top-2.5 text-[#6B778C]" />
             <input
               type="text"
               placeholder="Search by name, ID, email, or designation..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-xs focus:outline-purple-600"
+              className="w-full pl-8 pr-3 py-1.5 border border-[#DFE1E6] rounded text-xs text-[#172B4D] focus:outline-none focus:border-[#0052CC]"
             />
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowFilter(!showFilter)}
-              className={`flex items-center gap-1.5 border px-3 py-2 rounded-lg text-xs font-semibold transition ${
+              className={`flex items-center gap-1.5 border px-3 py-1.5 rounded text-xs font-medium transition cursor-pointer ${
                 showFilter || filters.department || filters.status
-                  ? "bg-purple-50 text-purple-700 border-purple-200"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                  ? "bg-[#DEEBFF] text-[#0052CC] border-[#B3D4FF]"
+                  : "bg-white text-[#172B4D] border-[#DFE1E6] hover:bg-[#F4F5F7]"
               }`}
             >
               <Filter size={14} />
@@ -341,43 +341,43 @@ function Employees() {
             </div>
 
             {/* Form Tabs */}
-            <div className="flex border-b border-gray-200 bg-gray-50/60 px-6 text-xs font-semibold">
+            <div className="flex border-b border-[#DFE1E6] bg-[#F4F5F7] px-5 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => setFormTab("personal")}
-                className={`flex items-center gap-1.5 py-3 px-3 border-b-2 transition ${
+                className={`flex items-center gap-1.5 py-2.5 px-3 border-b-2 transition cursor-pointer ${
                   formTab === "personal"
-                    ? "border-purple-600 text-purple-700 bg-white"
-                    : "border-transparent text-gray-500 hover:text-gray-800"
+                    ? "border-[#0052CC] text-[#0052CC] bg-white"
+                    : "border-transparent text-[#6B778C] hover:text-[#172B4D]"
                 }`}
               >
-                <User size={14} />
+                <User size={13} />
                 <span>Personal & Contacts</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setFormTab("job")}
-                className={`flex items-center gap-1.5 py-3 px-3 border-b-2 transition ${
+                className={`flex items-center gap-1.5 py-2.5 px-3 border-b-2 transition cursor-pointer ${
                   formTab === "job"
-                    ? "border-purple-600 text-purple-700 bg-white"
-                    : "border-transparent text-gray-500 hover:text-gray-800"
+                    ? "border-[#0052CC] text-[#0052CC] bg-white"
+                    : "border-transparent text-[#6B778C] hover:text-[#172B4D]"
                 }`}
               >
-                <Briefcase size={14} />
+                <Briefcase size={13} />
                 <span>Job & Org</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setFormTab("statutory")}
-                className={`flex items-center gap-1.5 py-3 px-3 border-b-2 transition ${
+                className={`flex items-center gap-1.5 py-2.5 px-3 border-b-2 transition cursor-pointer ${
                   formTab === "statutory"
-                    ? "border-purple-600 text-purple-700 bg-white"
-                    : "border-transparent text-gray-500 hover:text-gray-800"
+                    ? "border-[#0052CC] text-[#0052CC] bg-white"
+                    : "border-transparent text-[#6B778C] hover:text-[#172B4D]"
                 }`}
               >
-                <Landmark size={14} />
+                <Landmark size={13} />
                 <span>Bank & Statutory</span>
               </button>
             </div>
@@ -773,18 +773,18 @@ function Employees() {
               )}
 
               {/* Form Footer Buttons */}
-              <div className="pt-4 border-t border-gray-100 flex justify-end gap-2.5">
+              <div className="pt-3 border-t border-[#DFE1E6] flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowFormModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-semibold"
+                  className="px-3.5 py-1.5 border border-[#DFE1E6] rounded text-xs font-medium text-[#172B4D] hover:bg-[#F4F5F7] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold shadow-xs"
+                  className="px-4 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-medium disabled:opacity-50 cursor-pointer"
                 >
                   {actionLoading ? "Saving Dossier..." : editingId ? "Update Dossier" : "Save Employee"}
                 </button>

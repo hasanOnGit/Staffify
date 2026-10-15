@@ -1,5 +1,3 @@
-import { Sparkles } from "lucide-react";
-
 function LeaveBalanceCards({ balances = {}, year = new Date().getFullYear() }) {
   const cards = [
     {
@@ -43,39 +41,39 @@ function LeaveBalanceCards({ balances = {}, year = new Date().getFullYear() }) {
     switch (color) {
       case "blue":
         return {
-          border: "border-l-blue-600",
-          bar: "bg-blue-600",
-          badge: "bg-blue-50 text-blue-700",
+          border: "border-l-[#0052CC]",
+          bar: "bg-[#0052CC]",
+          badge: "bg-[#DEEBFF] text-[#0052CC] border border-[#B3D4FF]",
         };
       case "purple":
         return {
-          border: "border-l-purple-600",
-          bar: "bg-purple-600",
-          badge: "bg-purple-50 text-purple-700",
+          border: "border-l-[#403294]",
+          bar: "bg-[#403294]",
+          badge: "bg-[#EAE6FF] text-[#403294] border border-[#C0B6F2]",
         };
       case "rose":
         return {
-          border: "border-l-rose-600",
-          bar: "bg-rose-600",
-          badge: "bg-rose-50 text-rose-700",
+          border: "border-l-[#DE350B]",
+          bar: "bg-[#DE350B]",
+          badge: "bg-[#FFEBE6] text-[#DE350B] border border-[#FFBDAD]",
         };
       case "amber":
         return {
-          border: "border-l-amber-500",
-          bar: "bg-amber-500",
-          badge: "bg-amber-50 text-amber-700",
+          border: "border-l-[#FF991F]",
+          bar: "bg-[#FF991F]",
+          badge: "bg-[#FFF0B3] text-[#172B4D] border border-[#FFE380]",
         };
       default:
         return {
-          border: "border-l-gray-400",
-          bar: "bg-gray-500",
-          badge: "bg-gray-100 text-gray-700",
+          border: "border-l-[#7A869A]",
+          bar: "bg-[#7A869A]",
+          badge: "bg-[#F4F5F7] text-[#172B4D] border border-[#DFE1E6]",
         };
     }
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 mb-6">
       {cards.map((card) => {
         const theme = getColorClasses(card.color);
         const { total, used, available } = card.data;
@@ -84,33 +82,33 @@ function LeaveBalanceCards({ balances = {}, year = new Date().getFullYear() }) {
         return (
           <div
             key={card.key}
-            className={`bg-white border border-gray-200 border-l-4 ${theme.border} rounded-xl p-4 shadow-2xs hover:shadow-xs transition`}
+            className={`bg-white border border-[#DFE1E6] border-l-4 ${theme.border} rounded p-3.5`}
           >
             <div className="flex items-center justify-between mb-1">
-              <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${theme.badge}`}>
+              <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${theme.badge}`}>
                 {card.title.split(" ")[0]}
               </span>
-              <span className="text-[11px] text-gray-400 font-mono">{year}</span>
+              <span className="text-[11px] text-[#6B778C] font-mono">{year}</span>
             </div>
 
-            <h3 className="text-xs font-semibold text-gray-800 mt-1.5">{card.title}</h3>
-            <p className="text-[11px] text-gray-400 mb-3">{card.subtitle}</p>
+            <h3 className="text-xs font-semibold text-[#172B4D] mt-1">{card.title}</h3>
+            <p className="text-[11px] text-[#6B778C] mb-2.5">{card.subtitle}</p>
 
             <div className="flex items-baseline justify-between mb-2">
               <div>
-                <span className="text-2xl font-bold text-gray-900">{available}</span>
-                <span className="text-xs text-gray-400 font-medium ml-1">Available</span>
+                <span className="text-xl font-bold text-[#172B4D]">{available}</span>
+                <span className="text-[11px] text-[#6B778C] font-medium ml-1">Available</span>
               </div>
-              <span className="text-xs font-semibold text-gray-500">
-                {used} / {card.key === "lop" ? "∞" : total} Used
+              <span className="text-[11px] font-medium text-[#6B778C]">
+                {used} / {card.key === "lop" ? "-" : total} Used
               </span>
             </div>
 
             {/* Consumption Progress Bar */}
             {card.key !== "lop" && (
-              <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+              <div className="w-full bg-[#F4F5F7] rounded-full h-1 overflow-hidden border border-[#DFE1E6]/50">
                 <div
-                  className={`h-1.5 rounded-full ${theme.bar} transition-all duration-300`}
+                  className={`h-1 rounded-full ${theme.bar} transition-all duration-300`}
                   style={{ width: `${percentUsed}%` }}
                 />
               </div>

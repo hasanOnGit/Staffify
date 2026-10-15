@@ -151,65 +151,65 @@ function Leaves() {
   return (
     <DashboardLayout>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gray-800">Leave Management</h1>
-            <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2 py-0.5 rounded-full">
+            <h1 className="text-xl font-bold text-[#172B4D]">Leave Management</h1>
+            <span className="text-[11px] bg-[#DEEBFF] text-[#0747A6] font-semibold px-2 py-0.5 rounded border border-[#B3D4FF]">
               greytHR ESS
             </span>
           </div>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-xs text-[#6B778C] mt-0.5">
             Leave quotas, multi-type applications, manager approvals & company holidays
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <button
             onClick={fetchData}
-            className="p-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-lg text-gray-600 transition shadow-2xs"
+            className="p-1.5 border border-[#DFE1E6] bg-white hover:bg-[#F4F5F7] rounded text-[#6B778C] transition cursor-pointer"
             title="Refresh"
           >
-            <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           </button>
 
           <button
             onClick={() => setShowApplyModal(true)}
-            className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow-xs"
+            className="flex items-center gap-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white text-xs font-medium px-3.5 py-1.5 rounded transition cursor-pointer"
           >
-            <PlusCircle size={15} />
+            <PlusCircle size={13} />
             <span>Apply Leave</span>
           </button>
         </div>
       </div>
 
       {/* greytHR Navigation Tabs */}
-      <div className="flex border-b border-gray-200 mb-6 gap-2 text-xs font-semibold overflow-x-auto">
+      <div className="flex border-b border-[#DFE1E6] mb-5 gap-1 text-xs font-semibold overflow-x-auto">
         <button
           onClick={() => setActiveTab("my_leaves")}
-          className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition whitespace-nowrap ${
+          className={`flex items-center gap-1.5 px-3.5 py-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
             activeTab === "my_leaves"
-              ? "border-purple-600 text-purple-700 bg-purple-50/50"
-              : "border-transparent text-gray-500 hover:text-gray-800"
+              ? "border-[#0052CC] text-[#0052CC] bg-[#DEEBFF]/30"
+              : "border-transparent text-[#6B778C] hover:text-[#172B4D]"
           }`}
         >
-          <Calendar size={15} />
+          <Calendar size={13} />
           <span>My Leaves & Quotas</span>
         </button>
 
         {isManager && (
           <button
             onClick={() => setActiveTab("approvals")}
-            className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition whitespace-nowrap ${
+            className={`flex items-center gap-1.5 px-3.5 py-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
               activeTab === "approvals"
-                ? "border-purple-600 text-purple-700 bg-purple-50/50"
-                : "border-transparent text-gray-500 hover:text-gray-800"
+                ? "border-[#0052CC] text-[#0052CC] bg-[#DEEBFF]/30"
+                : "border-transparent text-[#6B778C] hover:text-[#172B4D]"
             }`}
           >
-            <CheckCircle2 size={15} />
+            <CheckCircle2 size={13} />
             <span>Manager Approvals</span>
             {pendingApprovals.length > 0 && (
-              <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full">
+              <span className="bg-[#FFF0B3] text-[#172B4D] text-[10px] font-bold px-1.5 py-0.2 rounded border border-[#FFE380]">
                 {pendingApprovals.length}
               </span>
             )}
@@ -218,25 +218,25 @@ function Leaves() {
 
         <button
           onClick={() => setActiveTab("holidays")}
-          className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition whitespace-nowrap ${
+          className={`flex items-center gap-1.5 px-3.5 py-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
             activeTab === "holidays"
-              ? "border-purple-600 text-purple-700 bg-purple-50/50"
-              : "border-transparent text-gray-500 hover:text-gray-800"
+              ? "border-[#0052CC] text-[#0052CC] bg-[#DEEBFF]/30"
+              : "border-transparent text-[#6B778C] hover:text-[#172B4D]"
           }`}
         >
-          <CalendarDays size={15} />
+          <CalendarDays size={13} />
           <span>Holiday Calendar</span>
         </button>
 
         <button
           onClick={() => setActiveTab("team")}
-          className={`flex items-center gap-2 px-4 py-2.5 border-b-2 transition whitespace-nowrap ${
+          className={`flex items-center gap-1.5 px-3.5 py-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
             activeTab === "team"
-              ? "border-purple-600 text-purple-700 bg-purple-50/50"
-              : "border-transparent text-gray-500 hover:text-gray-800"
+              ? "border-[#0052CC] text-[#0052CC] bg-[#DEEBFF]/30"
+              : "border-transparent text-[#6B778C] hover:text-[#172B4D]"
           }`}
         >
-          <Users size={15} />
+          <Users size={13} />
           <span>Team on Leave</span>
         </button>
       </div>

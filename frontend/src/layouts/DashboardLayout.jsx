@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 
 function DashboardLayout({ children }) {
   return (
-    <div className="h-screen bg-gray-100">
+    <div className="h-screen bg-[#F4F5F7]">
       {/* Fixed Sidebar */}
       <Sidebar />
 

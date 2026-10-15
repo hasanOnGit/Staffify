@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { X } from "lucide-react";
 
 function TeamForm({ onCancel, onCreate }) {
   const [teamName, setTeamName] = useState("");
@@ -23,25 +24,25 @@ function TeamForm({ onCancel, onCreate }) {
   };
 
   return (
-    <div className="bg-white border border-purple-100 rounded-2xl p-6 mb-6 shadow-sm">
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+    <div className="bg-white border border-[#DFE1E6] rounded p-5 mb-5">
+      <div className="flex items-center justify-between mb-4 pb-2.5 border-b border-[#DFE1E6]">
         <div>
-          <h2 className="text-lg font-bold text-gray-900">Create New Team</h2>
-          <p className="text-xs text-gray-500">Group employees into functional units, departments, or project pods</p>
+          <h2 className="text-sm font-bold text-[#172B4D]">Create New Team</h2>
+          <p className="text-xs text-[#6B778C]">Group employees into functional units, departments, or project pods</p>
         </div>
         <button
           onClick={onCancel}
-          className="text-gray-400 hover:text-gray-600 text-lg font-semibold"
+          className="text-[#6B778C] hover:text-[#172B4D] p-1 cursor-pointer"
         >
-          ✕
+          <X size={15} />
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-3.5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
-              Team Name <span className="text-red-500">*</span>
+            <label className="block text-xs font-semibold text-[#172B4D] mb-1">
+              Team Name <span className="text-[#DE350B]">*</span>
             </label>
             <input
               type="text"
@@ -49,18 +50,18 @@ function TeamForm({ onCancel, onCreate }) {
               value={teamName}
               onChange={(e) => setTeamName(e.target.value)}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full border border-[#DFE1E6] rounded px-3 py-1.5 text-xs text-[#172B4D] focus:outline-none focus:border-[#0052CC]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
-              Department <span className="text-red-500">*</span>
+            <label className="block text-xs font-semibold text-[#172B4D] mb-1">
+              Department <span className="text-[#DE350B]">*</span>
             </label>
             <select
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+              className="w-full border border-[#DFE1E6] rounded px-3 py-1.5 text-xs text-[#172B4D] focus:outline-none focus:border-[#0052CC] bg-white"
             >
               <option value="Engineering">Engineering</option>
               <option value="Product">Product</option>
@@ -76,7 +77,7 @@ function TeamForm({ onCancel, onCreate }) {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">
+          <label className="block text-xs font-semibold text-[#172B4D] mb-1">
             Description
           </label>
           <textarea
@@ -84,22 +85,22 @@ function TeamForm({ onCancel, onCreate }) {
             placeholder="Key responsibilities and scope of this team..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full border border-[#DFE1E6] rounded px-3 py-1.5 text-xs text-[#172B4D] focus:outline-none focus:border-[#0052CC]"
           />
         </div>
 
-        <div className="flex justify-end gap-3 pt-2">
+        <div className="flex justify-end gap-2 pt-2">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+            className="px-3 py-1.5 border border-[#DFE1E6] rounded text-xs font-medium text-[#172B4D] hover:bg-[#F4F5F7] transition cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg text-sm font-semibold hover:from-purple-700 hover:to-indigo-700 transition shadow-sm disabled:opacity-50"
+            className="px-4 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-medium transition disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Creating..." : "Save Team"}
           </button>

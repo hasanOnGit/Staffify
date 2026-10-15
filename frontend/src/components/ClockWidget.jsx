@@ -90,7 +90,6 @@ function ClockWidget() {
         localStorage.setItem("staffify_is_clocked_in", "true");
         localStorage.setItem("staffify_clock_in_time", now.toISOString());
         toast.success(`Web Clock-In successful at ${timeStr}`, {
-          icon: "🟢",
           duration: 3500,
         });
       } else {
@@ -99,7 +98,6 @@ function ClockWidget() {
         localStorage.setItem("staffify_is_clocked_in", "false");
         localStorage.removeItem("staffify_clock_in_time");
         toast.success(`Clocked Out at ${timeStr}. Session: ${formatTimer(elapsedSeconds)}`, {
-          icon: "⏹️",
           duration: 4000,
         });
       }
@@ -126,47 +124,47 @@ function ClockWidget() {
   };
 
   return (
-    <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 shadow-xs">
+    <div className="flex items-center gap-3 bg-[#F4F5F7] border border-[#DFE1E6] rounded px-2.5 py-1">
       {/* Status indicator & live timer */}
       <div className="flex items-center gap-2">
         <span
-          className={`w-2.5 h-2.5 rounded-full ${
+          className={`w-2 h-2 rounded-full ${
             isClockedIn
-              ? "bg-emerald-500 animate-pulse ring-4 ring-emerald-100"
-              : "bg-gray-400"
+              ? "bg-[#00875A] ring-2 ring-[#ABF5D1]"
+              : "bg-[#7A869A]"
           }`}
         />
         <div className="text-xs">
-          <p className="font-semibold text-gray-700 font-mono leading-none">
+          <p className="font-semibold text-[#172B4D] font-mono leading-none">
             {isClockedIn ? formatTimer(elapsedSeconds) : "00:00:00"}
           </p>
-          <p className="text-[10px] text-gray-400 leading-none mt-0.5">
+          <p className="text-[10px] text-[#6B778C] leading-none mt-0.5">
             {isClockedIn ? "Session Active" : "Work Timer"}
           </p>
         </div>
       </div>
 
-      <div className="h-6 w-px bg-gray-200 mx-1" />
+      <div className="h-5 w-px bg-[#DFE1E6] mx-0.5" />
 
       {/* Action Button */}
       <button
         onClick={handleToggleClock}
         disabled={loading}
-        className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md transition-all shadow-xs cursor-pointer ${
+        className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded transition-colors cursor-pointer ${
           isClockedIn
-            ? "bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200"
-            : "bg-purple-600 text-white hover:bg-purple-700 shadow-purple-100"
+            ? "bg-[#FFEBE6] text-[#DE350B] hover:bg-[#FFD2CC] border border-[#FFBDAD]"
+            : "bg-[#0052CC] text-white hover:bg-[#0747A6]"
         } ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
       >
         {isClockedIn ? (
           <>
-            <LogOut size={13} />
+            <LogOut size={12} />
             <span>{loading ? "Clocking..." : "Clock Out"}</span>
           </>
         ) : (
           <>
-            <LogIn size={13} />
-            <span>{loading ? "Clocking..." : "Web Clock-In"}</span>
+            <LogIn size={12} />
+            <span>{loading ? "Clocking..." : "Clock In"}</span>
           </>
         )}
       </button>

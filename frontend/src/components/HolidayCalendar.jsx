@@ -42,22 +42,22 @@ function HolidayCalendar() {
     <div className="space-y-6">
       {/* Upcoming Holiday Banner */}
       {upcoming && (
-        <div className="bg-gradient-to-r from-purple-700 to-indigo-600 rounded-xl p-5 text-white flex items-center justify-between shadow-xs">
+        <div className="bg-[#0052CC] rounded p-4 text-white flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-white/15 backdrop-blur-xs flex items-center justify-center font-bold text-lg">
+            <div className="w-11 h-11 rounded bg-white/15 backdrop-blur-xs flex items-center justify-center font-bold text-base">
               {new Date(upcoming.date).getDate()}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs uppercase tracking-wider font-semibold text-purple-200">
+                <span className="text-[11px] uppercase tracking-wider font-semibold text-blue-200">
                   Next Holiday
                 </span>
-                <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-medium">
+                <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded font-medium">
                   {upcoming.type}
                 </span>
               </div>
-              <h3 className="text-lg font-bold mt-0.5">{upcoming.name}</h3>
-              <p className="text-xs text-purple-200">
+              <h3 className="text-base font-bold mt-0.5">{upcoming.name}</h3>
+              <p className="text-xs text-blue-200">
                 {new Date(upcoming.date).toLocaleDateString("en-US", {
                   weekday: "long",
                   month: "long",
@@ -72,35 +72,35 @@ function HolidayCalendar() {
             <span className="text-2xl font-bold">
               {Math.ceil((new Date(upcoming.date) - new Date()) / (1000 * 60 * 60 * 24))}
             </span>
-            <span className="text-xs block text-purple-200">Days to go</span>
+            <span className="text-xs block text-blue-200">Days to go</span>
           </div>
         </div>
       )}
 
       {/* Holidays List */}
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-xs">
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white border border-[#DFE1E6] rounded overflow-hidden">
+        <div className="p-3.5 border-b border-[#DFE1E6] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Calendar size={18} className="text-purple-600" />
-            <h3 className="font-semibold text-gray-800 text-sm">
+            <Calendar size={16} className="text-[#0052CC]" />
+            <h3 className="font-semibold text-[#172B4D] text-xs">
               Official Holiday Calendar — {new Date().getFullYear()}
             </h3>
           </div>
-          <span className="text-xs text-gray-400 font-medium">
+          <span className="text-xs text-[#6B778C] font-medium">
             {holidays.length} Annual Holidays
           </span>
         </div>
 
         {loading ? (
-          <div className="p-10 text-center text-gray-400 text-sm">
+          <div className="p-10 text-center text-[#6B778C] text-xs">
             Loading holiday schedule...
           </div>
         ) : holidays.length === 0 ? (
-          <div className="p-10 text-center text-gray-400 text-sm">
+          <div className="p-10 text-center text-[#6B778C] text-xs">
             No holidays scheduled for this calendar year.
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-[#DFE1E6]">
             {holidays.map((h) => {
               const dateObj = new Date(h.date);
               const isPast = h.date < todayStr;
@@ -108,16 +108,16 @@ function HolidayCalendar() {
               return (
                 <div
                   key={h._id || h.date}
-                  className={`p-4 flex items-center justify-between hover:bg-gray-50/80 transition ${
-                    isPast ? "opacity-60 bg-gray-50/40" : ""
+                  className={`p-3.5 flex items-center justify-between hover:bg-[#F4F5F7] transition ${
+                    isPast ? "opacity-60 bg-[#F4F5F7]/40" : ""
                   }`}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-11 h-11 rounded-lg bg-purple-50 text-purple-700 border border-purple-100 flex flex-col items-center justify-center font-bold leading-none">
-                      <span className="text-[10px] uppercase font-semibold text-purple-400">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded bg-[#DEEBFF] text-[#0052CC] border border-[#B3D4FF] flex flex-col items-center justify-center font-bold leading-none">
+                      <span className="text-[9px] uppercase font-semibold text-[#0747A6]">
                         {dateObj.toLocaleDateString("en-US", { month: "short" })}
                       </span>
-                      <span className="text-base font-bold mt-0.5">
+                      <span className="text-sm font-bold mt-0.5">
                         {dateObj.getDate()}
                       </span>
                     </div>

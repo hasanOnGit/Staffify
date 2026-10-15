@@ -3,7 +3,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import AttendanceTable from "../components/AttendanceTable";
 import { getAttendanceByDate, requestRegularization } from "../services/attendance";
 import { useAuth } from "../context/AuthContext";
-import { Calendar, Clock, RefreshCw, PlusCircle, AlertCircle } from "lucide-react";
+import { Calendar, Clock, RefreshCw, PlusCircle, AlertCircle, X } from "lucide-react";
 import toast from "react-hot-toast";
 
 function Attendance() {
@@ -211,9 +211,9 @@ function Attendance() {
               </div>
               <button
                 onClick={() => setShowRegModal(false)}
-                className="text-gray-400 hover:text-gray-600 p-1"
+                className="text-[#6B778C] hover:text-[#172B4D] p-1 cursor-pointer"
               >
-                ✕
+                <X size={15} />
               </button>
             </div>
 
@@ -276,18 +276,18 @@ function Attendance() {
                 />
               </div>
 
-              <div className="pt-3 border-t border-gray-100 flex justify-end gap-2">
+              <div className="pt-3 border-t border-[#DFE1E6] flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowRegModal(false)}
-                  className="px-4 py-2 border rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50"
+                  className="px-3.5 py-1.5 border border-[#DFE1E6] rounded text-xs font-medium text-[#172B4D] hover:bg-[#F4F5F7] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={regSubmitting}
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-semibold"
+                  className="px-4 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-medium disabled:opacity-50 cursor-pointer"
                 >
                   {regSubmitting ? "Submitting..." : "Submit Request"}
                 </button>
@@ -305,17 +305,17 @@ export default Attendance;
 /* ---------- Summary Card ---------- */
 function SummaryCard({ title, value, color }) {
   const colorMap = {
-    green: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    red: "bg-rose-50 text-rose-700 border-rose-200",
-    yellow: "bg-amber-50 text-amber-700 border-amber-200",
-    purple: "bg-purple-50 text-purple-700 border-purple-200",
-    blue: "bg-blue-50 text-blue-700 border-blue-200",
+    green: "border-l-[#00875A] text-[#00875A]",
+    red: "border-l-[#DE350B] text-[#DE350B]",
+    yellow: "border-l-[#FF991F] text-[#FF991F]",
+    purple: "border-l-[#403294] text-[#403294]",
+    blue: "border-l-[#0052CC] text-[#0052CC]",
   };
 
   return (
-    <div className={`bg-white border rounded-xl p-4 shadow-2xs border-l-4 ${colorMap[color]}`}>
-      <p className="text-xs font-medium text-gray-500">{title}</p>
-      <p className="text-2xl font-bold text-gray-800 mt-1">{value}</p>
+    <div className={`bg-white border border-[#DFE1E6] rounded p-3.5 border-l-4 ${colorMap[color] || "border-l-[#DFE1E6]"}`}>
+      <p className="text-[11px] font-semibold text-[#6B778C] uppercase tracking-wider">{title}</p>
+      <p className="text-xl font-bold text-[#172B4D] mt-0.5">{value}</p>
     </div>
   );
 }

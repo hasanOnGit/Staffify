@@ -2,6 +2,17 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useAuth } from "../context/AuthContext";
 import { getEmployeeByUserId, updateEmployee } from "../services/employee";
+import {
+  User,
+  Briefcase,
+  Landmark,
+  AlertCircle,
+  MapPin,
+  Pencil,
+  CheckCircle2,
+  X,
+  Circle,
+} from "lucide-react";
 
 function Profile() {
   const { user } = useAuth();
@@ -148,62 +159,70 @@ function Profile() {
     <DashboardLayout>
       {/* Toast Alert */}
       {notification && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-800 rounded-xl text-sm flex items-center justify-between animate-fadeIn">
-          <span>✓ {notification}</span>
-          <button onClick={() => setNotification("")} className="text-green-600 font-bold">✕</button>
+        <div className="mb-4 p-3 bg-[#E3FCEF] border border-[#ABF5D1] text-[#006644] rounded text-xs flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={14} className="text-[#00875A]" />
+            <span>{notification}</span>
+          </div>
+          <button onClick={() => setNotification("")} className="text-[#006644] hover:text-[#DE350B] p-0.5">
+            <X size={14} />
+          </button>
         </div>
       )}
 
       {loading ? (
-        <div className="bg-white border rounded-2xl p-16 text-center text-gray-500">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-3"></div>
-          Loading employee dossier...
+        <div className="bg-white border border-[#DFE1E6] rounded p-12 text-center text-[#6B778C]">
+          <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-[#0052CC] mx-auto mb-3"></div>
+          <p className="text-xs">Loading employee dossier...</p>
         </div>
       ) : !employee ? (
-        <div className="bg-white border rounded-2xl p-12 text-center text-gray-500">
+        <div className="bg-white border border-[#DFE1E6] rounded p-12 text-center text-[#6B778C] text-sm">
           Profile not found
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-5">
           {/* Hero Profile Header (greytHR style) */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-32 bg-gradient-to-bl from-purple-100/50 via-indigo-50/20 to-transparent pointer-events-none"></div>
-
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
-              <div className="flex items-center gap-5">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-black text-2xl flex items-center justify-center shadow-md">
+          <div className="bg-white border border-[#DFE1E6] rounded p-5 relative overflow-hidden">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 relative z-10">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded bg-[#0052CC] text-white font-bold text-xl flex items-center justify-center">
                   {employee.name?.charAt(0)?.toUpperCase() || "E"}
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-2xl font-bold text-gray-900">{employee.name}</h1>
-                    <span className="font-mono text-xs bg-purple-50 text-purple-700 px-2.5 py-0.5 rounded-full font-bold border border-purple-100">
+                    <h1 className="text-lg font-bold text-[#172B4D]">{employee.name}</h1>
+                    <span className="font-mono text-[11px] bg-[#DEEBFF] text-[#0747A6] px-2 py-0.5 rounded font-semibold border border-[#B3D4FF]">
                       {employee.employeeId}
                     </span>
-                    <span className="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full font-semibold border border-emerald-100">
-                      ● {employee.probationStatus || "Confirmed"}
+                    <span className="inline-flex items-center gap-1 text-[11px] bg-[#E3FCEF] text-[#006644] px-2 py-0.5 rounded font-semibold border border-[#ABF5D1]">
+                      <Circle size={5} className="fill-[#00875A] text-[#00875A]" />
+                      {employee.probationStatus || "Confirmed"}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
-                    <span className="font-semibold text-gray-800">{employee.designation || "Staff"}</span>
-                    {" · "}
+                  <p className="text-xs text-[#5E6C84] mt-1 flex items-center gap-1.5 flex-wrap">
+                    <span className="font-semibold text-[#172B4D]">{employee.designation || "Staff"}</span>
+                    <span>·</span>
                     <span>{employee.department || "Operations"}</span>
-                    {" · "}
-                    <span>📍 {employee.workLocation || "Headquarters"}</span>
+                    <span>·</span>
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin size={11} className="text-[#6B778C]" />
+                      {employee.workLocation || "Headquarters"}
+                    </span>
                   </p>
-                  <p className="text-xs text-gray-400 mt-0.5">
+                  <p className="text-[11px] text-[#6B778C] mt-0.5">
                     {employee.email} {employee.phoneNo ? `· ${employee.phoneNo}` : ""}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 {!editMode ? (
                   <button
                     onClick={() => setEditMode(true)}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-xl text-sm shadow-sm transition flex items-center gap-1.5"
+                    className="bg-[#0052CC] hover:bg-[#0747A6] text-white font-medium px-3.5 py-1.5 rounded text-xs transition flex items-center gap-1.5 cursor-pointer"
                   >
-                    ✎ Edit Dossier
+                    <Pencil size={12} />
+                    <span>Edit Dossier</span>
                   </button>
                 ) : (
                   <button
@@ -211,7 +230,7 @@ function Profile() {
                       setEditMode(false);
                       populateFormData(employee);
                     }}
-                    className="border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold px-4 py-2 rounded-xl text-sm transition"
+                    className="border border-[#DFE1E6] hover:bg-[#F4F5F7] text-[#172B4D] font-medium px-3.5 py-1.5 rounded text-xs transition cursor-pointer"
                   >
                     Cancel Editing
                   </button>
@@ -220,69 +239,76 @@ function Profile() {
             </div>
 
             {/* Quick Stat Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-5 pt-4 border-t border-[#DFE1E6] text-xs">
               <div>
-                <span className="text-gray-400 block font-medium">Employment Type</span>
-                <span className="font-semibold text-gray-800 text-sm">{employee.employmentType || "Full-time"}</span>
+                <span className="text-[#6B778C] block text-[11px] font-medium">Employment Type</span>
+                <span className="font-semibold text-[#172B4D] text-xs">{employee.employmentType || "Full-time"}</span>
               </div>
               <div>
-                <span className="text-gray-400 block font-medium">Date of Joining</span>
-                <span className="font-semibold text-gray-800 text-sm">
+                <span className="text-[#6B778C] block text-[11px] font-medium">Date of Joining</span>
+                <span className="font-semibold text-[#172B4D] text-xs">
                   {employee.dateOfJoining ? new Date(employee.dateOfJoining).toLocaleDateString() : "2024-01-15"}
                 </span>
               </div>
               <div>
-                <span className="text-gray-400 block font-medium">Reporting Manager</span>
-                <span className="font-semibold text-purple-700 text-sm">{employee.managerName || "Amit Kumar"}</span>
+                <span className="text-[#6B778C] block text-[11px] font-medium">Reporting Manager</span>
+                <span className="font-semibold text-[#0052CC] text-xs">{employee.managerName || "Amit Kumar"}</span>
               </div>
               <div>
-                <span className="text-gray-400 block font-medium">Self-Service Status</span>
-                <span className="font-semibold text-emerald-600 text-sm">Verified Profile ✓</span>
+                <span className="text-[#6B778C] block text-[11px] font-medium">Verification Status</span>
+                <span className="inline-flex items-center gap-1 font-semibold text-[#00875A] text-xs">
+                  <CheckCircle2 size={12} />
+                  Verified Profile
+                </span>
               </div>
             </div>
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex border-b border-gray-200 gap-6 text-sm font-medium">
+          <div className="flex border-b border-[#DFE1E6] gap-6 text-xs font-semibold">
             <button
               onClick={() => setActiveTab("personal")}
-              className={`pb-3 transition flex items-center gap-1.5 ${
+              className={`pb-2.5 transition flex items-center gap-1.5 cursor-pointer ${
                 activeTab === "personal"
-                  ? "border-b-2 border-purple-600 text-purple-600 font-bold"
-                  : "text-gray-500 hover:text-gray-800"
+                  ? "border-b-2 border-[#0052CC] text-[#0052CC]"
+                  : "text-[#6B778C] hover:text-[#172B4D]"
               }`}
             >
-              👤 Personal & Contact
+              <User size={13} />
+              <span>Personal & Contact</span>
             </button>
             <button
               onClick={() => setActiveTab("job")}
-              className={`pb-3 transition flex items-center gap-1.5 ${
+              className={`pb-2.5 transition flex items-center gap-1.5 cursor-pointer ${
                 activeTab === "job"
-                  ? "border-b-2 border-purple-600 text-purple-600 font-bold"
-                  : "text-gray-500 hover:text-gray-800"
+                  ? "border-b-2 border-[#0052CC] text-[#0052CC]"
+                  : "text-[#6B778C] hover:text-[#172B4D]"
               }`}
             >
-              🏢 Job & Organization
+              <Briefcase size={13} />
+              <span>Job & Organization</span>
             </button>
             <button
               onClick={() => setActiveTab("statutory")}
-              className={`pb-3 transition flex items-center gap-1.5 ${
+              className={`pb-2.5 transition flex items-center gap-1.5 cursor-pointer ${
                 activeTab === "statutory"
-                  ? "border-b-2 border-purple-600 text-purple-600 font-bold"
-                  : "text-gray-500 hover:text-gray-800"
+                  ? "border-b-2 border-[#0052CC] text-[#0052CC]"
+                  : "text-[#6B778C] hover:text-[#172B4D]"
               }`}
             >
-              🏛 Bank & Statutory
+              <Landmark size={13} />
+              <span>Bank & Statutory</span>
             </button>
             <button
               onClick={() => setActiveTab("emergency")}
-              className={`pb-3 transition flex items-center gap-1.5 ${
+              className={`pb-2.5 transition flex items-center gap-1.5 cursor-pointer ${
                 activeTab === "emergency"
-                  ? "border-b-2 border-purple-600 text-purple-600 font-bold"
-                  : "text-gray-500 hover:text-gray-800"
+                  ? "border-b-2 border-[#0052CC] text-[#0052CC]"
+                  : "text-[#6B778C] hover:text-[#172B4D]"
               }`}
             >
-              🚨 Emergency Details
+              <AlertCircle size={13} />
+              <span>Emergency Details</span>
             </button>
           </div>
 

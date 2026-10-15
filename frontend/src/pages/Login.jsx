@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import AuthLayout from "../layouts/AuthLayout";
 import { useAuth } from "../context/AuthContext";
+import { ShieldCheck, Briefcase, UserCheck, CheckCircle2, AlertCircle, KeyRound } from "lucide-react";
 
 function Login() {
   const { login } = useAuth();
@@ -22,7 +23,7 @@ function Login() {
       const res = await login(email, password);
 
       if (res?.msg === "Login successful.") {
-        setSuccess("Login successful! Redirecting to dashboard...");
+        setSuccess("Login successful. Redirecting to dashboard...");
         setTimeout(() => {
           navigate("/dashboard");
         }, 500);
@@ -45,64 +46,69 @@ function Login() {
   return (
     <AuthLayout>
       {/* Heading */}
-      <h2 className="text-3xl font-semibold text-gray-800">
+      <h2 className="text-xl font-bold text-[#172B4D]">
         Sign in to Staffify
       </h2>
-      <p className="mt-2 text-sm text-gray-500">
-        Access your greytHR enterprise portal to manage people and processes
+      <p className="mt-1 text-xs text-[#6B778C]">
+        Enter your credentials to access your enterprise portal
       </p>
 
       {/* Quick Demo Access Buttons */}
-      <div className="mt-5 p-3.5 bg-purple-50/70 border border-purple-100 rounded-xl">
-        <p className="text-xs font-semibold text-purple-900 mb-2">
-          ⚡ One-Click Test Accounts:
+      <div className="mt-4 p-3 bg-[#F4F5F7] border border-[#DFE1E6] rounded">
+        <p className="text-[11px] font-semibold text-[#172B4D] mb-2 flex items-center gap-1.5">
+          <KeyRound size={13} className="text-[#0052CC]" />
+          <span>Demo Role Access</span>
         </p>
         <div className="grid grid-cols-3 gap-2">
           <button
             type="button"
             onClick={() => handleQuickLogin("admin@staffify.com", "Admin@123")}
-            className="text-xs py-1.5 px-2 bg-white border border-purple-200 hover:bg-purple-100/50 text-purple-800 rounded-lg font-medium transition text-center shadow-xs"
+            className="text-xs py-1 px-2 bg-white border border-[#DFE1E6] hover:bg-[#DEEBFF] hover:border-[#B3D4FF] text-[#172B4D] rounded font-medium transition flex items-center justify-center gap-1 cursor-pointer"
           >
-            👑 Admin
+            <ShieldCheck size={12} className="text-[#403294]" />
+            <span>Admin</span>
           </button>
           <button
             type="button"
             onClick={() => handleQuickLogin("manager@staffify.com", "Manager@123")}
-            className="text-xs py-1.5 px-2 bg-white border border-purple-200 hover:bg-purple-100/50 text-purple-800 rounded-lg font-medium transition text-center shadow-xs"
+            className="text-xs py-1 px-2 bg-white border border-[#DFE1E6] hover:bg-[#DEEBFF] hover:border-[#B3D4FF] text-[#172B4D] rounded font-medium transition flex items-center justify-center gap-1 cursor-pointer"
           >
-            👔 Manager
+            <Briefcase size={12} className="text-[#0747A6]" />
+            <span>Manager</span>
           </button>
           <button
             type="button"
             onClick={() => handleQuickLogin("employee@staffify.com", "Employee@123")}
-            className="text-xs py-1.5 px-2 bg-white border border-purple-200 hover:bg-purple-100/50 text-purple-800 rounded-lg font-medium transition text-center shadow-xs"
+            className="text-xs py-1 px-2 bg-white border border-[#DFE1E6] hover:bg-[#DEEBFF] hover:border-[#B3D4FF] text-[#172B4D] rounded font-medium transition flex items-center justify-center gap-1 cursor-pointer"
           >
-            👤 Employee
+            <UserCheck size={12} className="text-[#0052CC]" />
+            <span>Employee</span>
           </button>
         </div>
       </div>
 
       {/* Success Message */}
       {success && (
-        <p className="mt-4 text-sm text-green-700 bg-green-50 px-4 py-2 rounded-lg border border-green-200">
-          ✓ {success}
-        </p>
+        <div className="mt-4 text-xs text-[#006644] bg-[#E3FCEF] px-3 py-2 rounded border border-[#ABF5D1] flex items-center gap-2">
+          <CheckCircle2 size={14} className="shrink-0" />
+          <span>{success}</span>
+        </div>
       )}
 
       {/* Error Message */}
       {error && (
-        <p className="mt-4 text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg border border-red-200">
-          ✕ {error}
-        </p>
+        <div className="mt-4 text-xs text-[#DE350B] bg-[#FFEBE6] px-3 py-2 rounded border border-[#FFBDAD] flex items-center gap-2">
+          <AlertCircle size={14} className="shrink-0" />
+          <span>{error}</span>
+        </div>
       )}
 
       {/* Login Form */}
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        {/* Email */}
+      <form onSubmit={handleSubmit} className="mt-5 space-y-3.5">
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-xs font-semibold text-[#172B4D]"
           >
             Work Email
           </label>
@@ -113,17 +119,15 @@ function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="mt-1.5 w-full px-4 py-2.5 border border-gray-300 rounded-lg 
-                       focus:outline-none focus:ring-2 focus:ring-purple-600
-                       focus:border-purple-600 text-sm transition"
+            className="mt-1 w-full px-3 py-2 border border-[#DFE1E6] rounded text-sm text-[#172B4D]
+                       focus:outline-none focus:border-[#0052CC] focus:ring-1 focus:ring-[#0052CC] transition"
           />
         </div>
 
-        {/* Password */}
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-xs font-semibold text-[#172B4D]"
           >
             Password
           </label>
@@ -134,34 +138,32 @@ function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="mt-1.5 w-full px-4 py-2.5 border border-gray-300 rounded-lg 
-                       focus:outline-none focus:ring-2 focus:ring-purple-600
-                       focus:border-purple-600 text-sm transition"
+            className="mt-1 w-full px-3 py-2 border border-[#DFE1E6] rounded text-sm text-[#172B4D]
+                       focus:outline-none focus:border-[#0052CC] focus:ring-1 focus:ring-[#0052CC] transition"
           />
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-2.5 rounded-lg font-semibold text-sm transition shadow-sm
+          className={`w-full py-2 rounded text-sm font-medium transition cursor-pointer
             ${
               loading
-                ? "bg-purple-400 cursor-not-allowed text-white"
-                : "bg-purple-600 hover:bg-purple-700 text-white"
+                ? "bg-[#0052CC]/60 cursor-not-allowed text-white"
+                : "bg-[#0052CC] hover:bg-[#0747A6] text-white"
             }
-            focus:outline-none focus:ring-2 focus:ring-purple-600`}
+            focus:outline-none focus:ring-2 focus:ring-[#0052CC]`}
         >
           {loading ? "Signing in..." : "Sign in to Portal"}
         </button>
       </form>
 
       {/* Footer */}
-      <p className="mt-6 text-sm text-center text-gray-500">
+      <p className="mt-5 text-xs text-center text-[#6B778C]">
         New to Staffify?{" "}
         <Link
           to="/register"
-          className="text-purple-600 font-medium hover:underline"
+          className="text-[#0052CC] font-semibold hover:underline"
         >
           Create an account
         </Link>

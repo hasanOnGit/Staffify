@@ -8,18 +8,18 @@ function EmployeeDossierModal({ employee, isOpen, onClose, onEdit }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-3xl w-full shadow-2xl border border-gray-100 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-white rounded max-w-3xl w-full shadow-lg border border-[#DFE1E6] max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header Profile Hero */}
-        <div className="bg-gradient-to-r from-purple-800 to-indigo-700 text-white p-6 relative">
+        <div className="bg-[#0747A6] text-white p-5 relative">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-1.5 rounded-full transition"
+            className="absolute top-4 right-4 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-1.5 rounded transition cursor-pointer"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md text-white font-bold text-2xl flex items-center justify-center shadow-inner">
+            <div className="w-14 h-14 rounded bg-[#0052CC] border border-white/20 text-white font-bold text-xl flex items-center justify-center">
               {employee.name ? employee.name.slice(0, 2).toUpperCase() : "EM"}
             </div>
 
@@ -64,40 +64,40 @@ function EmployeeDossierModal({ employee, isOpen, onClose, onEdit }) {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-gray-200 bg-gray-50/50 px-6 text-xs font-semibold">
+        <div className="flex border-b border-[#DFE1E6] bg-[#F4F5F7] px-5 text-xs font-semibold">
           <button
             onClick={() => setActiveTab("personal")}
-            className={`flex items-center gap-1.5 py-3 px-3 border-b-2 transition ${
+            className={`flex items-center gap-1.5 py-2.5 px-3 border-b-2 transition cursor-pointer ${
               activeTab === "personal"
-                ? "border-purple-600 text-purple-700 bg-white"
-                : "border-transparent text-gray-500 hover:text-gray-800"
+                ? "border-[#0052CC] text-[#0052CC] bg-white"
+                : "border-transparent text-[#6B778C] hover:text-[#172B4D]"
             }`}
           >
-            <User size={14} />
+            <User size={13} />
             <span>Personal & Contact</span>
           </button>
 
           <button
             onClick={() => setActiveTab("job")}
-            className={`flex items-center gap-1.5 py-3 px-3 border-b-2 transition ${
+            className={`flex items-center gap-1.5 py-2.5 px-3 border-b-2 transition cursor-pointer ${
               activeTab === "job"
-                ? "border-purple-600 text-purple-700 bg-white"
-                : "border-transparent text-gray-500 hover:text-gray-800"
+                ? "border-[#0052CC] text-[#0052CC] bg-white"
+                : "border-transparent text-[#6B778C] hover:text-[#172B4D]"
             }`}
           >
-            <Briefcase size={14} />
+            <Briefcase size={13} />
             <span>Job & Organization</span>
           </button>
 
           <button
             onClick={() => setActiveTab("statutory")}
-            className={`flex items-center gap-1.5 py-3 px-3 border-b-2 transition ${
+            className={`flex items-center gap-1.5 py-2.5 px-3 border-b-2 transition cursor-pointer ${
               activeTab === "statutory"
-                ? "border-purple-600 text-purple-700 bg-white"
-                : "border-transparent text-gray-500 hover:text-gray-800"
+                ? "border-[#0052CC] text-[#0052CC] bg-white"
+                : "border-transparent text-[#6B778C] hover:text-[#172B4D]"
             }`}
           >
-            <Landmark size={14} />
+            <Landmark size={13} />
             <span>Bank & Statutory</span>
           </button>
         </div>

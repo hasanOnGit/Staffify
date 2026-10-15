@@ -3,9 +3,8 @@ import ClockWidget from "./ClockWidget";
 import { Bell, LogOut, ShieldCheck, UserCheck, Briefcase } from "lucide-react";
 
 function Navbar() {
-  const { user, logout, role, isAdmin, isManager } = useAuth();
+  const { user, logout, isAdmin, isManager } = useAuth();
 
-  // Helper for avatar initials
   const getInitials = (name = "") => {
     if (!name) return "U";
     return name
@@ -19,7 +18,7 @@ function Navbar() {
   const getRoleBadge = () => {
     if (isAdmin) {
       return (
-        <span className="flex items-center gap-1 bg-rose-50 text-rose-700 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-rose-200">
+        <span className="flex items-center gap-1 bg-[#EAE6FF] text-[#403294] text-[11px] font-semibold px-2 py-0.5 rounded border border-[#C0B6F2]">
           <ShieldCheck size={12} />
           Admin
         </span>
@@ -27,14 +26,14 @@ function Navbar() {
     }
     if (isManager) {
       return (
-        <span className="flex items-center gap-1 bg-amber-50 text-amber-700 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-amber-200">
+        <span className="flex items-center gap-1 bg-[#DEEBFF] text-[#0747A6] text-[11px] font-semibold px-2 py-0.5 rounded border border-[#B3D4FF]">
           <Briefcase size={12} />
           Manager
         </span>
       );
     }
     return (
-      <span className="flex items-center gap-1 bg-purple-50 text-purple-700 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-purple-200">
+      <span className="flex items-center gap-1 bg-[#E3FCEF] text-[#006644] text-[11px] font-semibold px-2 py-0.5 rounded border border-[#ABF5D1]">
         <UserCheck size={12} />
         Employee
       </span>
@@ -42,66 +41,64 @@ function Navbar() {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-30 shadow-xs">
-      {/* Left: Organization context */}
+    <header className="h-14 bg-white border-b border-[#DFE1E6] flex items-center justify-between px-6 sticky top-0 z-30">
+      {/* Left: Organization & Date */}
       <div className="flex items-center gap-3">
         <div>
-          <h1 className="text-base font-semibold text-gray-800 leading-tight">
-            Staffify HRMS
-          </h1>
-          <p className="text-xs text-gray-400">
+          <span className="text-xs font-semibold text-[#172B4D] tracking-tight">
+            Staffify Enterprise
+          </span>
+          <span className="text-xs text-[#6B778C] ml-2">
             {new Date().toLocaleDateString("en-US", {
               weekday: "short",
               month: "short",
               day: "numeric",
               year: "numeric",
             })}
-          </p>
+          </span>
         </div>
       </div>
 
-      {/* Center/Right: Web Clock-In Widget, Notifications & Profile */}
-      <div className="flex items-center gap-4">
-        {/* greytHR Signature Clock-In Widget */}
+      {/* Right: Clock Widget, Notifications & Profile */}
+      <div className="flex items-center gap-3">
         <ClockWidget />
 
-        <div className="h-6 w-px bg-gray-200" />
+        <div className="h-5 w-px bg-[#DFE1E6]" />
 
         {/* Notifications */}
         <button
-          className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition"
+          className="relative p-2 text-[#5E6C84] hover:text-[#172B4D] hover:bg-[#EBECF0] rounded transition"
           title="Notifications"
           onClick={() => {}}
         >
-          <Bell size={18} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-purple-600 rounded-full" />
+          <Bell size={16} />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#DE350B] rounded-full" />
         </button>
 
-        {/* User Profile Dossier */}
-        <div className="flex items-center gap-3 pl-2 border-l border-gray-200">
-          <div className="w-9 h-9 rounded-full bg-purple-600 text-white font-medium flex items-center justify-center text-xs shadow-xs">
+        {/* User Profile */}
+        <div className="flex items-center gap-2.5 pl-2 border-l border-[#DFE1E6]">
+          <div className="w-8 h-8 rounded-full bg-[#0052CC] text-white font-medium flex items-center justify-center text-xs">
             {getInitials(user?.name)}
           </div>
 
           <div className="hidden sm:block text-left">
             <div className="flex items-center gap-1.5">
-              <p className="text-xs font-semibold text-gray-800 leading-none">
+              <p className="text-xs font-semibold text-[#172B4D] leading-none">
                 {user?.name || "User"}
               </p>
               {getRoleBadge()}
             </div>
-            <p className="text-[11px] text-gray-400 mt-0.5 leading-none">
+            <p className="text-[11px] text-[#6B778C] mt-0.5 leading-none">
               {user?.email}
             </p>
           </div>
 
-          {/* Logout Button */}
           <button
             onClick={logout}
-            className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition ml-1"
+            className="p-1.5 text-[#6B778C] hover:text-[#DE350B] hover:bg-[#FFEBE6] rounded transition ml-1"
             title="Sign Out"
           >
-            <LogOut size={16} />
+            <LogOut size={15} />
           </button>
         </div>
       </div>
