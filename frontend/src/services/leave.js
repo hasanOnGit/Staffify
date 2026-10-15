@@ -1,41 +1,59 @@
 import api from "./api";
 
-/* =============================
-   GET ALL LEAVES
-============================= */
-export const getLeaves = async () => {
-  const res = await api.get("/getLeaves");
-  return res.data.data;   // return only array
+/**
+ * Fetch all leaves with optional employeeId and status filters
+ */
+export const getLeaves = async (params = {}) => {
+  const res = await api.get("/getLeaves", { params });
+  return res.data.data;
 };
 
-/* =============================
-   APPLY LEAVE
-============================= */
+/**
+ * Submit a new leave application
+ */
 export const createLeave = async (leaveData) => {
   const res = await api.post("/applyLeave", leaveData);
   return res.data;
 };
 
-/* =============================
-   UPDATE LEAVE (Approve/Reject)
-============================= */
-export const updateLeave = async (leaveId, status, approvedBy) => {
+/**
+ * Update leave status (Approve / Reject) with optional remarks
+ */
+export const updateLeave = async (leaveId, status, approvedBy, rejectionReason = "") => {
   const res = await api.post("/updateLeave", {
     leaveId,
     status,
-    approvedBy
+    approvedBy,
+    rejectionReason,
   });
-
   return res.data;
 };
 
-/* =============================
-   DELETE LEAVE
-============================= */
-export const deleteLeave = async (leaveId) => {
-  const res = await api.post("/deleteLeave", {
-    leaveId
+/**
+ * Cancel / Withdraw a leave application (refunds balance if previously approved)
+ */
+export const cancelLeave = async (leaveId, employeeId) => {
+  const res = await api.post("/cancelLeave", {
+    leaveId,
+    employeeId,
   });
-
   return res.data;
+};
+
+/**
+ * Fetch detailed leave balance and quotas for an employee
+ */
+export const getLeaveBalance = async (employeeId, year) => {
+  const res = await api.get("/getLeaveBalance", {
+    params: { employeeId, year },
+  });
+  return res.data;
+};
+
+/**
+ * Fetch colleagues currently on approved leave
+ */
+export const getTeamOnLeave = async () => {
+  const res = await api.get("/team-on-leave");
+  return res.data.data;
 };
