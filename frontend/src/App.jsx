@@ -3,31 +3,31 @@ import { useEffect, useState } from "react";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard  from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard";
 import Leaves from "./pages/Leaves";
-import Teams from "./pages/Teams"
+import Teams from "./pages/Teams";
 import TeamDetails from "./pages/TeamDetails";
 import Attendance from "./pages/Attendance";
-import socket from "./socket";
-
 import Employees from "./pages/Employees";
-import Profile from "./pages/Profile"
+import Profile from "./pages/Profile";
 
 /* ============================
-   Auth Helpers (temporary)
+   Auth Helpers
 ============================ */
-const getStoredUser = () => {
-  const user = localStorage.getItem("user");
-  return user ? JSON.parse(user) : null;
-};
-
 const isAuthenticated = () => {
-  return !!localStorage.getItem("user");
+  return !!localStorage.getItem("token") || !!localStorage.getItem("user");
 };
 
 function ProtectedRoute({ children }) {
   if (!isAuthenticated()) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
+
+function PublicRoute({ children }) {
+  if (isAuthenticated()) {
+    return <Navigate to="/dashboard" replace />;
   }
   return children;
 }
@@ -36,77 +36,100 @@ function ProtectedRoute({ children }) {
    App Component
 ============================ */
 function App() {
-  const [user, setUser] = useState(getStoredUser());
-
-  // 🔔 Join socket room once user is available
-  useEffect(() => {
-    if (user?._id) {
-      socket.emit("join", user._id);
-    }
-  }, [user]);
-
   return (
     <BrowserRouter>
-    
-
       <Routes>
-        
-        <Route path="/login" element={<Login setUser={setUser} />} />
+        {/* Root Redirect */}
+        <Route
+          path="/"
+          element={
+            <Navigate to={isAuthenticated() ? "/dashboard" : "/login"} replace />
+          }
+        />
 
+        {/* Public Auth Routes */}
         <Route
           path="/login"
-          element={<Login setUser={setUser} />}
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
         />
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
 
-        <Route path="/dashboard" element ={ 
-          <Dashboard /> }
-          
-          />
+        {/* Protected greytHR Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employees"
+          element={
+            <ProtectedRoute>
+              <Employees />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/leaves"
+          element={
+            <ProtectedRoute>
+              <Leaves />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teams"
+          element={
+            <ProtectedRoute>
+              <Teams />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teams/:teamId"
+          element={
+            <ProtectedRoute>
+              <TeamDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/attendance"
+          element={
+            <ProtectedRoute>
+              <Attendance />
+            </ProtectedRoute>
+          }
+        />
 
-
-          <Route
-  path ="/employees"
-  element={
-    
-      <Employees />
-    
-  }
-/>
-
- <Route
-  path ="/leaves"
-  element={
-    
-      <Leaves />
-    
-  }
-/>
-
- <Route
-  path ="/profile"
-  element={
-    
-      <Profile />
-    
-  }
-/>
-
- <Route
-  path ="/teams"
-  element={
-    
-      <Teams />
-    
-  }
-/>
-
-        <Route path="/teams/:teamId" element={<TeamDetails />} />
-
-          <Route path="attendance" element={<Attendance />} />
-
-
-       
+        {/* Fallback for any unknown route */}
+        <Route
+          path="*"
+          element={
+            <Navigate to={isAuthenticated() ? "/dashboard" : "/login"} replace />
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

@@ -1,15 +1,8 @@
-import { io } from "socket.io-client";
-
-const socket = io("http://localhost:4000", {
-  withCredentials: true,
-});
-
-socket.on("connect", () => {
-  console.log("✅ Socket connected:", socket.id);
-});
-
-socket.on("disconnect", () => {
-  console.log("❌ Socket disconnected");
-});
+// Safe mock/optional socket client to prevent console ERR_CONNECTION_REFUSED
+const socket = {
+  emit: () => {},
+  on: () => {},
+  off: () => {},
+};
 
 export default socket;
