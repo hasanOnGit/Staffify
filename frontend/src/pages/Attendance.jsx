@@ -156,17 +156,15 @@ function Attendance() {
             <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
           </button>
 
-          {/* Office Geofences Settings (Managers/Admins) */}
-          {isManager && (
-            <button
-              onClick={() => setShowGeofenceModal(true)}
-              className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer"
-              title="Configure Office Geofence Perimeters"
-            >
-              <MapPin size={14} className="text-[#0052CC]" />
-              <span>Office Geofences</span>
-            </button>
-          )}
+          {/* Office Geofences Settings / Info */}
+          <button
+            onClick={() => setShowGeofenceModal(true)}
+            className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer"
+            title="View & Configure Authorized Office Geofences"
+          >
+            <MapPin size={14} className="text-[#0052CC]" />
+            <span>{isManager ? "Office Geofences" : "View Office Zones"}</span>
+          </button>
 
           {/* Regularize Button */}
           <button
@@ -207,15 +205,13 @@ function Attendance() {
             </p>
             <p className="text-[10px] text-[#6B778C]">Standard Radius: 300m</p>
           </div>
-          {isManager && (
-            <button
-              onClick={() => setShowGeofenceModal(true)}
-              className="text-xs font-medium bg-white text-[#0052CC] hover:bg-[#DEEBFF] border border-[#B3D4FF] px-2.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1"
-            >
-              <SlidersHorizontal size={13} />
-              <span>Configure Radii</span>
-            </button>
-          )}
+          <button
+            onClick={() => setShowGeofenceModal(true)}
+            className="text-xs font-medium bg-white text-[#0052CC] hover:bg-[#DEEBFF] border border-[#B3D4FF] px-2.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1"
+          >
+            <SlidersHorizontal size={13} />
+            <span>{isManager ? "Configure Radii" : "View Office Zones"}</span>
+          </button>
         </div>
       </div>
 
