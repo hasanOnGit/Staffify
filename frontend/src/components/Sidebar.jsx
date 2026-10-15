@@ -13,6 +13,7 @@ import {
   FileText,
   CreditCard,
   Target,
+  Calendar,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -69,6 +70,11 @@ function Sidebar() {
           <NavLink to="/performance" className={getNavLinkClass}>
             <Target size={15} />
             <span>Performance & OKRs</span>
+          </NavLink>
+
+          <NavLink to="/roster" className={getNavLinkClass}>
+            <Calendar size={15} />
+            <span>Shift Roster Planner</span>
           </NavLink>
         </div>
 

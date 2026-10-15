@@ -78,7 +78,7 @@ function PayslipModal({ payslip, onClose }) {
         </div>
 
         {/* ========================================================
-            SCROLLABLE PRINTABLE PAYSLIP DOCUMENT (greytHR Format)
+            SCROLLABLE PRINTABLE PAYSLIP DOCUMENT (Staffify Format)
             ======================================================== */}
         <div
           ref={printRef}

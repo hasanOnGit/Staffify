@@ -81,7 +81,7 @@ function Teams() {
               Teams & Organization
             </h1>
             <span className="bg-[#DEEBFF] text-[#0747A6] text-xs px-2 py-0.5 rounded font-semibold border border-[#B3D4FF]">
-              greytHR Org Unit
+              Staffify Org Unit
             </span>
           </div>
           <p className="text-xs text-[#6B778C] mt-0.5">

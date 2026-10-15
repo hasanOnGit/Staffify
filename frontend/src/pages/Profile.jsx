@@ -181,7 +181,7 @@ function Profile() {
         </div>
       ) : (
         <div className="space-y-5">
-          {/* Hero Profile Header (greytHR style) */}
+          {/* Hero Profile Header (Staffify style) */}
           <div className="bg-white border border-[#DFE1E6] rounded p-5 relative overflow-hidden">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 relative z-10">
               <div className="flex items-center gap-4">

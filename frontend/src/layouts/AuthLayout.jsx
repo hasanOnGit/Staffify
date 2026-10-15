@@ -12,7 +12,7 @@ function AuthLayout({ children }) {
             <h1 className="text-2xl font-bold tracking-tight">Staffify</h1>
           </div>
           <p className="text-xs font-semibold uppercase tracking-wider text-blue-200">
-            greytHR Enterprise Edition
+            Staffify Enterprise Edition
           </p>
 
           <p className="mt-8 text-2xl font-semibold text-white leading-snug">

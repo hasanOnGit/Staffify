@@ -22,6 +22,7 @@ import {
   FileText,
   CreditCard,
   Target,
+  ArrowLeftRight,
 } from "lucide-react";
 
 function Navbar() {
@@ -396,6 +397,26 @@ function Navbar() {
                   </h4>
                   <p className="text-[11px] text-[#6B778C]">
                     Define measurable key results and performance targets
+                  </p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowCreateModal(false);
+                  navigate("/roster");
+                }}
+                className="w-full text-left p-3 rounded-lg border border-[#DFE1E6] hover:border-[#0052CC] hover:bg-[#DEEBFF]/20 transition flex items-center gap-3 group cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-md bg-[#EAE6FF] text-[#6554C0] flex items-center justify-center shrink-0">
+                  <ArrowLeftRight size={16} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[#172B4D] group-hover:text-[#0052CC]">
+                    Request Shift Swap
+                  </h4>
+                  <p className="text-[11px] text-[#6B778C]">
+                    Exchange scheduled shift date with an eligible squad peer
                   </p>
                 </div>
               </button>

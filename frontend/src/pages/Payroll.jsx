@@ -170,7 +170,7 @@ function Payroll() {
               <span>Payroll & Statutory Processing</span>
             </h1>
             <p className="text-xs text-[#6B778C] mt-0.5">
-              greytHR Compliant Salary Engine • EPF, ESIC, Professional Tax, and Payslip Generation
+              Staffify Compliant Salary Engine • EPF, ESIC, Professional Tax, and Payslip Generation
             </p>
           </div>
 
@@ -532,7 +532,7 @@ function Payroll() {
           </div>
         )}
 
-        {/* Modal: View greytHR Printable Payslip */}
+        {/* Modal: View Staffify Printable Payslip */}
         {activePayslip && (
           <PayslipModal payslip={activePayslip} onClose={() => setActivePayslip(null)} />
         )}

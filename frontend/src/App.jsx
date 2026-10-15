@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import Payroll from "./pages/Payroll";
 import Payslips from "./pages/Payslips";
 import Performance from "./pages/Performance";
+import Roster from "./pages/Roster";
 
 /* ============================
    Auth & RBAC Helpers
@@ -134,6 +135,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Performance />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/roster"
+          element={
+            <ProtectedRoute>
+              <Roster />
             </ProtectedRoute>
           }
         />

@@ -83,7 +83,7 @@ function ApplyLeaveModal({
           <div className="flex items-center gap-2">
             <Calendar size={18} className="text-[#0052CC]" />
             <h3 className="text-sm font-bold text-[#172B4D]">
-              Apply Leave — greytHR ESS
+              Apply Leave — Staffify ESS
             </h3>
           </div>
           <button

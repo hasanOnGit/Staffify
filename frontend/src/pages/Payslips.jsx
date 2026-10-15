@@ -140,7 +140,7 @@ function Payslips() {
                 Monthly Payslip Archive
               </h3>
               <p className="text-[11px] text-[#6B778C]">
-                Click on any month to view and print the official greytHR payslip
+                Click on any month to view and print the official Staffify payslip
               </p>
             </div>
           </div>
@@ -221,7 +221,7 @@ function Payslips() {
           )}
         </div>
 
-        {/* Printable greytHR Payslip Modal */}
+        {/* Printable Staffify Payslip Modal */}
         {activePayslip && (
           <PayslipModal payslip={activePayslip} onClose={() => setActivePayslip(null)} />
         )}

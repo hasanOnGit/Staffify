@@ -193,7 +193,7 @@ function Employees() {
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-gray-800">Employee Directory</h1>
             <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2 py-0.5 rounded-full">
-              greytHR 360
+              Staffify 360
             </span>
           </div>
           <p className="text-sm text-gray-500 mt-0.5">
@@ -329,7 +329,7 @@ function Employees() {
                   <h3 className="font-bold text-gray-800 text-base">
                     {editingId ? `Edit Dossier: ${formData.name}` : "Add New Employee Profile"}
                   </h3>
-                  <p className="text-xs text-gray-500">greytHR Complete 360 Personnel Setup</p>
+                  <p className="text-xs text-gray-500">Staffify Complete 360 Personnel Setup</p>
                 </div>
               </div>
               <button

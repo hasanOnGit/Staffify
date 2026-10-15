@@ -231,7 +231,7 @@ function Performance() {
               <span>Performance Management System</span>
             </h1>
             <p className="text-xs text-[#6B778C] mt-0.5">
-              greytHR Continuous Appraisal System • Goals & OKRs, 2-Stage Cycles, 1-on-1s, and Bell Curve Analytics
+              Staffify Continuous Appraisal System • Goals & OKRs, 2-Stage Cycles, 1-on-1s, and Bell Curve Analytics
             </p>
           </div>
 
@@ -618,7 +618,7 @@ function Performance() {
                     </span>
                   </div>
                   <p className="text-xs text-[#6B778C] mt-1">
-                    greytHR Dual-stage appraisal cycle: Employee Self-Assessment followed by Manager Review & Calibration
+                    Staffify Dual-stage appraisal cycle: Employee Self-Assessment followed by Manager Review & Calibration
                   </p>
                 </div>
 
@@ -943,7 +943,7 @@ function Performance() {
             <div className="bg-white border border-[#DFE1E6] rounded p-4 shadow-2xs">
               <h3 className="font-bold text-sm text-[#172B4D] flex items-center gap-2">
                 <BarChart3 size={16} className="text-[#0052CC]" />
-                greytHR Appraisal Bell Curve & Performance Distribution
+                Staffify Appraisal Bell Curve & Performance Distribution
               </h3>
               <p className="text-xs text-[#6B778C] mt-1">
                 Calibrated rating distribution comparing actual team scores against enterprise quota targets.

@@ -138,7 +138,7 @@ const employeeSchema = new mongoose.Schema(
       default: 0,
     },
 
-    // Banking & Statutory (greytHR standard)
+    // Banking & Statutory (Staffify standard)
     bankDetails: {
       type: bankDetailsSchema,
       default: () => ({}),

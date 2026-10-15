@@ -156,7 +156,7 @@ function Leaves() {
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold text-[#172B4D]">Leave Management</h1>
             <span className="text-[11px] bg-[#DEEBFF] text-[#0747A6] font-semibold px-2 py-0.5 rounded border border-[#B3D4FF]">
-              greytHR ESS
+              Staffify ESS
             </span>
           </div>
           <p className="text-xs text-[#6B778C] mt-0.5">
@@ -183,7 +183,7 @@ function Leaves() {
         </div>
       </div>
 
-      {/* greytHR Navigation Tabs */}
+      {/* Staffify Navigation Tabs */}
       <div className="flex border-b border-[#DFE1E6] mb-5 gap-1 text-xs font-semibold overflow-x-auto">
         <button
           onClick={() => setActiveTab("my_leaves")}
