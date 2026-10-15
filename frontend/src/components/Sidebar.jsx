@@ -14,6 +14,7 @@ import {
   CreditCard,
   Target,
   Calendar,
+  LifeBuoy,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -75,6 +76,11 @@ function Sidebar() {
           <NavLink to="/roster" className={getNavLinkClass}>
             <Calendar size={15} />
             <span>Shift Roster Planner</span>
+          </NavLink>
+
+          <NavLink to="/helpdesk" className={getNavLinkClass}>
+            <LifeBuoy size={15} />
+            <span>Helpdesk & Assets</span>
           </NavLink>
         </div>
 

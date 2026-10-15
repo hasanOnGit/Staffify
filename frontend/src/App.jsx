@@ -12,6 +12,7 @@ import Payroll from "./pages/Payroll";
 import Payslips from "./pages/Payslips";
 import Performance from "./pages/Performance";
 import Roster from "./pages/Roster";
+import Helpdesk from "./pages/Helpdesk";
 
 /* ============================
    Auth & RBAC Helpers
@@ -143,6 +144,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Roster />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/helpdesk"
+          element={
+            <ProtectedRoute>
+              <Helpdesk />
             </ProtectedRoute>
           }
         />
