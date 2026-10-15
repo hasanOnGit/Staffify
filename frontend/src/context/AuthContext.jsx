@@ -42,9 +42,12 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const res = await api.post("/login", { email, password });
 
+    if (res.data?.token) {
+      localStorage.setItem("token", res.data.token);
+    }
+
     if (res.data?.user) {
       const userData = { ...res.data.user };
-      // If backend doesn't return a name, derive one from email
       if (!userData.name) {
         userData.name = getNameFromEmail(userData.email || email);
       }
@@ -58,12 +61,23 @@ export const AuthProvider = ({ children }) => {
   /* ===============================
      REGISTER
   =============================== */
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, role = "Employee") => {
     const res = await api.post("/register", {
       name,
       email,
       password,
+      role,
     });
+
+    if (res.data?.token) {
+      localStorage.setItem("token", res.data.token);
+    }
+
+    if (res.data?.user) {
+      const userData = { ...res.data.user };
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+    }
 
     return res.data;
   };
@@ -73,8 +87,13 @@ export const AuthProvider = ({ children }) => {
   =============================== */
   const logout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     setUser(null);
   };
+
+  const role = user?.role || "Employee";
+  const isAdmin = role.toLowerCase() === "admin";
+  const isManager = role.toLowerCase() === "manager" || isAdmin;
 
   return (
     <AuthContext.Provider
@@ -85,6 +104,9 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         loading,
+        role,
+        isAdmin,
+        isManager,
         isAuthenticated: !!user,
       }}
     >

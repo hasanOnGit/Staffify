@@ -1,186 +1,244 @@
 const express = require("express");
 const apiRoutes = express.Router();
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const User = require("../models/user.model");
- 
+const authMiddleware = require("../middleware/auth.middleware");
+
+const otpStore = new Map();
 
 module.exports = function(app){
   
- apiRoutes.post("/register", async (req, res) => {
-  
-    const { name, email, password } = req.body;
+  apiRoutes.post("/register", async (req, res) => {
+    const { name, email, password, role } = req.body;
     try {
-
-
-        const userId = "USR-" + Math.floor(1000 + Math.random() * 9000);
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).send({ msg: "User already registered." });
+      if (!email || !password || !name) {
+        return res.status(400).json({ msg: "Name, email, and password are required." });
       }
 
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ msg: "User with this email already registered." });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      const userId = "USR-" + Math.floor(1000 + Math.random() * 9000);
+      const userRole = role || "Employee";
+
       const newUser = await User.create({
-       userId, name, email, password
+        userId,
+        name,
+        email,
+        password: hashedPassword,
+        role: userRole,
+        isActive: true,
       });
-      res
-        .status(201)
-        .send({ msg: "User registered successfully.", user: newUser });
+
+      const token = jwt.sign(
+        {
+          id: newUser._id,
+          userId: newUser.userId,
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
+        },
+        process.env.JWT_SECRET || "staffify_super_secret_jwt_key_2026_dev",
+        { expiresIn: "7d" }
+      );
+
+      res.status(201).json({
+        msg: "User registered successfully.",
+        token,
+        user: {
+          userId: newUser.userId,
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
+        },
+      });
     } catch (err) {
-      res
-        .status(500)
-        .send({ msg: "Error registering user.", error: err.message });
+      console.error("Register Error:", err);
+      res.status(500).json({ msg: "Error registering user.", error: err.message });
     }
   });
 
   apiRoutes.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
-         const userId = "USR-" + Math.floor(1000 + Math.random() * 9000);
-      const user = await User.findOne({ email});
-      if (!user || user.password !== password) {
-        return res.status(400).send({ msg: "Invalid credentials." });
+      if (!email || !password) {
+        return res.status(400).json({ msg: "Email and password are required." });
       }
 
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(400).json({ msg: "Invalid credentials." });
+      }
 
-      res.status(200).send({ msg: "Login successful.", email,userId:user.userId ,user:user.name});
+      let isMatch = false;
+      if (user.password && (user.password.startsWith("$2a$") || user.password.startsWith("$2b$"))) {
+        isMatch = await bcrypt.compare(password, user.password);
+      } else {
+        isMatch = user.password === password;
+        if (isMatch) {
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(password, salt);
+          await user.save();
+        }
+      }
+
+      if (!isMatch) {
+        return res.status(400).json({ msg: "Invalid credentials." });
+      }
+
+      const userRole = user.role || "Employee";
+
+      const token = jwt.sign(
+        {
+          id: user._id,
+          userId: user.userId,
+          name: user.name,
+          email: user.email,
+          role: userRole,
+        },
+        process.env.JWT_SECRET || "staffify_super_secret_jwt_key_2026_dev",
+        { expiresIn: "7d" }
+      );
+
+      res.status(200).json({
+        msg: "Login successful.",
+        token,
+        user: {
+          userId: user.userId,
+          name: user.name,
+          email: user.email,
+          role: userRole,
+          profilePicture: user.profilePicture,
+        },
+      });
     } catch (err) {
-      res.status(500).send({ msg: "Error logging in.", error: err.message });
+      console.error("Login Error:", err);
+      res.status(500).json({ msg: "Error logging in.", error: err.message });
     }
   });
 
+  /* ==========================================================
+     GET CURRENT USER (ME)
+     ========================================================== */
+  apiRoutes.get("/me", authMiddleware, async (req, res) => {
+    try {
+      const user = await User.findOne({ userId: req.user.userId }).select("-password");
+      if (!user) {
+        return res.status(404).json({ msg: "User not found." });
+      }
+      res.status(200).json({ user });
+    } catch (err) {
+      res.status(500).json({ msg: "Server error.", error: err.message });
+    }
+  });
+
+  /* ==========================================================
+     GET PROFILE BY USER ID
+     ========================================================== */
+  apiRoutes.get("/getProfile/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const user = await User.findOne({ userId }).select("-password");
+      if (!user) {
+        return res.status(404).json({ message: "Profile not found." });
+      }
+      res.status(200).json({ data: user });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  /* ==========================================================
+     UPDATE PROFILE BY USER ID
+     ========================================================== */
+  apiRoutes.post("/updateProfile/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { name, phone, address, profilePicture, role } = req.body;
+
+      const user = await User.findOne({ userId });
+      if (!user) {
+        return res.status(404).json({ message: "User not found." });
+      }
+
+      if (name) user.name = name;
+      if (profilePicture) user.profilePicture = profilePicture;
+      if (role) user.role = role;
+
+      await user.save();
+
+      res.status(200).json({
+        message: "Profile updated successfully.",
+        data: {
+          userId: user.userId,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          profilePicture: user.profilePicture,
+        },
+      });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  /* ==========================================================
+     FORGET PASSWORD & OTP
+     ========================================================== */
   apiRoutes.post("/forget-password", async (req, res) => {
     const { email } = req.body;
-    console.log("Body for Forget-Password::::", req.body);
     try {
-      const user = await User.findOne({ email});
+      const user = await User.findOne({ email });
       if (!user) {
-        console.log(`User not found for emailOrUsername: ${email}`);
-        return res.status(404).send({ msg: "User not found.", status: "false" });
+        return res.status(404).json({ msg: "User not found.", status: "false" });
       }
+
       const otp = crypto.randomInt(100000, 999999);
-      otpStore[email] = otp; // Store OTP temporarily
+      otpStore.set(email, { otp, expiresAt: Date.now() + 10 * 60 * 1000 });
 
-      console.log(
-        `Generated OTP: ${otp} for email: ${email}`
-      );
+      console.log(`[PASSWORD RESET] OTP generated for ${email}: ${otp}`);
 
-      await sendEmail(
-        email,
-        "Password Reset OTP",
-        `Your OTP for password reset is: ${otp}`
-      );
-
-      res.status(200).send({ msg: "OTP sent to your email.", status: "true" });
+      res.status(200).json({
+        msg: "OTP sent to your email (simulated in logs).",
+        status: "true",
+        otpSimulated: otp,
+      });
     } catch (err) {
-      console.error(`Error sending OTP to ${email}:`, err.message);
-      res.status(500).send({ msg: "Error sending OTP.", error: err.message });
+      res.status(500).json({ msg: "Error sending OTP.", error: err.message });
     }
   });
 
   apiRoutes.post("/verify-otp", async (req, res) => {
     const { email, otp, newPassword } = req.body;
-
     try {
-      const storedOtp = otpStore[email];
-      if (!storedOtp || storedOtp !== parseInt(otp)) {
-        return res.status(400).send({ msg: "Invalid or expired OTP." });
+      const stored = otpStore.get(email);
+      if (!stored || stored.otp !== parseInt(otp) || stored.expiresAt < Date.now()) {
+        return res.status(400).json({ msg: "Invalid or expired OTP." });
       }
 
-      const user = await User.findOne({ email});
+      const user = await User.findOne({ email });
       if (!user) {
-        return res.status(404).send({ msg: "User not found." });
+        return res.status(404).json({ msg: "User not found." });
       }
 
-      user.password = newPassword;
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(newPassword, salt);
       await user.save();
 
-      delete otpStore[emailOrUsername];
+      otpStore.delete(email);
 
-      res.status(200).send({ msg: "Password updated successfully." });
+      res.status(200).json({ msg: "Password updated successfully." });
     } catch (err) {
-      res
-        .status(500)
-        .send({ msg: "Error updating password.", error: err.message });
+      res.status(500).json({ msg: "Error updating password.", error: err.message });
     }
   });
 
-  // apiRoutes.post('/adminLogin', async (req, res) => {
-  //     const { email, phone, password, role } = req.body;
-
-  //     try {
-  //         // Find user based on email or phone
-  //         const user = await User.findOne({
-  //             $or: [
-  //                 { email: email },
-  //                 { phone: phone }
-  //             ]
-  //         });
-
-  //         // Check if user exists
-  //         if (!user) {
-  //             return res.status(400).send({ msg: 'User Not Found.' });
-  //         }
-
-  //         // Check if the password matches (assuming password is not hashed)
-  //         if (user.password !== password) {
-  //             return res.status(400).send({ msg: 'Invalid Password.' });
-  //         }
-
-  //         // Check if the role matches and if the user is an admin
-  //         if (user.role !== 'admin' || role !== 'admin') {
-  //             return res.status(403).send({ msg: 'You are not an admin.' });
-  //         }
-
-  //         // Login successful
-  //         res.status(200).send({ msg: 'Login successful.', email: user.email });
-  //     } catch (err) {
-  //         res.status(500).send({ msg: 'Error logging in.', error: err.message, err });
-  //     }
-  // });
-
-  apiRoutes.post("/adminLogin", async (req, res) => {
-    const { email, phone, password, role } = req.body;
-   
-    try {
-      // Define query condition based on input
-      let queryCondition = {};
-      if (email) {
-        queryCondition.emailOrUsername = email;
-      } else if (phone) {
-        queryCondition.phone = phone;
-      } else {
-        return res.status(400).send({ msg: "Email or phone is required." });
-      }
-
-      // Find user based on the specific query condition
-      const user = await User.findOne(queryCondition);
-
-      // Check if user exists
-      if (!user) {
-        return res.status(400).send({ msg: "User Not Found." });
-      }
-
-      // Check if the password matches
-      if (user.password !== password) {
-        return res.status(400).send({ msg: "Invalid Password." });
-      }
-
-      // Check if the role matches and if the user is an admin
-      if (user.role !== "admin" || role !== "admin") {
-        return res.status(403).send({ msg: "You are not an admin." });
-      }
-
-      // Login successful
-      res
-        .status(200)
-        .send({
-          msg: "Login successful.",
-          email: user.email,
-        });
-    } catch (err) {
-      res.status(500).send({ msg: "Error logging in.", error: err.message });
-    }
-  });
-
-
-    app.use("/",apiRoutes);
-   
-}
+  app.use("/", apiRoutes);
+};

@@ -10,6 +10,7 @@ function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("Employee");
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -23,7 +24,7 @@ function Register() {
     setLoading(true);
 
     try {
-      const res = await register(name, email, password);
+      const res = await register(name, email, password, role);
 
       if (res?.msg === "User registered successfully.") {
         setSuccess("Account created successfully. Redirecting to sign in...");
@@ -131,6 +132,28 @@ function Register() {
           <p className="mt-1 text-xs text-gray-500">
             Must be at least 8 characters
           </p>
+        </div>
+
+        {/* Role Selector */}
+        <div>
+          <label
+            htmlFor="role"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Role
+          </label>
+          <select
+            id="role"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="mt-2 w-full px-4 py-3 border border-gray-300 rounded-lg bg-white
+                       focus:outline-none focus:ring-2 focus:ring-purple-600
+                       focus:border-purple-600 transition text-sm"
+          >
+            <option value="Employee">Employee (ESS)</option>
+            <option value="Manager">Manager (MSS)</option>
+            <option value="Admin">HR Administrator</option>
+          </select>
         </div>
 
         {/* Submit Button */}
