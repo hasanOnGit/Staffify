@@ -78,21 +78,21 @@ function Performance() {
       if (activeTab === "goals") {
         const params = {};
         if (user?.role === "Employee") {
-          params.employeeId = user?.employeeId;
+          params.employeeId = user?.employeeId || user?.userId;
         }
         const res = await getGoals(params);
         if (res.success) setGoals(res.data || []);
       } else if (activeTab === "appraisals") {
         const params = {};
         if (user?.role === "Employee") {
-          params.employeeId = user?.employeeId;
+          params.employeeId = user?.employeeId || user?.userId;
         }
         const res = await getAppraisals(params);
         if (res.success) setAppraisals(res.data || []);
       } else if (activeTab === "oneOnOne") {
         const params = {};
         if (user?.role === "Employee") {
-          params.employeeId = user?.employeeId;
+          params.employeeId = user?.employeeId || user?.userId;
         }
         const res = await getOneOnOne(params);
         if (res.success) setOneOnOnes(res.data || []);
@@ -771,7 +771,7 @@ function Performance() {
                           {/* Actions */}
                           <div className="flex items-center gap-2">
                             {/* If Employee and Self is pending */}
-                            {(user?.role === "Employee" || user?.employeeId === apr.employeeId) &&
+                            {(user?.role === "Employee" || (user?.employeeId || user?.userId) === apr.employeeId) &&
                               isSelfPending && (
                                 <button
                                   onClick={() => handleOpenAppraisalModal(apr, "self")}
@@ -1166,7 +1166,7 @@ function Performance() {
             setEditingGoal(null);
           }}
           onSave={handleSaveGoal}
-          employeeId={user?.employeeId}
+          employeeId={user?.employeeId || user?.userId}
           employeeName={user?.name}
           department={user?.department}
           initialData={editingGoal}

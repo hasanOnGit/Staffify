@@ -54,6 +54,7 @@ module.exports = function(app){
         token,
         user: {
           userId: newUser.userId,
+          employeeId: newUser.userId,
           name: newUser.name,
           email: newUser.email,
           role: newUser.role,
@@ -112,6 +113,7 @@ module.exports = function(app){
         token,
         user: {
           userId: user.userId,
+          employeeId: user.userId,
           name: user.name,
           email: user.email,
           role: userRole,

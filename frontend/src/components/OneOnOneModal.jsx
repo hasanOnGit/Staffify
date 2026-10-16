@@ -67,9 +67,8 @@ function OneOnOneModal({ isOpen, onClose, onSave, currentUser, initialData }) {
     onSave({
       employeeId,
       employeeName,
-      designation,
-      managerId: currentUser?.role === "Manager" || currentUser?.role === "Admin" ? currentUser?.employeeId : "EMP-MGR-02",
-      managerName: currentUser?.role === "Manager" || currentUser?.role === "Admin" ? currentUser?.name : "Manager User",
+      managerId: currentUser?.employeeId || currentUser?.userId || "",
+      managerName: currentUser?.name || "Manager",
       meetingDate,
       talkingPoints,
       actionItems,

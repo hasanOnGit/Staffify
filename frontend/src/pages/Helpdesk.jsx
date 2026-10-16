@@ -72,7 +72,7 @@ function Helpdesk() {
     try {
       const params = {};
       if (!canManage) {
-        params.employeeId = user?.employeeId;
+        params.employeeId = user?.employeeId || user?.userId;
       }
       const res = await getTickets(params);
       if (res.success) setTickets(res.data || []);
@@ -221,7 +221,7 @@ function Helpdesk() {
   });
 
   // My issued equipment
-  const myAssets = assets.filter((a) => a.allocatedToId === user?.employeeId);
+  const myAssets = assets.filter((a) => a.allocatedToId === (user?.employeeId || user?.userId));
 
   // Stats
   const openTicketsCount = tickets.filter((t) => t.status === "Open" || t.status === "In Progress").length;

@@ -105,7 +105,7 @@ function Roster() {
     try {
       const params = {};
       if (!canManageRoster) {
-        params.employeeId = user?.employeeId;
+        params.employeeId = user?.employeeId || user?.userId;
       }
       const res = await getShiftSwaps(params);
       if (res.success) setSwaps(res.data || []);

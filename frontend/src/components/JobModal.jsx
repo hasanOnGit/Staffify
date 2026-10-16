@@ -48,9 +48,8 @@ function JobModal({ isOpen, onClose, onSave, currentUser }) {
       experienceRequired,
       salaryRange,
       description,
-      requirements,
-      hiringManagerId: currentUser?.employeeId || "EMP-MGR-02",
-      hiringManagerName: currentUser?.name || "Manager User",
+      hiringManagerId: currentUser?.employeeId || currentUser?.userId || "",
+      hiringManagerName: currentUser?.name || "Hiring Manager",
     });
   };
 

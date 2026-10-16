@@ -31,6 +31,9 @@ export const AuthProvider = ({ children }) => {
       if (!parsed.name && parsed.email) {
         parsed.name = getNameFromEmail(parsed.email);
       }
+      if (!parsed.employeeId && parsed.userId) {
+        parsed.employeeId = parsed.userId;
+      }
       setUser(parsed);
     }
     setLoading(false);
@@ -50,6 +53,9 @@ export const AuthProvider = ({ children }) => {
       const userData = { ...res.data.user };
       if (!userData.name) {
         userData.name = getNameFromEmail(userData.email || email);
+      }
+      if (!userData.employeeId && userData.userId) {
+        userData.employeeId = userData.userId;
       }
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
@@ -75,6 +81,9 @@ export const AuthProvider = ({ children }) => {
 
     if (res.data?.user) {
       const userData = { ...res.data.user };
+      if (!userData.employeeId && userData.userId) {
+        userData.employeeId = userData.userId;
+      }
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
     }

@@ -33,7 +33,12 @@ function Payslips() {
     const fetchEssData = async () => {
       try {
         setLoading(true);
-        const empId = user?.userId || "EMP-DEV-03";
+        const empId = user?.employeeId || user?.userId;
+        if (!empId) {
+          setPayslips([]);
+          setSalaryStructure(null);
+          return;
+        }
         const [payslipsRes, structRes] = await Promise.all([
           getPayslips({ employeeId: empId }).catch(() => ({ data: [] })),
           getSalaryStructure(empId).catch(() => ({ data: null })),

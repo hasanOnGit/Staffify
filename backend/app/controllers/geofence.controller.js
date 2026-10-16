@@ -23,10 +23,9 @@ function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
   return Math.round(R * c);
 }
 
-// Seed default office zone if empty
 async function ensureDefaultGeofence() {
-  const count = await Geofence.countDocuments();
-  if (count === 0) {
+  const hq = await Geofence.findOne({ zoneId: "GEO-HQ-01" });
+  if (!hq) {
     await Geofence.create([
       {
         zoneId: "GEO-HQ-01",

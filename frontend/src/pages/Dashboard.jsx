@@ -37,11 +37,11 @@ function Dashboard() {
   const navigate = useNavigate();
 
   const [stats, setStats] = useState({
-    totalEmployees: 4,
-    presentToday: 2,
+    totalEmployees: 0,
+    presentToday: 0,
     onLeave: 0,
     lateArrivals: 0,
-    absentToday: 2,
+    absentToday: 0,
   });
 
   const [pendingLeaves, setPendingLeaves] = useState([]);
@@ -75,25 +75,29 @@ function Dashboard() {
 
       // 1. Fetch Employees
       const emps = await getEmployees().catch(() => []);
-      const empCount = emps?.length || 4;
+      const empCount = Array.isArray(emps) ? emps.length : 0;
 
       // 2. Fetch Attendance for Today
       const attRecords = await getAttendanceByDate(todayISO).catch(() => []);
-      const presentCount = attRecords?.length || Math.max(1, Math.floor(empCount * 0.5));
-      const lateCount = attRecords?.filter((r) => r.status === "Late")?.length || 0;
-      setRecentAttendance(attRecords?.slice(0, 5) || []);
+      const recordsList = Array.isArray(attRecords) ? attRecords : [];
+      const presentRecords = recordsList.filter((r) => r.status === "Present" || r.status === "Late");
+      const presentCount = presentRecords.length;
+      const lateCount = recordsList.filter((r) => r.status === "Late").length;
+      setRecentAttendance(recordsList.slice(0, 5));
 
       // 3. Fetch Leaves
       const allLeaves = await getLeaves().catch(() => []);
-      const pending = allLeaves?.filter((l) => l.status === "Pending") || [];
+      const leavesList = Array.isArray(allLeaves) ? allLeaves : [];
+      const pending = leavesList.filter((l) => l.status === "Pending");
       setPendingLeaves(pending);
 
       // 4. Fetch Team on Leave
       const onLeave = await getTeamOnLeave().catch(() => []);
-      setTeamOnLeave(onLeave || []);
+      const onLeaveList = Array.isArray(onLeave) ? onLeave : [];
+      setTeamOnLeave(onLeaveList);
 
       // 5. Compute Stats
-      const onLeaveCount = onLeave?.length || 0;
+      const onLeaveCount = onLeaveList.length;
       const absentCount = Math.max(0, empCount - presentCount - onLeaveCount);
 
       setStats({
@@ -106,13 +110,15 @@ function Dashboard() {
 
       // 6. Fetch Holidays
       const holidayData = await getHolidays().catch(() => []);
-      setHolidays(holidayData || []);
+      setHolidays(Array.isArray(holidayData) ? holidayData : []);
 
       // 7. If employee, fetch personal balance
       if (!isAdmin && !isManager) {
-        const empId = user?.userId || "EMP-DEV-03";
-        const bal = await getLeaveBalance(empId).catch(() => null);
-        if (bal) setLeaveBalances(bal);
+        const empId = user?.employeeId || user?.userId;
+        if (empId) {
+          const bal = await getLeaveBalance(empId).catch(() => null);
+          if (bal?.data) setLeaveBalances(bal.data);
+        }
       }
     } catch (err) {
       console.error("Dashboard data load error:", err);
@@ -640,9 +646,11 @@ function Dashboard() {
                       Casual Leave
                     </span>
                     <p className="text-xl font-bold text-[#0052CC] mt-0.5">
-                      {leaveBalances?.casualLeave?.balance ?? 11} Days
+                      {leaveBalances?.casual?.available ?? 12} Days
                     </p>
-                    <p className="text-[10px] text-[#6B778C]">Total 12 / Used 1</p>
+                    <p className="text-[10px] text-[#6B778C]">
+                      Total {leaveBalances?.casual?.total ?? 12} / Used {leaveBalances?.casual?.used ?? 0}
+                    </p>
                   </div>
 
                   <div className="border border-[#DFE1E6] rounded-lg p-3 bg-[#F4F5F7]/30">
@@ -650,9 +658,11 @@ function Dashboard() {
                       Earned Leave
                     </span>
                     <p className="text-xl font-bold text-[#00875A] mt-0.5">
-                      {leaveBalances?.earnedLeave?.balance ?? 13} Days
+                      {leaveBalances?.earned?.available ?? 15} Days
                     </p>
-                    <p className="text-[10px] text-[#6B778C]">Total 15 / Used 2</p>
+                    <p className="text-[10px] text-[#6B778C]">
+                      Total {leaveBalances?.earned?.total ?? 15} / Used {leaveBalances?.earned?.used ?? 0}
+                    </p>
                   </div>
 
                   <div className="border border-[#DFE1E6] rounded-lg p-3 bg-[#F4F5F7]/30">
@@ -660,9 +670,11 @@ function Dashboard() {
                       Sick Leave
                     </span>
                     <p className="text-xl font-bold text-[#FF991F] mt-0.5">
-                      {leaveBalances?.sickLeave?.balance ?? 9} Days
+                      {leaveBalances?.sick?.available ?? 10} Days
                     </p>
-                    <p className="text-[10px] text-[#6B778C]">Total 10 / Used 1</p>
+                    <p className="text-[10px] text-[#6B778C]">
+                      Total {leaveBalances?.sick?.total ?? 10} / Used {leaveBalances?.sick?.used ?? 0}
+                    </p>
                   </div>
 
                   <div className="border border-[#DFE1E6] rounded-lg p-3 bg-[#F4F5F7]/30">
@@ -670,9 +682,11 @@ function Dashboard() {
                       Half Day Quota
                     </span>
                     <p className="text-xl font-bold text-[#172B4D] mt-0.5">
-                      {leaveBalances?.halfDay?.balance ?? 6} Days
+                      {leaveBalances?.halfDay?.available ?? 6} Days
                     </p>
-                    <p className="text-[10px] text-[#6B778C]">Session 1 or 2</p>
+                    <p className="text-[10px] text-[#6B778C]">
+                      Total {leaveBalances?.halfDay?.total ?? 6} / Used {leaveBalances?.halfDay?.used ?? 0}
+                    </p>
                   </div>
                 </div>
 

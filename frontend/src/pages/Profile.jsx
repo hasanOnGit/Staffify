@@ -69,7 +69,7 @@ function Profile() {
       const fallback = {
         name: user.name || "Employee",
         email: user.email || "",
-        employeeId: user.userId || "EMP-1001",
+        employeeId: user?.employeeId || user?.userId || "",
         designation: "Software Engineer",
         department: "Engineering",
         gender: "Prefer not to say",
