@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 import ClockWidget from "./ClockWidget";
 import {
   Grid,
@@ -48,6 +49,13 @@ function Navbar() {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     navigate(`/employees?search=${encodeURIComponent(searchQuery)}`);
+  };
+
+  const handleLogout = () => {
+    setShowProfileMenu(false);
+    logout();
+    toast.success("Logged out successfully");
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -230,10 +238,8 @@ function Navbar() {
 
                 <div className="border-t border-[#DFE1E6] pt-1 mt-1">
                   <button
-                    onClick={() => {
-                      setShowProfileMenu(false);
-                      logout();
-                    }}
+                    type="button"
+                    onClick={handleLogout}
                     className="w-full text-left px-3.5 py-2 text-[#DE350B] hover:bg-[#FFEBE6] transition flex items-center gap-1.5 cursor-pointer font-medium"
                   >
                     <LogOut size={13} />

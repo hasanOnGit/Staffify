@@ -15,29 +15,33 @@ import Roster from "./pages/Roster";
 import Helpdesk from "./pages/Helpdesk";
 import Recruitment from "./pages/Recruitment";
 
+import { useAuth } from "./context/AuthContext";
+
 /* ============================
    Auth & RBAC Helpers
 ============================ */
-const isAuthenticated = () => {
-  return !!localStorage.getItem("token") || !!localStorage.getItem("user");
-};
-
-const getCurrentUser = () => {
-  try {
-    const stored = localStorage.getItem("user");
-    return stored ? JSON.parse(stored) : null;
-  } catch {
-    return null;
-  }
-};
+function RootRedirect() {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return null;
+  return <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />;
+}
 
 function ProtectedRoute({ children, allowedRoles }) {
-  if (!isAuthenticated()) {
+  const { user, isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFBFC]">
+        <div className="w-6 h-6 border-2 border-[#0052CC] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
   if (allowedRoles && allowedRoles.length > 0) {
-    const user = getCurrentUser();
     const userRole = (user?.role || "Employee").toLowerCase();
     const normalizedAllowed = allowedRoles.map((r) => r.toLowerCase());
 
@@ -50,7 +54,17 @@ function ProtectedRoute({ children, allowedRoles }) {
 }
 
 function PublicRoute({ children }) {
-  if (isAuthenticated()) {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFBFC]">
+        <div className="w-6 h-6 border-2 border-[#0052CC] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
   return children;
@@ -64,12 +78,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Root Redirect */}
-        <Route
-          path="/"
-          element={
-            <Navigate to={isAuthenticated() ? "/dashboard" : "/login"} replace />
-          }
-        />
+        <Route path="/" element={<RootRedirect />} />
 
         {/* Public Auth Routes */}
         <Route

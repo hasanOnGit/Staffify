@@ -86,8 +86,14 @@ export const AuthProvider = ({ children }) => {
      LOGOUT
   =============================== */
   const logout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    try {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("staffify_is_clocked_in");
+      localStorage.removeItem("staffify_clock_in_time");
+    } catch (e) {
+      console.warn("Error clearing storage on logout:", e);
+    }
     setUser(null);
   };
 
