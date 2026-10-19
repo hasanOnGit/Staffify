@@ -16,6 +16,9 @@ import Helpdesk from "./pages/Helpdesk";
 import Recruitment from "./pages/Recruitment";
 import OrgChart from "./pages/OrgChart";
 import Expenses from "./pages/Expenses";
+import Analytics from "./pages/Analytics";
+import Timesheets from "./pages/Timesheets";
+import Offboarding from "./pages/Offboarding";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -183,10 +186,34 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/timesheets"
+          element={
+            <ProtectedRoute>
+              <Timesheets />
+            </ProtectedRoute>
+          }
+        />
 
         {/* =========================================
-            Manager & Admin Only (MSS)
+            Manager & Admin Only (MSS & Executive)
            ========================================= */}
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
+              <Analytics />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/offboarding"
+          element={
+            <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
+              <Offboarding />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/teams"
           element={

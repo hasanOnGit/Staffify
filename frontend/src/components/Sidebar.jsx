@@ -18,6 +18,8 @@ import {
   LogOut,
   Network,
   Receipt,
+  BarChart3,
+  UserMinus,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
@@ -103,6 +105,11 @@ function Sidebar() {
             <Receipt size={15} />
             <span>Expenses & Claims</span>
           </NavLink>
+
+          <NavLink to="/timesheets" className={getNavLinkClass}>
+            <Clock size={15} />
+            <span>Project Timesheets</span>
+          </NavLink>
         </div>
 
         {/* MSS - Manager Self Service */}
@@ -126,6 +133,16 @@ function Sidebar() {
               <Briefcase size={15} />
               <span>Recruitment & ATS</span>
             </NavLink>
+
+            <NavLink to="/analytics" className={getNavLinkClass}>
+              <BarChart3 size={15} />
+              <span>Executive Analytics</span>
+            </NavLink>
+
+            <NavLink to="/offboarding" className={getNavLinkClass}>
+              <UserMinus size={15} />
+              <span>Exit Operations</span>
+            </NavLink>
           </div>
         )}
 
@@ -146,6 +163,16 @@ function Sidebar() {
               <span>Employee Directory</span>
             </NavLink>
 
+            <NavLink to="/analytics" className={getNavLinkClass}>
+              <BarChart3 size={15} />
+              <span>Executive Analytics</span>
+            </NavLink>
+
+            <NavLink to="/payroll" className={getNavLinkClass}>
+              <CreditCard size={15} />
+              <span>Payroll Processing</span>
+            </NavLink>
+
             <NavLink to="/recruitment" className={getNavLinkClass}>
               <Briefcase size={15} />
               <span>Recruitment & ATS</span>
@@ -156,9 +183,9 @@ function Sidebar() {
               <span>Teams & Structure</span>
             </NavLink>
 
-            <NavLink to="/payroll" className={getNavLinkClass}>
-              <CreditCard size={15} />
-              <span>Payroll Processing</span>
+            <NavLink to="/offboarding" className={getNavLinkClass}>
+              <UserMinus size={15} />
+              <span>Exit Operations</span>
             </NavLink>
           </div>
         )}

@@ -20,6 +20,9 @@ require('./controllers/expense.controller')(app);
 require('./controllers/hrDocument.controller')(app);
 require('./controllers/loan.controller')(app);
 require('./controllers/pulse.controller')(app);
+require('./controllers/analytics.controller')(app);
+require('./controllers/timesheet.controller')(app);
+require('./controllers/offboarding.controller')(app);
 
 }
 
