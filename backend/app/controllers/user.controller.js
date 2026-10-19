@@ -243,5 +243,7 @@ module.exports = function(app){
     }
   });
 
+  // Support both direct backend requests and Vercel /api rewrites.
   app.use("/", apiRoutes);
+  app.use("/api", apiRoutes);
 };

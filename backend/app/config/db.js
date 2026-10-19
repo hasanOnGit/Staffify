@@ -11,15 +11,21 @@ const demoUsers = [
 const ensureDemoUsers = async () => {
   for (const demoUser of demoUsers) {
     const existingUser = await User.findOne({ email: demoUser.email });
+    const hashedPassword = await bcrypt.hash(demoUser.password, 10);
     if (!existingUser) {
       await User.create({
         userId: `DEMO-${demoUser.role.toUpperCase()}`,
         name: demoUser.name,
         email: demoUser.email,
-        password: await bcrypt.hash(demoUser.password, 10),
+        password: hashedPassword,
         role: demoUser.role,
         isActive: true,
       });
+    } else if (existingUser.userId?.startsWith("DEMO-")) {
+      existingUser.password = hashedPassword;
+      existingUser.role = demoUser.role;
+      existingUser.isActive = true;
+      await existingUser.save();
     }
   }
 };
