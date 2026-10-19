@@ -215,12 +215,7 @@ function App() {
         />
 
         {/* Fallback for any unknown route */}
-        <Route
-          path="*"
-          element={
-            <Navigate to={isAuthenticated() ? "/dashboard" : "/login"} replace />
-          }
-        />
+        <Route path="*" element={<RootRedirect />} />
       </Routes>
     </BrowserRouter>
   );

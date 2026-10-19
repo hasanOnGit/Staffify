@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AttendanceTable from "../components/AttendanceTable";
 import GeofenceModal from "../components/GeofenceModal";
+import BiometricManagerModal from "../components/BiometricManagerModal";
 import { getAttendanceByDate, requestRegularization } from "../services/attendance";
 import { getGeofenceZones } from "../services/geofence";
+import { getEmployees } from "../services/employee";
 import { useAuth } from "../context/AuthContext";
-import { Clock, RefreshCw, PlusCircle, AlertCircle, X, MapPin, SlidersHorizontal } from "lucide-react";
+import { Clock, RefreshCw, PlusCircle, AlertCircle, X, MapPin, SlidersHorizontal, Cpu } from "lucide-react";
 import toast from "react-hot-toast";
 
 function Attendance() {
@@ -20,6 +22,10 @@ function Attendance() {
   // Geofence Modal & Zones
   const [showGeofenceModal, setShowGeofenceModal] = useState(false);
   const [activeZones, setActiveZones] = useState([]);
+
+  // Biometric Terminal Modal
+  const [showBiometricModal, setShowBiometricModal] = useState(false);
+  const [employeesList, setEmployeesList] = useState([]);
 
   // Regularization Modal State
   const [showRegModal, setShowRegModal] = useState(false);
@@ -58,6 +64,7 @@ function Attendance() {
   useEffect(() => {
     fetchRecords();
     loadActiveZones();
+    getEmployees().then((data) => setEmployeesList(Array.isArray(data) ? data : [])).catch(() => {});
   }, [fetchRecords, loadActiveZones]);
 
   // Re-fetch when topbar punch updates
@@ -164,6 +171,16 @@ function Attendance() {
           >
             <MapPin size={14} className="text-[#0052CC]" />
             <span>{isManager ? "Office Geofences" : "View Office Zones"}</span>
+          </button>
+
+          {/* Biometric Hardware Terminals & ADMS Push Sync */}
+          <button
+            onClick={() => setShowBiometricModal(true)}
+            className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer"
+            title="Manage eSSL / ZKTeco Biometric Devices and Sync Logs"
+          >
+            <Cpu size={14} className="text-[#00875A]" />
+            <span>Biometric Hardware</span>
           </button>
 
           {/* Regularize Button */}
@@ -370,6 +387,16 @@ function Attendance() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Biometric Hardware Terminals Modal */}
+      {showBiometricModal && (
+        <BiometricManagerModal
+          isOpen={showBiometricModal}
+          onClose={() => setShowBiometricModal(false)}
+          employees={employeesList}
+          onSynced={fetchRecords}
+        />
       )}
     </DashboardLayout>
   );

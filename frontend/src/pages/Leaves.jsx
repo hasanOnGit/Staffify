@@ -13,6 +13,7 @@ import LeaveBalanceCards from "../components/LeaveBalanceCards";
 import HolidayCalendar from "../components/HolidayCalendar";
 import TeamOnLeave from "../components/TeamOnLeave";
 import ApplyLeaveModal from "../components/ApplyLeaveModal";
+import LeavePolicyModal from "../components/LeavePolicyModal";
 import {
   Calendar,
   CheckCircle2,
@@ -21,6 +22,7 @@ import {
   PlusCircle,
   RefreshCw,
   Clock,
+  Sliders,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -38,6 +40,7 @@ function Leaves() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
+  const [showPolicyModal, setShowPolicyModal] = useState(false);
   const [statusFilter, setStatusFilter] = useState("All");
 
   /* =============================
@@ -164,7 +167,7 @@ function Leaves() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={fetchData}
             className="p-1.5 border border-[#DFE1E6] bg-white hover:bg-[#F4F5F7] rounded text-[#6B778C] transition cursor-pointer"
@@ -173,9 +176,20 @@ function Leaves() {
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           </button>
 
+          {(isManager || user?.role === "Admin") && (
+            <button
+              onClick={() => setShowPolicyModal(true)}
+              className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] hover:bg-[#F4F5F7] text-[#172B4D] text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
+              title="Configure Sandwich Leave Policy & Annual Carry-Forward Rollover"
+            >
+              <Sliders size={13} className="text-[#0052CC]" />
+              <span>Leave Policy & Rules</span>
+            </button>
+          )}
+
           <button
             onClick={() => setShowApplyModal(true)}
-            className="flex items-center gap-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white text-xs font-medium px-3.5 py-1.5 rounded transition cursor-pointer"
+            className="flex items-center gap-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white text-xs font-medium px-3.5 py-1.5 rounded transition cursor-pointer shadow-xs"
           >
             <PlusCircle size={13} />
             <span>Apply Leave</span>
@@ -332,6 +346,15 @@ function Leaves() {
         balances={balances}
         loading={actionLoading}
       />
+
+      {/* Leave Policy & Sandwich Rule Modal */}
+      {showPolicyModal && (
+        <LeavePolicyModal
+          isOpen={showPolicyModal}
+          onClose={() => setShowPolicyModal(false)}
+          onPolicyUpdated={fetchData}
+        />
+      )}
     </DashboardLayout>
   );
 }

@@ -12,6 +12,10 @@ require('./controllers/roster.controller')(app);
 require('./controllers/helpdesk.controller')(app);
 require('./controllers/recruitment.controller')(app);
 require('./controllers/geofence.controller')(app);
+require('./controllers/tax.controller')(app);
+require('./controllers/settlement.controller')(app);
+require('./controllers/complianceExport.controller')(app);
+require('./controllers/biometric.controller')(app);
 
 }
 

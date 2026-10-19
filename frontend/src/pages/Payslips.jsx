@@ -3,6 +3,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import { useAuth } from "../context/AuthContext";
 import { getPayslips, getSalaryStructure } from "../services/payroll";
 import PayslipModal from "../components/PayslipModal";
+import TaxDeclarationModal from "../components/TaxDeclarationModal";
 import {
   FileText,
   DollarSign,
@@ -12,6 +13,7 @@ import {
   ChevronRight,
   ShieldCheck,
   CheckCircle2,
+  FileCheck,
 } from "lucide-react";
 
 function Payslips() {
@@ -20,6 +22,7 @@ function Payslips() {
   const [salaryStructure, setSalaryStructure] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activePayslip, setActivePayslip] = useState(null);
+  const [showTaxModal, setShowTaxModal] = useState(false);
 
   const formatCurrency = (val = 0) => {
     return new Intl.NumberFormat("en-IN", {
@@ -71,7 +74,14 @@ function Payslips() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => setShowTaxModal(true)}
+              className="px-3 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+            >
+              <FileCheck size={13} />
+              <span>Form 12BB IT Declaration</span>
+            </button>
             <span className="text-xs text-[#006644] bg-[#E3FCEF] border border-[#ABF5D1] px-2.5 py-1 rounded font-semibold flex items-center gap-1">
               <CheckCircle2 size={13} />
               <span>Salary Credited On-Time</span>
@@ -229,6 +239,17 @@ function Payslips() {
         {/* Printable Staffify Payslip Modal */}
         {activePayslip && (
           <PayslipModal payslip={activePayslip} onClose={() => setActivePayslip(null)} />
+        )}
+
+        {/* Form 12BB IT Declaration & Tax Regime Simulator Modal */}
+        {showTaxModal && (
+          <TaxDeclarationModal
+            isOpen={showTaxModal}
+            onClose={() => setShowTaxModal(false)}
+            employeeId={user?.employeeId || user?.userId}
+            employeeName={user?.name || "Employee"}
+            annualCtc={salaryStructure?.annualCtc || 600000}
+          />
         )}
       </div>
     </DashboardLayout>

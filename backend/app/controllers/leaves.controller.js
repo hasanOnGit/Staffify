@@ -2,6 +2,23 @@ const express = require("express");
 const apiRoutes = express.Router();
 const Leaves = require("../models/leave.model");
 const LeaveBalance = require("../models/employeeLeaveBalance.model");
+const LeavePolicy = require("../models/leavePolicy.model");
+const Holiday = require("../models/holiday.model");
+
+// Ensure default leave policy exists
+async function getOrCreatePolicy() {
+  let policy = await LeavePolicy.findOne({ policyId: "DEFAULT_LEAVE_POLICY" });
+  if (!policy) {
+    policy = await LeavePolicy.create({
+      policyId: "DEFAULT_LEAVE_POLICY",
+      sandwichPolicyEnabled: true,
+      includeWeekends: true,
+      includeStatutoryHolidays: true,
+      applicableLeaveTypes: ["casual", "sick", "earned"],
+    });
+  }
+  return policy;
+}
 
 // Helper to get or initialize yearly balance
 const getOrCreateBalance = async (employeeId, year = new Date().getFullYear()) => {
@@ -28,14 +45,41 @@ const getOrCreateBalance = async (employeeId, year = new Date().getFullYear()) =
   return balance;
 };
 
-// Calculate business days between dates
-const calculateDays = (from, to, isHalfDay) => {
-  if (isHalfDay) return 0.5;
+// Calculate days between dates with optional Sandwich rule inspection
+const calculateDaysWithSandwich = async (from, to, isHalfDay, leaveType, policy) => {
+  if (isHalfDay) return { daysCount: 0.5, isSandwiched: false, interveningDays: 0 };
+
   const fromD = new Date(from);
+  fromD.setHours(0, 0, 0, 0);
   const toD = new Date(to);
+  toD.setHours(0, 0, 0, 0);
+
   const diffTime = Math.abs(toD - fromD);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-  return diffDays > 0 ? diffDays : 1;
+  const rawCalendarDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+  // If single day or sandwich rule disabled
+  if (!policy?.sandwichPolicyEnabled || !policy.applicableLeaveTypes?.includes(leaveType)) {
+    return { daysCount: rawCalendarDays > 0 ? rawCalendarDays : 1, isSandwiched: false, interveningDays: 0 };
+  }
+
+  // Check if dates span across weekend (Saturday & Sunday)
+  let weekendDays = 0;
+  let cur = new Date(fromD);
+  while (cur <= toD) {
+    const day = cur.getDay();
+    if (day === 0 || day === 6) {
+      weekendDays++;
+    }
+    cur.setDate(cur.getDate() + 1);
+  }
+
+  const isSandwiched = weekendDays > 0 && rawCalendarDays > weekendDays;
+
+  return {
+    daysCount: rawCalendarDays,
+    isSandwiched,
+    interveningDays: weekendDays,
+  };
 };
 
 module.exports = function (app) {
@@ -69,7 +113,14 @@ module.exports = function (app) {
         return res.status(400).json({ error: "From date cannot be after To date." });
       }
 
-      const daysCount = calculateDays(from, to, isHalfDay);
+      const policy = await getOrCreatePolicy();
+      const { daysCount, isSandwiched, interveningDays } = await calculateDaysWithSandwich(
+        from,
+        to,
+        isHalfDay,
+        leaveType,
+        policy
+      );
       const year = from.getFullYear();
 
       // Check balance
@@ -84,7 +135,9 @@ module.exports = function (app) {
         const available = allocation.totalAllocated - allocation.used;
         if (daysCount > available) {
           return res.status(400).json({
-            error: `Insufficient ${leaveType} leave balance. Available: ${available} days, Requested: ${daysCount} days.`,
+            error: `Insufficient ${leaveType} leave balance. Available: ${available} days, Requested: ${daysCount} days${
+              isSandwiched ? ` (including ${interveningDays} sandwiched weekend/holiday days)` : ""
+            }.`,
           });
         }
       }
@@ -293,5 +346,107 @@ module.exports = function (app) {
     }
   });
 
+  /* ==========================================================
+     LEAVE POLICY SETTINGS (SANDWICH RULE & ACCRUAL CONFIG)
+     ========================================================== */
+  apiRoutes.get("/policy", async (req, res) => {
+    try {
+      const policy = await getOrCreatePolicy();
+      return res.status(200).json({ success: true, data: policy });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  apiRoutes.put("/policy", async (req, res) => {
+    try {
+      const { sandwichPolicyEnabled, includeWeekends, includeStatutoryHolidays, applicableLeaveTypes, annualRolloverRules } = req.body;
+      const policy = await getOrCreatePolicy();
+
+      if (sandwichPolicyEnabled !== undefined) policy.sandwichPolicyEnabled = !!sandwichPolicyEnabled;
+      if (includeWeekends !== undefined) policy.includeWeekends = !!includeWeekends;
+      if (includeStatutoryHolidays !== undefined) policy.includeStatutoryHolidays = !!includeStatutoryHolidays;
+      if (applicableLeaveTypes) policy.applicableLeaveTypes = applicableLeaveTypes;
+      if (annualRolloverRules) policy.annualRolloverRules = { ...policy.annualRolloverRules, ...annualRolloverRules };
+
+      await policy.save();
+      return res.status(200).json({ success: true, message: "Leave policy updated successfully", data: policy });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  /* ==========================================================
+     ANNUAL LEAVE ROLLOVER & CARRY-FORWARD BATCH ENGINE
+     ========================================================== */
+  apiRoutes.post("/rollover", async (req, res) => {
+    try {
+      const { executedBy = "HR Admin", targetYear } = req.body;
+      const nextYear = Number(targetYear) || new Date().getFullYear() + 1;
+      const prevYear = nextYear - 1;
+
+      const policy = await getOrCreatePolicy();
+      const prevBalances = await LeaveBalance.find({ year: prevYear });
+
+      let rolloverCount = 0;
+      for (const pb of prevBalances) {
+        const elAlloc = pb.leaveAllocation?.earned || { totalAllocated: 15, used: 0 };
+        const elRemaining = Math.max(0, elAlloc.totalAllocated - elAlloc.used);
+
+        // Max carry forward according to policy
+        const maxElCf = policy.annualRolloverRules?.earnedLeave?.maxCarryForward || 30;
+        const carriedOverEl = Math.min(maxElCf, elRemaining);
+        const annualCreditEl = policy.annualRolloverRules?.earnedLeave?.annualCredit || 15;
+
+        // Sick leave carry forward
+        const slAlloc = pb.leaveAllocation?.sick || { totalAllocated: 10, used: 0 };
+        const slRemaining = Math.max(0, slAlloc.totalAllocated - slAlloc.used);
+        const maxSlCf = policy.annualRolloverRules?.sickLeave?.maxCarryForward || 10;
+        const carriedOverSl = Math.min(maxSlCf, slRemaining);
+        const annualCreditSl = policy.annualRolloverRules?.sickLeave?.annualCredit || 10;
+
+        // Casual leave lapses (standard Indian law) - reset to fresh credit
+        const annualCreditCl = policy.annualRolloverRules?.casualLeave?.annualCredit || 12;
+
+        let nextBal = await LeaveBalance.findOne({ employeeId: pb.employeeId, year: nextYear });
+        if (!nextBal) {
+          nextBal = new LeaveBalance({
+            employeeId: pb.employeeId,
+            year: nextYear,
+          });
+        }
+
+        nextBal.leaveAllocation = {
+          earned: { totalAllocated: carriedOverEl + annualCreditEl, used: 0 },
+          casual: { totalAllocated: annualCreditCl, used: 0 },
+          sick: { totalAllocated: carriedOverSl + annualCreditSl, used: 0 },
+          paid: { totalAllocated: 12, used: 0 },
+          halfDay: { totalAllocated: 6, used: 0 },
+          maternity: { totalAllocated: 180, used: 0 },
+          paternity: { totalAllocated: 15, used: 0 },
+          lop: { totalAllocated: 999, used: 0 },
+        };
+        nextBal.lastUpdated = new Date();
+        await nextBal.save();
+        rolloverCount++;
+      }
+
+      policy.lastRolloverExecutedAt = new Date();
+      policy.lastRolloverExecutedBy = executedBy;
+      await policy.save();
+
+      return res.status(200).json({
+        success: true,
+        message: `Annual leave rollover executed successfully for ${rolloverCount} employees into FY ${nextYear}`,
+        rolloverCount,
+        targetYear: nextYear,
+      });
+    } catch (err) {
+      console.error("Rollover error:", err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
   app.use("/", apiRoutes);
+  app.use("/api/leaves", apiRoutes);
 };

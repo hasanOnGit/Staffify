@@ -206,11 +206,21 @@ function ApplyLeaveModal({
 
           {/* Duration Banner */}
           {duration > 0 && (
-            <div className="flex items-center justify-between px-3 py-1.5 bg-[#F4F5F7] border border-[#DFE1E6] rounded text-xs font-medium">
-              <span className="text-[#6B778C]">Calculated Duration:</span>
-              <span className="text-[#0052CC] font-bold bg-[#DEEBFF] px-2 py-0.5 rounded border border-[#B3D4FF]">
-                {duration} {duration === 1 ? "Day" : "Days"}
-              </span>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-[#F4F5F7] border border-[#DFE1E6] rounded text-xs font-medium">
+                <span className="text-[#6B778C]">Calculated Duration:</span>
+                <span className="text-[#0052CC] font-bold bg-[#DEEBFF] px-2 py-0.5 rounded border border-[#B3D4FF]">
+                  {duration} {duration === 1 ? "Day" : "Days"}
+                </span>
+              </div>
+              {duration > 2 && !isHalfDay && (
+                <div className="text-[11px] text-[#42526E] bg-[#DEEBFF]/30 border border-[#B3D4FF] p-2 rounded flex items-center gap-1.5">
+                  <AlertCircle size={13} className="text-[#0052CC] shrink-0" />
+                  <span>
+                    Company <strong>Sandwich Policy</strong> applies to multi-day requests spanning non-working days.
+                  </span>
+                </div>
+              )}
             </div>
           )}
 

@@ -57,3 +57,28 @@ export const getTeamOnLeave = async () => {
   const res = await api.get("/team-on-leave");
   return res.data.data;
 };
+
+/**
+ * Fetch leave policy & sandwich rule configuration
+ */
+export const getLeavePolicy = async () => {
+  const res = await api.get("/api/leaves/policy");
+  return res.data;
+};
+
+/**
+ * Update leave policy & sandwich rule configuration
+ */
+export const updateLeavePolicy = async (policyData) => {
+  const res = await api.put("/api/leaves/policy", policyData);
+  return res.data;
+};
+
+/**
+ * Execute annual leave rollover batch process
+ */
+export const executeLeaveRollover = async (rolloverData) => {
+  const res = await api.post("/api/leaves/rollover", rolloverData);
+  return res.data;
+};
+

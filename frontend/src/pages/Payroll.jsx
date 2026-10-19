@@ -10,6 +10,17 @@ import {
 } from "../services/payroll";
 import { getEmployees } from "../services/employee";
 import PayslipModal from "../components/PayslipModal";
+import SettlementModal from "../components/SettlementModal";
+import TaxDeclarationModal from "../components/TaxDeclarationModal";
+import {
+  getComplianceSummary,
+  downloadEpfoEcr,
+  downloadEsicReturn,
+  downloadBankDisbursement,
+} from "../services/compliance";
+import { getSettlements, initiateSettlement } from "../services/settlement";
+import { getAllTaxDeclarations, verifyTaxDeclaration } from "../services/tax";
+import toast from "react-hot-toast";
 import {
   DollarSign,
   Play,
@@ -26,6 +37,12 @@ import {
   X,
   Edit2,
   Search,
+  Download,
+  FileSpreadsheet,
+  UserMinus,
+  FileCheck,
+  ExternalLink,
+  Plus,
 } from "lucide-react";
 
 const MONTHS = [
@@ -48,11 +65,14 @@ function Payroll() {
 
   const [selectedMonth, setSelectedMonth] = useState(10); // Default October
   const [selectedYear, setSelectedYear] = useState(2026);
-  const [activeTab, setActiveTab] = useState("payslips"); // "payslips" or "salary_structures"
+  const [activeTab, setActiveTab] = useState("payslips"); // "payslips", "salary_structures", "compliance", "settlements", "tax_declarations"
 
   const [payslips, setPayslips] = useState([]);
   const [summary, setSummary] = useState(null);
   const [employees, setEmployees] = useState([]);
+  const [complianceSummary, setComplianceSummary] = useState(null);
+  const [settlements, setSettlements] = useState([]);
+  const [taxDeclarations, setTaxDeclarations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [running, setRunning] = useState(false);
   const [message, setMessage] = useState(null);
@@ -60,6 +80,16 @@ function Payroll() {
   // Modal states
   const [activePayslip, setActivePayslip] = useState(null);
   const [editingEmployee, setEditingEmployee] = useState(null);
+  const [activeSettlement, setActiveSettlement] = useState(null);
+  const [activeTaxEmp, setActiveTaxEmp] = useState(null);
+  const [showInitiateModal, setShowInitiateModal] = useState(false);
+  const [initEmpId, setInitEmpId] = useState("");
+  const [initResignDate, setInitResignDate] = useState(new Date().toISOString().split("T")[0]);
+  const [initLwdDate, setInitLwdDate] = useState(
+    new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+  );
+  const [initNoticeDays, setInitNoticeDays] = useState(30);
+
   const [editCtc, setEditCtc] = useState(600000);
   const [editRegime, setEditRegime] = useState("New");
 
@@ -77,19 +107,63 @@ function Payroll() {
   const loadPayrollData = async () => {
     try {
       setLoading(true);
-      const [payslipsRes, summaryRes, empsRes] = await Promise.all([
+      const [payslipsRes, summaryRes, empsRes, compRes, settleRes, taxRes] = await Promise.all([
         getPayslips({ month: selectedMonth, year: selectedYear }).catch(() => ({ data: [] })),
         getPayrollSummary(selectedMonth, selectedYear).catch(() => ({ data: null })),
         getEmployees().catch(() => []),
+        getComplianceSummary(selectedMonth, selectedYear).catch(() => ({ data: null })),
+        getSettlements().catch(() => ({ data: [] })),
+        getAllTaxDeclarations("2024-2025").catch(() => ({ data: [] })),
       ]);
 
       setPayslips(payslipsRes.data || []);
       setSummary(summaryRes.data || null);
       setEmployees(empsRes || []);
+      setComplianceSummary(compRes?.data || null);
+      setSettlements(settleRes?.data || []);
+      setTaxDeclarations(taxRes?.data || []);
     } catch (err) {
       console.error("Error loading payroll:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleInitiateSettlement = async (e) => {
+    e.preventDefault();
+    if (!initEmpId) {
+      toast.error("Please select an employee");
+      return;
+    }
+    try {
+      await initiateSettlement({
+        employeeId: initEmpId,
+        resignationDate: initResignDate,
+        lastWorkingDate: initLwdDate,
+        noticePeriodDays: Number(initNoticeDays),
+        servedNoticeDays: Number(initNoticeDays),
+        initiatedBy: user?.name || "HR Admin",
+      });
+      toast.success("Full & Final separation settlement initiated successfully");
+      setShowInitiateModal(false);
+      await loadPayrollData();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to initiate settlement");
+    }
+  };
+
+  const handleVerifyDeclaration = async (decId, nextStatus) => {
+    try {
+      await verifyTaxDeclaration({
+        declarationId: decId,
+        status: nextStatus,
+        verifiedBy: user?.name || "HR Admin",
+        adminRemarks: `Approved by HR Admin on ${new Date().toLocaleDateString("en-IN")}`,
+      });
+      toast.success(`Form 12BB tax declaration marked as ${nextStatus}`);
+      await loadPayrollData();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Verification failed");
     }
   };
 
@@ -290,7 +364,7 @@ function Payroll() {
         {/* ========================================================
             2. JIRA TABS BAR
             ======================================================== */}
-        <div className="flex items-center gap-2 border-b border-[#DFE1E6] pb-2">
+        <div className="flex items-center gap-2 border-b border-[#DFE1E6] pb-2 flex-wrap">
           <button
             onClick={() => setActiveTab("payslips")}
             className={`px-3 py-1.5 rounded text-xs font-medium transition cursor-pointer flex items-center gap-1.5 ${
@@ -300,7 +374,7 @@ function Payroll() {
             }`}
           >
             <FileText size={14} />
-            <span>Monthly Payslips Roster ({payslips.length})</span>
+            <span>Monthly Payslips ({payslips.length})</span>
           </button>
 
           <button
@@ -312,7 +386,43 @@ function Payroll() {
             }`}
           >
             <Percent size={14} />
-            <span>Salary Structures & CTC Directory</span>
+            <span>Salary Structures & CTC</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("compliance")}
+            className={`px-3 py-1.5 rounded text-xs font-medium transition cursor-pointer flex items-center gap-1.5 ${
+              activeTab === "compliance"
+                ? "bg-[#EBECF0] text-[#172B4D] font-bold"
+                : "text-[#42526E] hover:bg-[#EBECF0]"
+            }`}
+          >
+            <FileSpreadsheet size={14} />
+            <span>Statutory Exports (EPFO ECR / ESIC / Bank)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("settlements")}
+            className={`px-3 py-1.5 rounded text-xs font-medium transition cursor-pointer flex items-center gap-1.5 ${
+              activeTab === "settlements"
+                ? "bg-[#EBECF0] text-[#172B4D] font-bold"
+                : "text-[#42526E] hover:bg-[#EBECF0]"
+            }`}
+          >
+            <UserMinus size={14} />
+            <span>Exit & F&F Settlements ({settlements.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("tax_declarations")}
+            className={`px-3 py-1.5 rounded text-xs font-medium transition cursor-pointer flex items-center gap-1.5 ${
+              activeTab === "tax_declarations"
+                ? "bg-[#EBECF0] text-[#172B4D] font-bold"
+                : "text-[#42526E] hover:bg-[#EBECF0]"
+            }`}
+          >
+            <FileCheck size={14} />
+            <span>IT Declarations Form 12BB ({taxDeclarations.length})</span>
           </button>
         </div>
 
@@ -532,6 +642,334 @@ function Payroll() {
           </div>
         )}
 
+        {/* ========================================================
+            TAB 3: STATUTORY COMPLIANCE EXPORTS (EPFO ECR, ESIC, BANK)
+            ======================================================== */}
+        {activeTab === "compliance" && (
+          <div className="bg-white border border-[#DFE1E6] rounded-md p-4 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="font-bold text-[#172B4D] text-xs uppercase tracking-wider">
+                  Government Statutory Portal Exports
+                </h3>
+                <p className="text-[11px] text-[#6B778C]">
+                  Official EPFO Unified Portal ECR (.txt), ESIC Monthly Return (.csv), and Corporate Bank NEFT Disbursement (.csv) files for {MONTHS.find((m) => m.val === selectedMonth)?.name} {selectedYear}
+                </p>
+              </div>
+
+              {/* 1-Click Export Buttons */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={() => downloadEpfoEcr(selectedMonth, selectedYear)}
+                  className="px-3 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                >
+                  <Download size={13} />
+                  <span>EPFO ECR (.txt)</span>
+                </button>
+
+                <button
+                  onClick={() => downloadEsicReturn(selectedMonth, selectedYear)}
+                  className="px-3 py-1.5 bg-[#00875A] hover:bg-[#006644] text-white rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                >
+                  <Download size={13} />
+                  <span>ESIC Return (.csv)</span>
+                </button>
+
+                <button
+                  onClick={() => downloadBankDisbursement(selectedMonth, selectedYear)}
+                  className="px-3 py-1.5 bg-[#403294] hover:bg-[#35297A] text-white rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                >
+                  <FileSpreadsheet size={13} />
+                  <span>Bank NEFT Batch (.csv)</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Statutory Numbers Breakdown */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+              <div className="p-3 bg-[#FAFBFC] border border-[#DFE1E6] rounded">
+                <span className="text-[10px] uppercase font-bold text-[#6B778C] block">EPF Employee Share (12%)</span>
+                <span className="text-base font-bold text-[#0052CC]">
+                  {formatCurrency(complianceSummary?.totalEpfEE || 0)}
+                </span>
+                <p className="text-[10px] text-[#6B778C] mt-0.5">Deducted from staff wages</p>
+              </div>
+
+              <div className="p-3 bg-[#FAFBFC] border border-[#DFE1E6] rounded">
+                <span className="text-[10px] uppercase font-bold text-[#6B778C] block">Employer EPS Share (8.33%)</span>
+                <span className="text-base font-bold text-[#00875A]">
+                  {formatCurrency(complianceSummary?.totalEps || 0)}
+                </span>
+                <p className="text-[10px] text-[#6B778C] mt-0.5">Capped at ₹1,250 / emp</p>
+              </div>
+
+              <div className="p-3 bg-[#FAFBFC] border border-[#DFE1E6] rounded">
+                <span className="text-[10px] uppercase font-bold text-[#6B778C] block">Employer EPF Share (3.67%)</span>
+                <span className="text-base font-bold text-[#FF991F]">
+                  {formatCurrency(complianceSummary?.totalEpfER || 0)}
+                </span>
+                <p className="text-[10px] text-[#6B778C] mt-0.5">Direct company contribution</p>
+              </div>
+
+              <div className="p-3 bg-[#FAFBFC] border border-[#DFE1E6] rounded">
+                <span className="text-[10px] uppercase font-bold text-[#6B778C] block">Total EPFO Remittance</span>
+                <span className="text-base font-bold text-[#403294]">
+                  {formatCurrency(complianceSummary?.totalEpfOverall || 0)}
+                </span>
+                <p className="text-[10px] text-[#6B778C] mt-0.5">Account 1, 2, 10 & 21 Total</p>
+              </div>
+            </div>
+
+            {/* Preview Table */}
+            <div className="overflow-x-auto border border-[#DFE1E6] rounded">
+              <table className="min-w-full text-xs divide-y divide-[#DFE1E6]">
+                <thead className="bg-[#F4F5F7] text-[#6B778C] font-semibold uppercase text-[10px]">
+                  <tr>
+                    <th className="px-3 py-2 text-left">Employee Name</th>
+                    <th className="px-3 py-2 text-left">Employee ID</th>
+                    <th className="px-3 py-2 text-right">Gross Wages</th>
+                    <th className="px-3 py-2 text-right">EPF Wages</th>
+                    <th className="px-3 py-2 text-right">EE Share (12%)</th>
+                    <th className="px-3 py-2 text-right">EPS Share (8.33%)</th>
+                    <th className="px-3 py-2 text-right">ER Share (3.67%)</th>
+                    <th className="px-3 py-2 text-center">NCP / LOP Days</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#DFE1E6] bg-white">
+                  {payslips.map((p) => {
+                    const gross = p.earnings?.grossEarnings || 0;
+                    const basic = p.earnings?.basic || Math.round(gross * 0.45);
+                    const epfWage = Math.min(15000, basic);
+                    const eeShare = p.deductions?.epf || Math.round(epfWage * 0.12);
+                    const epsShare = Math.min(1250, Math.round(epfWage * 0.0833));
+                    const erShare = Math.max(0, eeShare - epsShare);
+
+                    return (
+                      <tr key={p._id || p.payslipId} className="hover:bg-[#FAFBFC]">
+                        <td className="px-3 py-2.5 font-semibold text-[#172B4D]">{p.employeeName}</td>
+                        <td className="px-3 py-2.5 text-[#6B778C] font-mono">{p.employeeId}</td>
+                        <td className="px-3 py-2.5 text-right font-medium">{formatCurrency(gross)}</td>
+                        <td className="px-3 py-2.5 text-right font-medium text-[#0052CC]">{formatCurrency(epfWage)}</td>
+                        <td className="px-3 py-2.5 text-right font-medium text-[#172B4D]">{formatCurrency(eeShare)}</td>
+                        <td className="px-3 py-2.5 text-right font-medium text-[#00875A]">{formatCurrency(epsShare)}</td>
+                        <td className="px-3 py-2.5 text-right font-medium text-[#FF991F]">{formatCurrency(erShare)}</td>
+                        <td className="px-3 py-2.5 text-center text-[#6B778C]">
+                          {p.attendanceSummary?.lopDays || 0}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB 4: EXIT & FULL AND FINAL (F&F) SETTLEMENTS
+            ======================================================== */}
+        {activeTab === "settlements" && (
+          <div className="bg-white border border-[#DFE1E6] rounded-md p-4 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="font-bold text-[#172B4D] text-xs uppercase tracking-wider">
+                  Full & Final (F&F) Separation Settlements
+                </h3>
+                <p className="text-[11px] text-[#6B778C]">
+                  Automated gratuity, leave encashment, notice period recovery, and departmental NOC clearance
+                </p>
+              </div>
+
+              <button
+                onClick={() => setShowInitiateModal(true)}
+                className="px-3 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer"
+              >
+                <Plus size={13} />
+                <span>Initiate Separation</span>
+              </button>
+            </div>
+
+            {settlements.length === 0 ? (
+              <div className="text-center py-10 bg-[#FAFBFC] rounded border border-dashed border-[#DFE1E6]">
+                <UserMinus size={24} className="text-[#6B778C] mx-auto mb-2" />
+                <p className="text-xs font-semibold text-[#172B4D]">No Active Separation Settlements</p>
+                <p className="text-[11px] text-[#6B778C] mt-1 max-w-sm mx-auto">
+                  When an employee resigns, click "Initiate Separation" to compute leave encashment and start NOC clearance.
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto border border-[#DFE1E6] rounded">
+                <table className="min-w-full text-xs divide-y divide-[#DFE1E6]">
+                  <thead className="bg-[#F4F5F7] text-[#6B778C] font-semibold uppercase text-[10px]">
+                    <tr>
+                      <th className="px-3 py-2 text-left">Employee</th>
+                      <th className="px-3 py-2 text-left">Resignation Date</th>
+                      <th className="px-3 py-2 text-left">Last Working Day</th>
+                      <th className="px-3 py-2 text-right">Leave Encashment</th>
+                      <th className="px-3 py-2 text-right">Gratuity</th>
+                      <th className="px-3 py-2 text-right">Net Payable</th>
+                      <th className="px-3 py-2 text-center">Status</th>
+                      <th className="px-3 py-2 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#DFE1E6] bg-white">
+                    {settlements.map((s) => (
+                      <tr key={s._id || s.settlementId} className="hover:bg-[#FAFBFC]">
+                        <td className="px-3 py-2.5">
+                          <p className="font-semibold text-[#172B4D]">{s.employeeName}</p>
+                          <p className="text-[10px] text-[#6B778C]">
+                            {s.employeeId} • {s.designation}
+                          </p>
+                        </td>
+                        <td className="px-3 py-2.5 text-[#42526E]">
+                          {new Date(s.resignationDate).toLocaleDateString("en-IN")}
+                        </td>
+                        <td className="px-3 py-2.5 text-[#42526E]">
+                          {new Date(s.lastWorkingDate).toLocaleDateString("en-IN")}
+                        </td>
+                        <td className="px-3 py-2.5 text-right font-medium text-[#00875A]">
+                          {formatCurrency(s.earnings?.leaveEncashmentAmount)}
+                        </td>
+                        <td className="px-3 py-2.5 text-right font-medium text-[#172B4D]">
+                          {formatCurrency(s.earnings?.gratuityAmount)}
+                        </td>
+                        <td className="px-3 py-2.5 text-right font-bold text-[#006644] text-sm">
+                          {formatCurrency(s.netPayable)}
+                        </td>
+                        <td className="px-3 py-2.5 text-center">
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                              s.settlementStatus === "Paid"
+                                ? "bg-[#E3FCEF] text-[#006644] border-[#ABF5D1]"
+                                : s.settlementStatus === "Settled"
+                                ? "bg-[#DEEBFF] text-[#0747A6] border-[#B3D4FF]"
+                                : "bg-[#FFF0B3] text-[#172B4D] border-[#FFE380]"
+                            }`}
+                          >
+                            {s.settlementStatus.replace(/_/g, " ")}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2.5 text-right">
+                          <button
+                            onClick={() => setActiveSettlement(s)}
+                            className="px-2.5 py-1 bg-[#F4F5F7] hover:bg-[#DEEBFF] text-[#0052CC] border border-[#DFE1E6] rounded text-xs font-semibold cursor-pointer transition flex items-center gap-1 inline-flex"
+                          >
+                            <ExternalLink size={12} />
+                            <span>View Dossier</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB 5: IT DECLARATIONS (FORM 12BB) REVIEW
+            ======================================================== */}
+        {activeTab === "tax_declarations" && (
+          <div className="bg-white border border-[#DFE1E6] rounded-md p-4 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="font-bold text-[#172B4D] text-xs uppercase tracking-wider">
+                  Employee Form 12BB IT Declarations (FY 2024-2025)
+                </h3>
+                <p className="text-[11px] text-[#6B778C]">
+                  Audit investment proofs, Section 80C, 80D, HRA claims, and verify employee tax regimes
+                </p>
+              </div>
+            </div>
+
+            {taxDeclarations.length === 0 ? (
+              <div className="text-center py-10 bg-[#FAFBFC] rounded border border-dashed border-[#DFE1E6]">
+                <FileCheck size={24} className="text-[#6B778C] mx-auto mb-2" />
+                <p className="text-xs font-semibold text-[#172B4D]">No Declarations Submitted Yet</p>
+                <p className="text-[11px] text-[#6B778C] mt-1 max-w-sm mx-auto">
+                  Employees can submit Form 12BB declarations directly from their Payslips & Salary self-service portal.
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto border border-[#DFE1E6] rounded">
+                <table className="min-w-full text-xs divide-y divide-[#DFE1E6]">
+                  <thead className="bg-[#F4F5F7] text-[#6B778C] font-semibold uppercase text-[10px]">
+                    <tr>
+                      <th className="px-3 py-2 text-left">Employee</th>
+                      <th className="px-3 py-2 text-center">Tax Regime</th>
+                      <th className="px-3 py-2 text-right">Declared 80C</th>
+                      <th className="px-3 py-2 text-right">Declared 80D</th>
+                      <th className="px-3 py-2 text-right">Annual Rent</th>
+                      <th className="px-3 py-2 text-right">Est. Tax Savings</th>
+                      <th className="px-3 py-2 text-center">Verification</th>
+                      <th className="px-3 py-2 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#DFE1E6] bg-white">
+                    {taxDeclarations.map((d) => (
+                      <tr key={d._id || d.declarationId} className="hover:bg-[#FAFBFC]">
+                        <td className="px-3 py-2.5 font-semibold text-[#172B4D]">
+                          {d.employeeName}
+                          <span className="text-[10px] text-[#6B778C] block font-normal">{d.employeeId}</span>
+                        </td>
+                        <td className="px-3 py-2.5 text-center">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#EAE6FF] text-[#403294] border border-[#C0B6F2]">
+                            {d.regime} Regime
+                          </span>
+                        </td>
+                        <td className="px-3 py-2.5 text-right font-medium text-[#0052CC]">
+                          {formatCurrency(d.section80C?.total80C || 0)}
+                        </td>
+                        <td className="px-3 py-2.5 text-right font-medium text-[#00875A]">
+                          {formatCurrency(d.section80D?.total80D || 0)}
+                        </td>
+                        <td className="px-3 py-2.5 text-right font-medium text-[#172B4D]">
+                          {formatCurrency(d.hraDetails?.annualRent || 0)}
+                        </td>
+                        <td className="px-3 py-2.5 text-right font-bold text-[#006644]">
+                          {formatCurrency(d.taxEstimate?.taxSavings || 0)}
+                        </td>
+                        <td className="px-3 py-2.5 text-center">
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                              d.status === "Verified"
+                                ? "bg-[#E3FCEF] text-[#006644] border-[#ABF5D1]"
+                                : d.status === "Submitted"
+                                ? "bg-[#DEEBFF] text-[#0747A6] border-[#B3D4FF]"
+                                : "bg-[#F4F5F7] text-[#172B4D] border-[#DFE1E6]"
+                            }`}
+                          >
+                            {d.status}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => setActiveTaxEmp(d)}
+                              className="px-2 py-1 bg-white hover:bg-[#EBECF0] border border-[#DFE1E6] rounded text-xs font-semibold cursor-pointer"
+                            >
+                              Inspect
+                            </button>
+                            {d.status !== "Verified" && (
+                              <button
+                                onClick={() => handleVerifyDeclaration(d.declarationId, "Verified")}
+                                className="px-2 py-1 bg-[#00875A] hover:bg-[#006644] text-white rounded text-xs font-semibold cursor-pointer"
+                              >
+                                Approve
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Modal: View Staffify Printable Payslip */}
         {activePayslip && (
           <PayslipModal payslip={activePayslip} onClose={() => setActivePayslip(null)} />
@@ -622,6 +1060,115 @@ function Payroll() {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal: Settlement Dossier */}
+        {activeSettlement && (
+          <SettlementModal
+            isOpen={!!activeSettlement}
+            onClose={() => setActiveSettlement(null)}
+            settlement={activeSettlement}
+            onUpdated={loadPayrollData}
+          />
+        )}
+
+        {/* Modal: Tax Declaration Modal */}
+        {activeTaxEmp && (
+          <TaxDeclarationModal
+            isOpen={!!activeTaxEmp}
+            onClose={() => setActiveTaxEmp(null)}
+            employeeId={activeTaxEmp.employeeId}
+            employeeName={activeTaxEmp.employeeName}
+            annualCtc={activeTaxEmp.taxEstimate?.grossAnnualIncome || 600000}
+          />
+        )}
+
+        {/* Modal: Initiate Separation Dialog */}
+        {showInitiateModal && (
+          <div className="fixed inset-0 bg-[#091E42]/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl border border-[#DFE1E6] w-full max-w-md overflow-hidden animate-in fade-in duration-150">
+              <div className="px-5 py-3.5 border-b border-[#DFE1E6] flex items-center justify-between bg-[#FAFBFC]">
+                <h3 className="font-bold text-[#172B4D] text-sm">Initiate Employee Separation</h3>
+                <button
+                  onClick={() => setShowInitiateModal(false)}
+                  className="p-1 rounded text-[#6B778C] hover:bg-[#EBECF0]"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <form onSubmit={handleInitiateSettlement} className="p-4 space-y-3 text-xs">
+                <div>
+                  <label className="font-semibold text-[#172B4D] block mb-1">Select Resigning Employee</label>
+                  <select
+                    value={initEmpId}
+                    onChange={(e) => setInitEmpId(e.target.value)}
+                    required
+                    className="w-full border border-[#DFE1E6] rounded p-2 text-xs outline-none focus:border-[#0052CC]"
+                  >
+                    <option value="">-- Choose Employee --</option>
+                    {employees.map((emp) => (
+                      <option key={emp.employeeId} value={emp.employeeId}>
+                        {emp.name} ({emp.employeeId}) • {emp.designation}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="font-semibold text-[#172B4D] block mb-1">Resignation Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={initResignDate}
+                      onChange={(e) => setInitResignDate(e.target.value)}
+                      className="w-full border border-[#DFE1E6] rounded p-2 text-xs outline-none focus:border-[#0052CC]"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-semibold text-[#172B4D] block mb-1">Last Working Day</label>
+                    <input
+                      type="date"
+                      required
+                      value={initLwdDate}
+                      onChange={(e) => setInitLwdDate(e.target.value)}
+                      className="w-full border border-[#DFE1E6] rounded p-2 text-xs outline-none focus:border-[#0052CC]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="font-semibold text-[#172B4D] block mb-1">Notice Period (Days)</label>
+                  <input
+                    type="number"
+                    value={initNoticeDays}
+                    onChange={(e) => setInitNoticeDays(Number(e.target.value))}
+                    className="w-full border border-[#DFE1E6] rounded p-2 text-xs outline-none focus:border-[#0052CC]"
+                  />
+                  <p className="text-[10px] text-[#6B778C] mt-1">
+                    System will auto-calculate Gratuity, Leave Encashment, and any Notice Shortfall deduction.
+                  </p>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2 border-t border-[#DFE1E6]">
+                  <button
+                    type="button"
+                    onClick={() => setShowInitiateModal(false)}
+                    className="px-3 py-1.5 border border-[#DFE1E6] rounded text-xs text-[#172B4D] hover:bg-[#EBECF0]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-3.5 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold cursor-pointer shadow-xs"
+                  >
+                    Initiate F&F
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
