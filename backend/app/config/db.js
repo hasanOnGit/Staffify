@@ -1,4 +1,28 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const User = require("../models/user.model");
+
+const demoUsers = [
+  { email: "admin@staffify.com", password: "Admin@123", role: "Admin", name: "Staffify Admin" },
+  { email: "manager@staffify.com", password: "Manager@123", role: "Manager", name: "Staffify Manager" },
+  { email: "employee@staffify.com", password: "Employee@123", role: "Employee", name: "Staffify Employee" },
+];
+
+const ensureDemoUsers = async () => {
+  for (const demoUser of demoUsers) {
+    const existingUser = await User.findOne({ email: demoUser.email });
+    if (!existingUser) {
+      await User.create({
+        userId: `DEMO-${demoUser.role.toUpperCase()}`,
+        name: demoUser.name,
+        email: demoUser.email,
+        password: await bcrypt.hash(demoUser.password, 10),
+        role: demoUser.role,
+        isActive: true,
+      });
+    }
+  }
+};
 
 module.exports = (app) => {
   if (mongoose.connection.readyState >= 1) {
@@ -11,8 +35,10 @@ module.exports = (app) => {
 
   mongoose
     .connect(mongoUri)
-    .then(() => {
+    .then(async () => {
       console.log("MongoDB connection successful");
+      await ensureDemoUsers();
+      console.log("Demo users verified");
     })
     .catch((err) => {
       console.error("Error connecting to MongoDB:", err);
