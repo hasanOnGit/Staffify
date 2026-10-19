@@ -20,6 +20,7 @@ import {
   Receipt,
   BarChart3,
   UserMinus,
+  Webhook,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
@@ -143,6 +144,11 @@ function Sidebar() {
               <UserMinus size={15} />
               <span>Exit Operations</span>
             </NavLink>
+
+            <NavLink to="/webhook-bridge" className={getNavLinkClass}>
+              <Webhook size={15} />
+              <span>Webhook Bridge</span>
+            </NavLink>
           </div>
         )}
 
@@ -166,6 +172,11 @@ function Sidebar() {
             <NavLink to="/analytics" className={getNavLinkClass}>
               <BarChart3 size={15} />
               <span>Executive Analytics</span>
+            </NavLink>
+
+            <NavLink to="/webhook-bridge" className={getNavLinkClass}>
+              <Webhook size={15} />
+              <span>Webhook Bridge</span>
             </NavLink>
 
             <NavLink to="/payroll" className={getNavLinkClass}>

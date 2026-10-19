@@ -19,6 +19,7 @@ import Expenses from "./pages/Expenses";
 import Analytics from "./pages/Analytics";
 import Timesheets from "./pages/Timesheets";
 import Offboarding from "./pages/Offboarding";
+import WebhookBridge from "./pages/WebhookBridge";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -211,6 +212,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
               <Offboarding />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/webhook-bridge"
+          element={
+            <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
+              <WebhookBridge />
             </ProtectedRoute>
           }
         />
