@@ -40,3 +40,11 @@ export const deleteEmployee = async (employeeId) => {
   });
   return res.data;
 };
+
+// GET Org Tree
+export const getOrgTree = async () => {
+  const res = await api.get("/api/employees/org-tree");
+  return res.data;
+};
+
+

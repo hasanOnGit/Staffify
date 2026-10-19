@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { getPayslips, getSalaryStructure } from "../services/payroll";
 import PayslipModal from "../components/PayslipModal";
 import TaxDeclarationModal from "../components/TaxDeclarationModal";
+import LoanModal from "../components/LoanModal";
 import {
   FileText,
   DollarSign,
@@ -14,6 +15,7 @@ import {
   ShieldCheck,
   CheckCircle2,
   FileCheck,
+  CreditCard,
 } from "lucide-react";
 
 function Payslips() {
@@ -23,6 +25,7 @@ function Payslips() {
   const [loading, setLoading] = useState(true);
   const [activePayslip, setActivePayslip] = useState(null);
   const [showTaxModal, setShowTaxModal] = useState(false);
+  const [showLoanModal, setShowLoanModal] = useState(false);
 
   const formatCurrency = (val = 0) => {
     return new Intl.NumberFormat("en-IN", {
@@ -75,6 +78,13 @@ function Payslips() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => setShowLoanModal(true)}
+              className="px-3 py-1.5 bg-white hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] rounded text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+            >
+              <CreditCard size={13} className="text-[#0052CC]" />
+              <span>Salary Advance & Loans</span>
+            </button>
             <button
               onClick={() => setShowTaxModal(true)}
               className="px-3 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
@@ -249,6 +259,15 @@ function Payslips() {
             employeeId={user?.employeeId || user?.userId}
             employeeName={user?.name || "Employee"}
             annualCtc={salaryStructure?.annualCtc || 600000}
+          />
+        )}
+
+        {/* Salary Advance & Loan Modal */}
+        {showLoanModal && (
+          <LoanModal
+            isOpen={showLoanModal}
+            onClose={() => setShowLoanModal(false)}
+            initialEmployeeId={user?.employeeId || user?.userId}
           />
         )}
       </div>

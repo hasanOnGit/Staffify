@@ -7,7 +7,8 @@ import {
   updateEmployee,
   deleteEmployee,
 } from "../services/employee";
-import { Users, Search, PlusCircle, Filter, RefreshCw, X, Shield, Landmark, User, Briefcase } from "lucide-react";
+import DocumentGeneratorModal from "../components/DocumentGeneratorModal";
+import { Users, Search, PlusCircle, Filter, RefreshCw, X, Shield, Landmark, User, Briefcase, FileText } from "lucide-react";
 import toast from "react-hot-toast";
 
 function Employees() {
@@ -19,6 +20,7 @@ function Employees() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
+  const [showDocModal, setShowDocModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formTab, setFormTab] = useState("personal");
 
@@ -211,13 +213,21 @@ function Employees() {
           </button>
 
           <button
+            onClick={() => setShowDocModal(true)}
+            className="flex items-center gap-1.5 bg-white hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] text-xs font-semibold px-3.5 py-1.5 rounded transition cursor-pointer shadow-xs"
+          >
+            <FileText size={14} className="text-[#0052CC]" />
+            <span>Generate HR Letter</span>
+          </button>
+
+          <button
             onClick={() => {
               setFormData(initialForm);
               setEditingId(null);
               setFormTab("personal");
               setShowFormModal(true);
             }}
-            className="flex items-center gap-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white text-xs font-medium px-3.5 py-1.5 rounded transition cursor-pointer"
+            className="flex items-center gap-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white text-xs font-medium px-3.5 py-1.5 rounded transition cursor-pointer shadow-xs"
           >
             <PlusCircle size={14} />
             <span>Add Employee</span>
@@ -793,6 +803,12 @@ function Employees() {
           </div>
         </div>
       )}
+
+      {/* Official HR Letter & Document Generator Modal */}
+      <DocumentGeneratorModal
+        isOpen={showDocModal}
+        onClose={() => setShowDocModal(false)}
+      />
     </DashboardLayout>
   );
 }

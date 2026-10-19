@@ -16,6 +16,10 @@ require('./controllers/tax.controller')(app);
 require('./controllers/settlement.controller')(app);
 require('./controllers/complianceExport.controller')(app);
 require('./controllers/biometric.controller')(app);
+require('./controllers/expense.controller')(app);
+require('./controllers/hrDocument.controller')(app);
+require('./controllers/loan.controller')(app);
+require('./controllers/pulse.controller')(app);
 
 }
 

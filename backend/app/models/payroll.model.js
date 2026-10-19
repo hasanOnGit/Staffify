@@ -73,6 +73,7 @@ const payrollSchema = new mongoose.Schema(
       professionalTax: { type: Number, default: 0 },
       tds: { type: Number, default: 0 },
       lopDeduction: { type: Number, default: 0 },
+      loanAdvance: { type: Number, default: 0 },
       totalDeductions: { type: Number, default: 0 },
     },
     netPay: {

@@ -12,6 +12,8 @@ import { getEmployees } from "../services/employee";
 import PayslipModal from "../components/PayslipModal";
 import SettlementModal from "../components/SettlementModal";
 import TaxDeclarationModal from "../components/TaxDeclarationModal";
+import LoanModal from "../components/LoanModal";
+import { getLoans } from "../services/loan";
 import {
   getComplianceSummary,
   downloadEpfoEcr,
@@ -73,12 +75,14 @@ function Payroll() {
   const [complianceSummary, setComplianceSummary] = useState(null);
   const [settlements, setSettlements] = useState([]);
   const [taxDeclarations, setTaxDeclarations] = useState([]);
+  const [loans, setLoans] = useState([]);
   const [loading, setLoading] = useState(false);
   const [running, setRunning] = useState(false);
   const [message, setMessage] = useState(null);
 
   // Modal states
   const [activePayslip, setActivePayslip] = useState(null);
+  const [showLoanModal, setShowLoanModal] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [activeSettlement, setActiveSettlement] = useState(null);
   const [activeTaxEmp, setActiveTaxEmp] = useState(null);
@@ -107,13 +111,14 @@ function Payroll() {
   const loadPayrollData = async () => {
     try {
       setLoading(true);
-      const [payslipsRes, summaryRes, empsRes, compRes, settleRes, taxRes] = await Promise.all([
+      const [payslipsRes, summaryRes, empsRes, compRes, settleRes, taxRes, loansRes] = await Promise.all([
         getPayslips({ month: selectedMonth, year: selectedYear }).catch(() => ({ data: [] })),
         getPayrollSummary(selectedMonth, selectedYear).catch(() => ({ data: null })),
         getEmployees().catch(() => []),
         getComplianceSummary(selectedMonth, selectedYear).catch(() => ({ data: null })),
         getSettlements().catch(() => ({ data: [] })),
         getAllTaxDeclarations("2024-2025").catch(() => ({ data: [] })),
+        getLoans().catch(() => ({ data: [] })),
       ]);
 
       setPayslips(payslipsRes.data || []);
@@ -122,6 +127,7 @@ function Payroll() {
       setComplianceSummary(compRes?.data || null);
       setSettlements(settleRes?.data || []);
       setTaxDeclarations(taxRes?.data || []);
+      setLoans(loansRes?.data || []);
     } catch (err) {
       console.error("Error loading payroll:", err);
     } finally {
@@ -423,6 +429,18 @@ function Payroll() {
           >
             <FileCheck size={14} />
             <span>IT Declarations Form 12BB ({taxDeclarations.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("loans")}
+            className={`px-3 py-1.5 rounded text-xs font-medium transition cursor-pointer flex items-center gap-1.5 ${
+              activeTab === "loans"
+                ? "bg-[#EBECF0] text-[#172B4D] font-bold"
+                : "text-[#42526E] hover:bg-[#EBECF0]"
+            }`}
+          >
+            <CreditCard size={14} />
+            <span>Loans & Advances ({loans.length})</span>
           </button>
         </div>
 
@@ -968,6 +986,98 @@ function Payroll() {
               </div>
             )}
           </div>
+        )}
+
+        {/* ========================================================
+            TAB 6: EMPLOYEE LOANS & SALARY ADVANCES
+            ======================================================== */}
+        {activeTab === "loans" && (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-lg border border-[#DFE1E6]">
+              <div>
+                <h3 className="font-bold text-sm text-[#172B4D]">
+                  Employee Loans & Salary Advance Ledger
+                </h3>
+                <p className="text-xs text-[#6B778C]">
+                  Zero-interest salary advances recovered automatically via monthly payroll EMI deductions
+                </p>
+              </div>
+
+              <button
+                onClick={() => setShowLoanModal(true)}
+                className="px-3.5 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+              >
+                <Plus size={14} />
+                <span>Issue Salary Advance</span>
+              </button>
+            </div>
+
+            <div className="bg-white border border-[#DFE1E6] rounded-lg overflow-hidden shadow-xs">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-[#F4F5F7] text-[#42526E] font-bold uppercase text-[10px] border-b border-[#DFE1E6]">
+                  <tr>
+                    <th className="px-3 py-2.5">Loan ID</th>
+                    <th className="px-3 py-2.5">Employee</th>
+                    <th className="px-3 py-2.5">Loan Type</th>
+                    <th className="px-3 py-2.5 text-right">Principal</th>
+                    <th className="px-3 py-2.5 text-right">Monthly EMI</th>
+                    <th className="px-3 py-2.5 text-right">Repaid</th>
+                    <th className="px-3 py-2.5 text-right">Remaining Balance</th>
+                    <th className="px-3 py-2.5">Status</th>
+                    <th className="px-3 py-2.5 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#DFE1E6]">
+                  {loans.length > 0 ? (
+                    loans.map((loan) => (
+                      <tr key={loan._id || loan.loanId} className="hover:bg-[#FAFBFC] transition">
+                        <td className="px-3 py-2.5 font-mono font-bold text-[#172B4D]">{loan.loanId}</td>
+                        <td className="px-3 py-2.5">
+                          <p className="font-semibold text-[#172B4D]">{loan.employeeName}</p>
+                          <p className="text-[10px] text-[#6B778C]">{loan.department} • {loan.employeeId}</p>
+                        </td>
+                        <td className="px-3 py-2.5">{loan.loanType}</td>
+                        <td className="px-3 py-2.5 text-right font-bold text-[#172B4D]">{formatCurrency(loan.principalAmount)}</td>
+                        <td className="px-3 py-2.5 text-right font-bold text-[#0052CC]">{formatCurrency(loan.monthlyEmi)}/mo</td>
+                        <td className="px-3 py-2.5 text-right font-bold text-[#00875A]">{formatCurrency(loan.totalRepaid)}</td>
+                        <td className="px-3 py-2.5 text-right font-bold text-[#DE350B]">{formatCurrency(loan.remainingBalance)}</td>
+                        <td className="px-3 py-2.5">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
+                            loan.status === "Active" ? "bg-[#E3FCEF] text-[#006644] border-[#ABF5D1]" : "bg-[#FFF0B3] text-[#172B4D] border-[#FFE380]"
+                          }`}>
+                            {loan.status}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2.5 text-right">
+                          <button
+                            onClick={() => setShowLoanModal(true)}
+                            className="px-2 py-1 bg-white hover:bg-[#EBECF0] border border-[#DFE1E6] rounded text-xs font-semibold cursor-pointer"
+                          >
+                            Inspect Ledger
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={9} className="py-8 text-center text-xs text-[#6B778C]">
+                        No loans or salary advances currently registered.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Modal: Salary Advance Management */}
+        {showLoanModal && (
+          <LoanModal
+            isOpen={showLoanModal}
+            onClose={() => setShowLoanModal(false)}
+            onSuccess={loadPayrollData}
+          />
         )}
 
         {/* Modal: View Staffify Printable Payslip */}

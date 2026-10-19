@@ -16,6 +16,8 @@ import {
   Calendar,
   LifeBuoy,
   LogOut,
+  Network,
+  Receipt,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
@@ -90,6 +92,16 @@ function Sidebar() {
           <NavLink to="/helpdesk" className={getNavLinkClass}>
             <LifeBuoy size={15} />
             <span>Helpdesk & Assets</span>
+          </NavLink>
+
+          <NavLink to="/org-chart" className={getNavLinkClass}>
+            <Network size={15} />
+            <span>Organization Tree</span>
+          </NavLink>
+
+          <NavLink to="/expenses" className={getNavLinkClass}>
+            <Receipt size={15} />
+            <span>Expenses & Claims</span>
           </NavLink>
         </div>
 

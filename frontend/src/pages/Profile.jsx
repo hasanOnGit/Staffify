@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useAuth } from "../context/AuthContext";
 import { getEmployeeByUserId, updateEmployee } from "../services/employee";
+import { getDocuments } from "../services/hrDocument";
 import {
   User,
   Briefcase,
@@ -12,6 +13,8 @@ import {
   CheckCircle2,
   X,
   Circle,
+  FileText,
+  Printer,
 } from "lucide-react";
 
 function Profile() {
@@ -23,6 +26,8 @@ function Profile() {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
   const [notification, setNotification] = useState("");
+  const [myDocuments, setMyDocuments] = useState([]);
+  const [previewDoc, setPreviewDoc] = useState(null);
 
   // Edit form state
   const [formData, setFormData] = useState({
@@ -57,7 +62,14 @@ function Profile() {
       setLoading(true);
 
       const queryId = user.userId || user.id || user._id;
-      const data = await getEmployeeByUserId(queryId);
+      const [data, docsRes] = await Promise.all([
+        getEmployeeByUserId(queryId).catch(() => null),
+        getDocuments({ employeeId: user?.employeeId || user?.userId }).catch(() => ({ data: [] })),
+      ]);
+
+      if (docsRes?.success) {
+        setMyDocuments(docsRes.data || []);
+      }
 
       if (data) {
         setEmployee(data);
@@ -309,6 +321,17 @@ function Profile() {
             >
               <AlertCircle size={13} />
               <span>Emergency Details</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("documents")}
+              className={`pb-2.5 transition flex items-center gap-1.5 cursor-pointer ${
+                activeTab === "documents"
+                  ? "border-b-2 border-[#0052CC] text-[#0052CC]"
+                  : "text-[#6B778C] hover:text-[#172B4D]"
+              }`}
+            >
+              <FileText size={13} />
+              <span>Letters & Certificates ({myDocuments.length})</span>
             </button>
           </div>
 
@@ -616,6 +639,132 @@ function Profile() {
                   </div>
                 </div>
               )}
+
+              {activeTab === "documents" && (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-base">Issued Letters & Certificates</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Official digitally issued employment certificates, appointment annexures, and formal letters
+                    </p>
+                  </div>
+
+                  {myDocuments.length > 0 ? (
+                    <div className="border border-[#DFE1E6] rounded-xl overflow-hidden bg-white shadow-xs">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-[#F4F5F7] text-[#42526E] font-bold uppercase text-[10px] border-b border-[#DFE1E6]">
+                          <tr>
+                            <th className="px-4 py-3">Reference No</th>
+                            <th className="px-4 py-3">Document Title</th>
+                            <th className="px-4 py-3">Issued On</th>
+                            <th className="px-4 py-3">Authorized Signatory</th>
+                            <th className="px-4 py-3 text-right">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#DFE1E6]">
+                          {myDocuments.map((doc) => (
+                            <tr key={doc._id || doc.docId} className="hover:bg-[#FAFBFC] transition">
+                              <td className="px-4 py-3 font-mono font-bold text-[#0052CC]">{doc.refNo}</td>
+                              <td className="px-4 py-3 font-semibold text-[#172B4D]">{doc.title}</td>
+                              <td className="px-4 py-3 text-[#6B778C]">
+                                {new Date(doc.issueDate).toLocaleDateString("en-IN", {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                })}
+                              </td>
+                              <td className="px-4 py-3 text-[#42526E]">{doc.signatoryName || "Head of HR"}</td>
+                              <td className="px-4 py-3 text-right">
+                                <button
+                                  type="button"
+                                  onClick={() => setPreviewDoc(doc)}
+                                  className="px-3 py-1 bg-[#DEEBFF] hover:bg-[#B3D4FF] text-[#0052CC] font-semibold rounded text-xs transition cursor-pointer"
+                                >
+                                  View & Print
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="py-12 text-center text-xs text-[#6B778C] bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                      No official letters have been issued to your profile yet.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Letter View & Print Modal */}
+          {previewDoc && (
+            <div className="fixed inset-0 z-50 bg-[#091E42]/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-white rounded-xl shadow-2xl border border-[#DFE1E6] max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                <div className="px-6 py-4 border-b border-[#DFE1E6] flex items-center justify-between bg-[#FAFBFC]">
+                  <div>
+                    <span className="text-[10px] font-mono font-bold text-[#0052CC] bg-[#DEEBFF] px-2 py-0.5 rounded border border-[#B3D4FF]">
+                      Ref: {previewDoc.refNo}
+                    </span>
+                    <h3 className="font-bold text-sm text-[#172B4D] mt-1">{previewDoc.title}</h3>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const printWindow = window.open("", "_blank");
+                        printWindow.document.write(`
+                          <html>
+                            <head>
+                              <title>${previewDoc.title}</title>
+                              <style>
+                                @page { size: A4; margin: 20mm; }
+                                body { font-family: 'Segoe UI', Arial, sans-serif; color: #172B4D; margin: 0; padding: 10px; }
+                                table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px; }
+                                th, td { border: 1px solid #DFE1E6; padding: 8px 10px; font-size: 12px; }
+                                th { background-color: #F4F5F7; text-align: left; }
+                              </style>
+                            </head>
+                            <body>
+                              ${previewDoc.contentHtml}
+                            </body>
+                          </html>
+                        `);
+                        printWindow.document.close();
+                        printWindow.focus();
+                        setTimeout(() => printWindow.print(), 250);
+                      }}
+                      className="px-3 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    >
+                      <Printer size={13} />
+                      <span>Print Document</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewDoc(null)}
+                      className="text-[#6B778C] hover:text-[#172B4D] p-1.5 rounded-md hover:bg-[#EBECF0]"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  className="p-8 overflow-y-auto bg-white text-xs text-[#172B4D] min-h-[350px]"
+                  dangerouslySetInnerHTML={{ __html: previewDoc.contentHtml }}
+                />
+
+                <div className="p-3 bg-[#F4F5F7] border-t border-[#DFE1E6] flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewDoc(null)}
+                    className="px-4 py-1.5 border border-[#DFE1E6] rounded-lg text-xs font-semibold text-[#42526E]"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>

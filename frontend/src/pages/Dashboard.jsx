@@ -6,6 +6,7 @@ import { getEmployees } from "../services/employee";
 import { getLeaves, updateLeave, getLeaveBalance, getTeamOnLeave } from "../services/leave";
 import { getHolidays } from "../services/holiday";
 import { getAttendanceByDate } from "../services/attendance";
+import PulseFeed from "../components/PulseFeed";
 import {
   Calendar,
   Clock,
@@ -893,6 +894,9 @@ function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Company Pulse, Broadcasts & Community Kudos */}
+        <PulseFeed />
       </div>
     </DashboardLayout>
   );

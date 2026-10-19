@@ -265,5 +265,93 @@ module.exports = function (app) {
     }
   });
 
+  /* ==========================================================
+     GET ORG TREE (HIERARCHICAL REPORTING STRUCTURE)
+     ========================================================== */
+  const getOrgTreeHandler = async (req, res) => {
+    try {
+      const allEmps = await newEmployee.find({ isActive: { $ne: false } }).lean();
+
+      // Ensure default reporting hierarchy if unassigned
+      let dev = allEmps.find((e) => e.employeeId === "EMP-DEV-03");
+      let mgr = allEmps.find((e) => e.employeeId === "EMP-MGR-02");
+      let admin = allEmps.find((e) => e.employeeId === "EMP-ADMIN-01");
+
+      if (admin && !admin.managerId) {
+        // Admin is top of the tree
+      }
+      if (mgr && (!mgr.managerId || mgr.managerId === "") && admin) {
+        mgr.managerId = admin.employeeId;
+        mgr.managerName = admin.name;
+        await newEmployee.updateOne({ employeeId: mgr.employeeId }, { managerId: admin.employeeId, managerName: admin.name });
+      }
+      if (dev && (!dev.managerId || dev.managerId === "") && mgr) {
+        dev.managerId = mgr.employeeId;
+        dev.managerName = mgr.name;
+        await newEmployee.updateOne({ employeeId: dev.employeeId }, { managerId: mgr.employeeId, managerName: mgr.name });
+      }
+
+      // Re-fetch or use updated list
+      const updatedList = await newEmployee.find({ isActive: { $ne: false } }).lean();
+
+      // Build node map
+      const nodeMap = {};
+      updatedList.forEach((emp) => {
+        nodeMap[emp.employeeId] = {
+          _id: emp._id,
+          employeeId: emp.employeeId,
+          name: emp.name,
+          email: emp.email,
+          designation: emp.designation,
+          department: emp.department,
+          phoneNo: emp.phoneNo || "",
+          workLocation: emp.workLocation || "Headquarters",
+          dateOfJoining: emp.dateOfJoining || "",
+          managerId: emp.managerId || null,
+          managerName: emp.managerName || "",
+          probationStatus: emp.probationStatus || "Confirmed",
+          directReportsCount: 0,
+          totalSubordinatesCount: 0,
+          children: [],
+        };
+      });
+
+      // Build tree
+      const roots = [];
+      Object.values(nodeMap).forEach((node) => {
+        if (node.managerId && nodeMap[node.managerId] && node.managerId !== node.employeeId) {
+          nodeMap[node.managerId].children.push(node);
+          nodeMap[node.managerId].directReportsCount += 1;
+        } else {
+          roots.push(node);
+        }
+      });
+
+      // Compute total subordinates recursively
+      function computeSubordinates(node) {
+        let count = node.children.length;
+        for (const child of node.children) {
+          count += computeSubordinates(child);
+        }
+        node.totalSubordinatesCount = count;
+        return count;
+      }
+      roots.forEach(computeSubordinates);
+
+      return res.status(200).json({
+        success: true,
+        tree: roots,
+        totalEmployees: updatedList.length,
+        nodes: Object.values(nodeMap),
+      });
+    } catch (error) {
+      console.error("Org tree error:", error);
+      return res.status(500).json({ error: error.message });
+    }
+  };
+
+  apiRoutes.get("/getOrgTree", getOrgTreeHandler);
+  apiRoutes.get("/api/employees/org-tree", getOrgTreeHandler);
+
   app.use("/", apiRoutes);
 };

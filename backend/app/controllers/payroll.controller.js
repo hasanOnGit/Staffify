@@ -5,6 +5,7 @@ const SalaryStructure = require("../models/salaryStructure.model");
 const Payroll = require("../models/payroll.model");
 const Leaves = require("../models/leave.model");
 const Attendance = require("../models/attendance.model");
+const Loan = require("../models/loan.model");
 
 // Month names helper
 const MONTH_NAMES = [
@@ -301,7 +302,33 @@ module.exports = function (app) {
         const perDaySalary = grossEarnings / totalDaysInMonth;
         const lopDeduction = Math.round(perDaySalary * lopDays);
 
-        const totalDeductions = epf + esi + professionalTax + tds + lopDeduction;
+        // Active Loan / Salary Advance EMI Auto-Deduction
+        const activeLoan = await Loan.findOne({
+          employeeId: emp.employeeId,
+          status: "Active",
+          remainingBalance: { $gt: 0 },
+        });
+
+        let loanAdvance = 0;
+        if (activeLoan) {
+          loanAdvance = Math.min(activeLoan.remainingBalance, activeLoan.monthlyEmi || 0);
+          activeLoan.totalRepaid = (activeLoan.totalRepaid || 0) + loanAdvance;
+          activeLoan.remainingBalance = Math.max(0, activeLoan.remainingBalance - loanAdvance);
+          if (activeLoan.remainingBalance === 0) activeLoan.status = "Fully_Paid";
+          activeLoan.repayments.push({
+            repaymentId: "REP-" + Date.now(),
+            month: m,
+            year: y,
+            amountPaid: loanAdvance,
+            emiIndex: (activeLoan.repayments?.length || 0) + 1,
+            payslipId: `PAY-${y}${String(m).padStart(2, "0")}-${emp.employeeId}`,
+            deductedAt: new Date(),
+            mode: "Payroll Auto-Deduction",
+          });
+          await activeLoan.save();
+        }
+
+        const totalDeductions = epf + esi + professionalTax + tds + lopDeduction + loanAdvance;
         const netPay = Math.max(0, grossEarnings - totalDeductions);
         const netPayInWords = numberToIndianWords(netPay);
 
@@ -351,6 +378,7 @@ module.exports = function (app) {
               professionalTax,
               tds,
               lopDeduction,
+              loanAdvance,
               totalDeductions,
             },
             netPay,

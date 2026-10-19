@@ -14,6 +14,8 @@ import Performance from "./pages/Performance";
 import Roster from "./pages/Roster";
 import Helpdesk from "./pages/Helpdesk";
 import Recruitment from "./pages/Recruitment";
+import OrgChart from "./pages/OrgChart";
+import Expenses from "./pages/Expenses";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -162,6 +164,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Helpdesk />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/org-chart"
+          element={
+            <ProtectedRoute>
+              <OrgChart />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/expenses"
+          element={
+            <ProtectedRoute>
+              <Expenses />
             </ProtectedRoute>
           }
         />
