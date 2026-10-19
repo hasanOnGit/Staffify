@@ -5,9 +5,9 @@ const getBaseURL = () => {
   if (import.meta.env.VITE_API_BASE_URL !== undefined && import.meta.env.VITE_API_BASE_URL !== "") {
     return import.meta.env.VITE_API_BASE_URL;
   }
-  // In production (Vercel unified domain), use relative path so requests route through /api rewrites
+  // In production, route API requests through the Vercel /api rewrite to the backend service.
   if (import.meta.env.PROD) {
-    return "";
+    return "/api";
   }
   // Local development fallback
   return "http://localhost:5000";

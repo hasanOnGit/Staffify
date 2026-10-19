@@ -43,25 +43,35 @@ export const AuthProvider = ({ children }) => {
      LOGIN
   =============================== */
   const login = async (email, password) => {
-    const res = await api.post("/login", { email, password });
+    try {
+      const res = await api.post("/login", { email, password });
 
-    if (res.data?.token) {
-      localStorage.setItem("token", res.data.token);
+      if (res.data?.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+
+      if (res.data?.user) {
+        const userData = { ...res.data.user };
+        if (!userData.name) {
+          userData.name = getNameFromEmail(userData.email || email);
+        }
+        if (!userData.employeeId && userData.userId) {
+          userData.employeeId = userData.userId;
+        }
+        localStorage.setItem("user", JSON.stringify(userData));
+        setUser(userData);
+      }
+
+      return res.data;
+    } catch (error) {
+      console.error("[v0] Login request failed", {
+        status: error.response?.status,
+        message: error.response?.data?.msg || error.message,
+        url: error.config?.url,
+      });
+      throw error;
     }
 
-    if (res.data?.user) {
-      const userData = { ...res.data.user };
-      if (!userData.name) {
-        userData.name = getNameFromEmail(userData.email || email);
-      }
-      if (!userData.employeeId && userData.userId) {
-        userData.employeeId = userData.userId;
-      }
-      localStorage.setItem("user", JSON.stringify(userData));
-      setUser(userData);
-    }
-
-    return res.data;
   };
 
   /* ===============================
