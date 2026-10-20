@@ -1,17 +1,12 @@
 import axios from "axios";
 
 const getBaseURL = () => {
-  // Deployed frontend requests must stay same-origin. A stale VITE_API_BASE_URL
-  // such as http://localhost:5000 would point the user's browser at their own computer.
-  if (import.meta.env.PROD) {
-    return "/api";
-  }
-  // Use an explicit backend URL only during local development.
-  if (import.meta.env.VITE_API_BASE_URL !== undefined && import.meta.env.VITE_API_BASE_URL !== "") {
+  // Keep production requests same-origin so they always use the deployed backend.
+  // Only local development may opt into a separate backend URL.
+  if (!import.meta.env.PROD && import.meta.env.VITE_API_BASE_URL) {
     return import.meta.env.VITE_API_BASE_URL;
   }
-  // Local development fallback
-  return "http://localhost:5000";
+  return "/api";
 };
 
 const api = axios.create({
