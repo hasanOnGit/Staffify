@@ -21,12 +21,14 @@ import {
   BarChart3,
   UserMinus,
   Webhook,
+  X,
+  Building2,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
 const baseLinkClasses =
-  "flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors duration-150";
+  "flex items-center gap-2.5 px-3 py-2.5 md:py-2 rounded-md text-xs font-medium transition-colors duration-150";
 
 const getNavLinkClass = ({ isActive }) =>
   `${baseLinkClasses} ${
@@ -35,207 +37,263 @@ const getNavLinkClass = ({ isActive }) =>
       : "text-[#42526E] hover:bg-[#EBECF0] hover:text-[#172B4D]"
   }`;
 
-function Sidebar() {
+function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
   const { role, isAdmin, isManager, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    onCloseMobile();
     logout();
     toast.success("Logged out successfully");
     navigate("/login", { replace: true });
   };
 
-  return (
-    <aside className="w-56 lg:w-60 bg-white border-r border-[#DFE1E6] hidden md:flex flex-col shrink-0 h-full select-none">
-      {/* Navigation Modules */}
-      <nav className="flex-1 px-3 py-4 space-y-4 overflow-y-auto">
-        {/* ESS - Employee Self Service */}
-        <div className="space-y-0.5">
-          <div className="px-3 pb-1">
-            <p className="text-[10px] font-bold text-[#6B778C] uppercase tracking-wider">
-              Self Service (ESS)
-            </p>
-          </div>
-
-          <NavLink to="/dashboard" className={getNavLinkClass}>
-            <LayoutDashboard size={15} />
-            <span>For you (Dashboard)</span>
-          </NavLink>
-
-          <NavLink to="/attendance" className={getNavLinkClass}>
-            <Clock size={15} />
-            <span>Attendance & Swipes</span>
-          </NavLink>
-
-          <NavLink to="/leaves" className={getNavLinkClass}>
-            <CalendarCheck size={15} />
-            <span>Leave & Balances</span>
-          </NavLink>
-
-          <NavLink to="/profile" className={getNavLinkClass}>
-            <User size={15} />
-            <span>My Profile</span>
-          </NavLink>
-
-          <NavLink to="/payslips" className={getNavLinkClass}>
-            <FileText size={15} />
-            <span>Payslips & Salary</span>
-          </NavLink>
-
-          <NavLink to="/performance" className={getNavLinkClass}>
-            <Target size={15} />
-            <span>Performance & OKRs</span>
-          </NavLink>
-
-          <NavLink to="/roster" className={getNavLinkClass}>
-            <Calendar size={15} />
-            <span>Shift Roster Planner</span>
-          </NavLink>
-
-          <NavLink to="/helpdesk" className={getNavLinkClass}>
-            <LifeBuoy size={15} />
-            <span>Helpdesk & Assets</span>
-          </NavLink>
-
-          <NavLink to="/org-chart" className={getNavLinkClass}>
-            <Network size={15} />
-            <span>Organization Tree</span>
-          </NavLink>
-
-          <NavLink to="/expenses" className={getNavLinkClass}>
-            <Receipt size={15} />
-            <span>Expenses & Claims</span>
-          </NavLink>
-
-          <NavLink to="/timesheets" className={getNavLinkClass}>
-            <Clock size={15} />
-            <span>Project Timesheets</span>
-          </NavLink>
+  const renderNavLinks = () => (
+    <nav className="flex-1 px-3 py-4 space-y-4 overflow-y-auto">
+      {/* ESS - Employee Self Service */}
+      <div className="space-y-0.5">
+        <div className="px-3 pb-1">
+          <p className="text-[10px] font-bold text-[#6B778C] uppercase tracking-wider">
+            Self Service (ESS)
+          </p>
         </div>
 
-        {/* MSS - Manager Self Service */}
-        {isManager && !isAdmin && (
-          <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6]">
-            <div className="flex items-center justify-between px-3 pb-1">
-              <p className="text-[10px] font-bold text-[#6B778C] uppercase tracking-wider">
-                Manager Services
-              </p>
-              <span className="text-[9px] font-semibold text-[#0747A6] bg-[#DEEBFF] px-1.5 py-0.2 rounded border border-[#B3D4FF]">
-                Manager
-              </span>
-            </div>
+        <NavLink to="/dashboard" className={getNavLinkClass} onClick={onCloseMobile}>
+          <LayoutDashboard size={15} />
+          <span>For you (Dashboard)</span>
+        </NavLink>
 
-            <NavLink to="/teams" className={getNavLinkClass}>
-              <Users2 size={15} />
-              <span>Squads & Rosters</span>
-            </NavLink>
+        <NavLink to="/attendance" className={getNavLinkClass} onClick={onCloseMobile}>
+          <Clock size={15} />
+          <span>Attendance & Swipes</span>
+        </NavLink>
 
-            <NavLink to="/recruitment" className={getNavLinkClass}>
-              <Briefcase size={15} />
-              <span>Recruitment & ATS</span>
-            </NavLink>
+        <NavLink to="/leaves" className={getNavLinkClass} onClick={onCloseMobile}>
+          <CalendarCheck size={15} />
+          <span>Leave & Balances</span>
+        </NavLink>
 
-            <NavLink to="/analytics" className={getNavLinkClass}>
-              <BarChart3 size={15} />
-              <span>Executive Analytics</span>
-            </NavLink>
+        <NavLink to="/profile" className={getNavLinkClass} onClick={onCloseMobile}>
+          <User size={15} />
+          <span>My Profile</span>
+        </NavLink>
 
-            <NavLink to="/offboarding" className={getNavLinkClass}>
-              <UserMinus size={15} />
-              <span>Exit Operations</span>
-            </NavLink>
+        <NavLink to="/payslips" className={getNavLinkClass} onClick={onCloseMobile}>
+          <FileText size={15} />
+          <span>Payslips & Salary</span>
+        </NavLink>
 
-            <NavLink to="/webhook-bridge" className={getNavLinkClass}>
-              <Webhook size={15} />
-              <span>Webhook Bridge</span>
-            </NavLink>
-          </div>
-        )}
+        <NavLink to="/performance" className={getNavLinkClass} onClick={onCloseMobile}>
+          <Target size={15} />
+          <span>Performance & OKRs</span>
+        </NavLink>
 
-        {/* HR & System Administration */}
-        {isAdmin && (
-          <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6]">
-            <div className="flex items-center justify-between px-3 pb-1">
-              <p className="text-[10px] font-bold text-[#6B778C] uppercase tracking-wider">
-                HR & Administration
-              </p>
-              <span className="text-[9px] font-semibold text-[#403294] bg-[#EAE6FF] px-1.5 py-0.2 rounded border border-[#C0B6F2]">
-                Admin
-              </span>
-            </div>
+        <NavLink to="/roster" className={getNavLinkClass} onClick={onCloseMobile}>
+          <Calendar size={15} />
+          <span>Shift Roster Planner</span>
+        </NavLink>
 
-            <NavLink to="/employees" className={getNavLinkClass}>
-              <Users size={15} />
-              <span>Employee Directory</span>
-            </NavLink>
+        <NavLink to="/helpdesk" className={getNavLinkClass} onClick={onCloseMobile}>
+          <LifeBuoy size={15} />
+          <span>Helpdesk & Assets</span>
+        </NavLink>
 
-            <NavLink to="/analytics" className={getNavLinkClass}>
-              <BarChart3 size={15} />
-              <span>Executive Analytics</span>
-            </NavLink>
+        <NavLink to="/org-chart" className={getNavLinkClass} onClick={onCloseMobile}>
+          <Network size={15} />
+          <span>Organization Tree</span>
+        </NavLink>
 
-            <NavLink to="/webhook-bridge" className={getNavLinkClass}>
-              <Webhook size={15} />
-              <span>Webhook Bridge</span>
-            </NavLink>
+        <NavLink to="/expenses" className={getNavLinkClass} onClick={onCloseMobile}>
+          <Receipt size={15} />
+          <span>Expenses & Claims</span>
+        </NavLink>
 
-            <NavLink to="/payroll" className={getNavLinkClass}>
-              <CreditCard size={15} />
-              <span>Payroll Processing</span>
-            </NavLink>
+        <NavLink to="/timesheets" className={getNavLinkClass} onClick={onCloseMobile}>
+          <Clock size={15} />
+          <span>Project Timesheets</span>
+        </NavLink>
+      </div>
 
-            <NavLink to="/recruitment" className={getNavLinkClass}>
-              <Briefcase size={15} />
-              <span>Recruitment & ATS</span>
-            </NavLink>
-
-            <NavLink to="/teams" className={getNavLinkClass}>
-              <FolderKanban size={15} />
-              <span>Teams & Structure</span>
-            </NavLink>
-
-            <NavLink to="/offboarding" className={getNavLinkClass}>
-              <UserMinus size={15} />
-              <span>Exit Operations</span>
-            </NavLink>
-          </div>
-        )}
-      </nav>
-
-      {/* Role Indicator Footer */}
-      <div className="p-3 border-t border-[#DFE1E6] bg-[#F4F5F7] flex items-center justify-between text-xs">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-white border border-[#DFE1E6] flex items-center justify-center text-[#42526E]">
-            {role === "Admin" ? (
-              <ShieldCheck size={13} className="text-[#403294]" />
-            ) : role === "Manager" ? (
-              <Briefcase size={13} className="text-[#0747A6]" />
-            ) : (
-              <User size={13} className="text-[#0052CC]" />
-            )}
-          </div>
-          <div>
-            <span className="font-semibold text-[#172B4D] capitalize text-[11px] leading-tight block">
-              {role === "Admin" ? "Administrator" : role === "Manager" ? "Manager" : "Employee"}
+      {/* MSS - Manager Self Service */}
+      {isManager && !isAdmin && (
+        <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6]">
+          <div className="flex items-center justify-between px-3 pb-1">
+            <p className="text-[10px] font-bold text-[#6B778C] uppercase tracking-wider">
+              Manager Services
+            </p>
+            <span className="text-[9px] font-semibold text-[#0747A6] bg-[#DEEBFF] px-1.5 py-0.2 rounded border border-[#B3D4FF]">
+              Manager
             </span>
           </div>
+
+          <NavLink to="/teams" className={getNavLinkClass} onClick={onCloseMobile}>
+            <Users2 size={15} />
+            <span>Squads & Rosters</span>
+          </NavLink>
+
+          <NavLink to="/recruitment" className={getNavLinkClass} onClick={onCloseMobile}>
+            <Briefcase size={15} />
+            <span>Recruitment & ATS</span>
+          </NavLink>
+
+          <NavLink to="/analytics" className={getNavLinkClass} onClick={onCloseMobile}>
+            <BarChart3 size={15} />
+            <span>Executive Analytics</span>
+          </NavLink>
+
+          <NavLink to="/offboarding" className={getNavLinkClass} onClick={onCloseMobile}>
+            <UserMinus size={15} />
+            <span>Exit Operations</span>
+          </NavLink>
+
+          <NavLink to="/webhook-bridge" className={getNavLinkClass} onClick={onCloseMobile}>
+            <Webhook size={15} />
+            <span>Webhook Bridge</span>
+          </NavLink>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            <Circle size={5} className="fill-emerald-500 text-emerald-500" />
-            Online
+      )}
+
+      {/* HR & System Administration */}
+      {isAdmin && (
+        <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6]">
+          <div className="flex items-center justify-between px-3 pb-1">
+            <p className="text-[10px] font-bold text-[#6B778C] uppercase tracking-wider">
+              HR & Administration
+            </p>
+            <span className="text-[9px] font-semibold text-[#403294] bg-[#EAE6FF] px-1.5 py-0.2 rounded border border-[#C0B6F2]">
+              Admin
+            </span>
+          </div>
+
+          <NavLink to="/employees" className={getNavLinkClass} onClick={onCloseMobile}>
+            <Users size={15} />
+            <span>Employee Directory</span>
+          </NavLink>
+
+          <NavLink to="/analytics" className={getNavLinkClass} onClick={onCloseMobile}>
+            <BarChart3 size={15} />
+            <span>Executive Analytics</span>
+          </NavLink>
+
+          <NavLink to="/webhook-bridge" className={getNavLinkClass} onClick={onCloseMobile}>
+            <Webhook size={15} />
+            <span>Webhook Bridge</span>
+          </NavLink>
+
+          <NavLink to="/payroll" className={getNavLinkClass} onClick={onCloseMobile}>
+            <CreditCard size={15} />
+            <span>Payroll Processing</span>
+          </NavLink>
+
+          <NavLink to="/recruitment" className={getNavLinkClass} onClick={onCloseMobile}>
+            <Briefcase size={15} />
+            <span>Recruitment & ATS</span>
+          </NavLink>
+
+          <NavLink to="/teams" className={getNavLinkClass} onClick={onCloseMobile}>
+            <FolderKanban size={15} />
+            <span>Teams & Structure</span>
+          </NavLink>
+
+          <NavLink to="/offboarding" className={getNavLinkClass} onClick={onCloseMobile}>
+            <UserMinus size={15} />
+            <span>Exit Operations</span>
+          </NavLink>
+        </div>
+      )}
+    </nav>
+  );
+
+  const renderFooter = () => (
+    <div className="p-3 border-t border-[#DFE1E6] bg-[#F4F5F7] flex items-center justify-between text-xs shrink-0">
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 rounded bg-white border border-[#DFE1E6] flex items-center justify-center text-[#42526E]">
+          {role === "Admin" ? (
+            <ShieldCheck size={13} className="text-[#403294]" />
+          ) : role === "Manager" ? (
+            <Briefcase size={13} className="text-[#0747A6]" />
+          ) : (
+            <User size={13} className="text-[#0052CC]" />
+          )}
+        </div>
+        <div>
+          <span className="font-semibold text-[#172B4D] capitalize text-[11px] leading-tight block">
+            {role === "Admin" ? "Administrator" : role === "Manager" ? "Manager" : "Employee"}
           </span>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="p-1 text-[#6B778C] hover:text-[#DE350B] hover:bg-[#FFEBE6] rounded transition cursor-pointer"
-            title="Log Out of Staffify"
-          >
-            <LogOut size={13} />
-          </button>
         </div>
       </div>
-    </aside>
+      <div className="flex items-center gap-1.5">
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <Circle size={5} className="fill-emerald-500 text-emerald-500" />
+          Online
+        </span>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="p-1.5 text-[#6B778C] hover:text-[#DE350B] hover:bg-[#FFEBE6] rounded transition cursor-pointer"
+          title="Log Out of Staffify"
+        >
+          <LogOut size={13} />
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {/* =========================================
+          1. Desktop Static Left Sidebar (md and up)
+         ========================================= */}
+      <aside className="w-56 lg:w-60 bg-white border-r border-[#DFE1E6] hidden md:flex flex-col shrink-0 h-full select-none">
+        {renderNavLinks()}
+        {renderFooter()}
+      </aside>
+
+      {/* =========================================
+          2. Mobile Slide-out Drawer (< md screen)
+         ========================================= */}
+      {/* Backdrop */}
+      <div
+        className={`fixed inset-0 bg-black/50 backdrop-blur-xs z-50 md:hidden transition-opacity duration-200 ${
+          mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={onCloseMobile}
+        aria-hidden="true"
+      />
+
+      {/* Drawer */}
+      <aside
+        className={`fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-white z-50 shadow-2xl flex flex-col md:hidden transform transition-transform duration-250 ease-in-out select-none ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+        aria-label="Mobile Navigation Drawer"
+      >
+        {/* Drawer Header */}
+        <div className="h-12 px-3.5 border-b border-[#DFE1E6] flex items-center justify-between bg-[#FAFBFC] shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded bg-[#0052CC] flex items-center justify-center text-white shadow-xs">
+              <Building2 size={13} />
+            </div>
+            <span className="text-sm font-bold text-[#172B4D]">Staffify Navigation</span>
+          </div>
+          <button
+            type="button"
+            onClick={onCloseMobile}
+            className="p-1.5 text-[#6B778C] hover:text-[#172B4D] hover:bg-[#EBECF0] rounded transition cursor-pointer"
+            title="Close Menu"
+            aria-label="Close navigation"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Drawer Scrollable Links */}
+        {renderNavLinks()}
+
+        {/* Drawer Footer with Logout */}
+        {renderFooter()}
+      </aside>
+    </>
   );
 }
 

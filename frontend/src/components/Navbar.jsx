@@ -25,9 +25,10 @@ import {
   Target,
   ArrowLeftRight,
   LifeBuoy,
+  Menu,
 } from "lucide-react";
 
-function Navbar() {
+function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
   const { user, logout, isAdmin, isManager } = useAuth();
   const navigate = useNavigate();
 
@@ -60,12 +61,23 @@ function Navbar() {
 
   return (
     <>
-      <header className="h-12 bg-white border-b border-[#DFE1E6] flex items-center justify-between px-3.5 sticky top-0 z-50 select-none">
-        {/* Left: Jira App Switcher, Staffify Brand & Search */}
-        <div className="flex items-center gap-3">
+      <header className="h-12 bg-white border-b border-[#DFE1E6] flex items-center justify-between px-2.5 sm:px-3.5 sticky top-0 z-50 select-none">
+        {/* Left: Mobile Menu, Jira App Switcher, Staffify Brand & Search */}
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          {/* Mobile Hamburger Drawer Toggle */}
+          <button
+            type="button"
+            onClick={onToggleMobileMenu}
+            className="md:hidden p-1.5 text-[#42526E] hover:text-[#172B4D] hover:bg-[#EBECF0] rounded transition cursor-pointer"
+            title="Toggle Navigation Menu"
+            aria-label="Toggle navigation menu"
+          >
+            {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
+
           {/* 9-Dots Jira App Switcher */}
           <button
-            className="p-1.5 text-[#42526E] hover:text-[#172B4D] hover:bg-[#EBECF0] rounded transition cursor-pointer"
+            className="p-1.5 text-[#42526E] hover:text-[#172B4D] hover:bg-[#EBECF0] rounded transition cursor-pointer hidden sm:block"
             title="Atlassian App Switcher"
             onClick={() => {}}
           >
@@ -80,15 +92,15 @@ function Navbar() {
             <div className="w-7 h-7 rounded bg-[#0052CC] flex items-center justify-center text-white shadow-xs">
               <Building2 size={15} />
             </div>
-            <span className="text-sm font-bold text-[#172B4D] tracking-tight group-hover:text-[#0052CC] transition hidden sm:inline">
+            <span className="text-sm font-bold text-[#172B4D] tracking-tight group-hover:text-[#0052CC] transition hidden xs:inline">
               Staffify
             </span>
           </div>
 
           {/* Jira Global Search Bar */}
-          <form onSubmit={handleSearchSubmit} className="relative ml-2">
-            <div className="flex items-center bg-[#FAFBFC] hover:bg-white focus-within:bg-white border border-[#DFE1E6] focus-within:border-[#0052CC] rounded-md px-2.5 py-1 text-xs w-44 sm:w-64 md:w-80 transition shadow-2xs">
-              <Search size={14} className="text-[#6B778C] shrink-0 mr-2" />
+          <form onSubmit={handleSearchSubmit} className="relative ml-1 sm:ml-2">
+            <div className="flex items-center bg-[#FAFBFC] hover:bg-white focus-within:bg-white border border-[#DFE1E6] focus-within:border-[#0052CC] rounded-md px-2 py-1 text-xs w-28 xs:w-36 sm:w-60 md:w-80 transition shadow-2xs">
+              <Search size={13} className="text-[#6B778C] shrink-0 mr-1.5" />
               <input
                 type="text"
                 placeholder="Search"
