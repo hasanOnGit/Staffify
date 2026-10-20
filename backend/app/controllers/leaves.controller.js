@@ -447,6 +447,7 @@ module.exports = function (app) {
     }
   });
 
-  app.use("/", apiRoutes);
   app.use("/api/leaves", apiRoutes);
+  app.use("/api", apiRoutes);
+  app.use("/", apiRoutes);
 };

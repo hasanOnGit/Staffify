@@ -353,5 +353,7 @@ module.exports = function (app) {
   apiRoutes.get("/getOrgTree", getOrgTreeHandler);
   apiRoutes.get("/api/employees/org-tree", getOrgTreeHandler);
 
+  app.use("/api/employees", apiRoutes);
+  app.use("/api", apiRoutes);
   app.use("/", apiRoutes);
 };

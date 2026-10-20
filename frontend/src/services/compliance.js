@@ -5,14 +5,18 @@ export const getComplianceSummary = async (month, year) => {
   return res.data;
 };
 
+const getDownloadBase = () => {
+  return import.meta.env.PROD ? "" : (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000");
+};
+
 export const downloadEpfoEcr = (month, year) => {
-  window.open(`http://localhost:5000/api/compliance/epfo-ecr?month=${month}&year=${year}`, "_blank");
+  window.open(`${getDownloadBase()}/api/compliance/epfo-ecr?month=${month}&year=${year}`, "_blank");
 };
 
 export const downloadEsicReturn = (month, year) => {
-  window.open(`http://localhost:5000/api/compliance/esic-return?month=${month}&year=${year}`, "_blank");
+  window.open(`${getDownloadBase()}/api/compliance/esic-return?month=${month}&year=${year}`, "_blank");
 };
 
 export const downloadBankDisbursement = (month, year) => {
-  window.open(`http://localhost:5000/api/compliance/bank-disbursement?month=${month}&year=${year}`, "_blank");
+  window.open(`${getDownloadBase()}/api/compliance/bank-disbursement?month=${month}&year=${year}`, "_blank");
 };
