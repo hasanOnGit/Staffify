@@ -128,7 +128,19 @@ async function getOrCreateSalaryStructure(employeeId, customCtc = 600000) {
 
 module.exports = function (app) {
   /* ==========================================================
-     GET SALARY STRUCTURE
+     GET ALL SALARY STRUCTURES
+     ========================================================== */
+  apiRoutes.get("/salary-structures", async (req, res) => {
+    try {
+      const structures = await SalaryStructure.find().sort({ employeeId: 1 });
+      return res.status(200).json({ success: true, count: structures.length, data: structures });
+    } catch (err) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  /* ==========================================================
+     GET SALARY STRUCTURE FOR EMPLOYEE
      ========================================================== */
   apiRoutes.get("/salary-structure/:employeeId", async (req, res) => {
     try {

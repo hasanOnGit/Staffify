@@ -283,14 +283,59 @@ module.exports = function (app) {
   });
 
   /**
+   * GET /api/documents/templates
+   * List available official document templates
+   */
+  apiRoutes.get("/templates", async (req, res) => {
+    return res.status(200).json({
+      success: true,
+      data: [
+        {
+          templateType: "Appointment_Offer",
+          title: "Formal Appointment Letter & Compensation Annexure",
+          description: "Full-time offer and appointment letter with itemized monthly & annual CTC annexure.",
+          category: "Employment & Onboarding",
+        },
+        {
+          templateType: "Bonafide_Certificate",
+          title: "Employment Verification & Bonafide Certificate",
+          description: "Official certificate confirming active employment, designation, and tenure for visa, bank, or rental verifications.",
+          category: "Verification",
+        },
+        {
+          templateType: "Salary_Revision",
+          title: "Annual Compensation Revision Letter",
+          description: "Annual appraisal or mid-year salary revision letter showing revised CTC breakdown.",
+          category: "Compensation",
+        },
+        {
+          templateType: "Relieving_Experience",
+          title: "Relieving and Service Experience Certificate",
+          description: "Formal exit relieving certificate certifying character, conduct, and total tenure of service.",
+          category: "Separation",
+        },
+        {
+          templateType: "Address_Proof",
+          title: "Residential Address Confirmation Letter",
+          description: "Company certification of employee residence as per internal HR files.",
+          category: "Verification",
+        },
+      ],
+    });
+  });
+
+  /**
    * GET /api/documents/:id
    * Get single document
    */
   apiRoutes.get("/:id", async (req, res) => {
     try {
-      const doc = await HrDocument.findOne({
-        $or: [{ documentId: req.params.id }, { _id: req.params.id }],
-      });
+      const isOid = req.params.id.length === 24 && /^[0-9a-fA-F]{24}$/.test(req.params.id);
+      const query = isOid
+        ? { $or: [{ documentId: req.params.id }, { _id: req.params.id }] }
+        : { documentId: req.params.id };
+
+      const doc = await HrDocument.findOne(query);
       if (!doc) {
         return res.status(404).json({ error: "Document not found" });
       }

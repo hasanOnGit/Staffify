@@ -65,6 +65,22 @@ module.exports = function (app) {
   });
 
   /**
+   * GET /api/loans/active
+   * List all active loans
+   */
+  apiRoutes.get("/active", async (req, res) => {
+    try {
+      const { employeeId } = req.query;
+      const filter = { status: "Active" };
+      if (employeeId) filter.employeeId = employeeId;
+      const loans = await Loan.find(filter).sort({ createdAt: -1 });
+      return res.status(200).json({ success: true, count: loans.length, data: loans });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  /**
    * GET /api/loans/summary
    * Aggregated active loan statistics
    */

@@ -60,6 +60,25 @@ module.exports = function (app) {
   });
 
   /**
+   * GET /api/biometric/logs
+   * List recent biometric punch logs with optional filtering
+   */
+  apiRoutes.get("/logs", async (req, res) => {
+    try {
+      const { machineId, employeeId, limit = 50 } = req.query;
+      const filter = {};
+      if (machineId) filter.machineId = machineId;
+      if (employeeId) filter.employeeId = employeeId;
+      const logs = await BiometricLog.find(filter)
+        .sort({ punchTime: -1 })
+        .limit(Number(limit) || 50);
+      return res.status(200).json({ success: true, count: logs.length, data: logs });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  /**
    * POST /api/biometric/machines
    * Register a new biometric device terminal
    */

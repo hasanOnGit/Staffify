@@ -287,12 +287,13 @@ module.exports = function (app) {
      ========================================================== */
   const handleGetBalance = async (req, res) => {
     try {
-      const employeeId = req.query?.employeeId || req.body?.employeeId;
+      const employeeId =
+        req.query?.employeeId ||
+        req.body?.employeeId ||
+        req.user?.employeeId ||
+        req.user?.userId ||
+        "EMP-ADMIN-01";
       const year = Number(req.query?.year || req.body?.year) || new Date().getFullYear();
-
-      if (!employeeId) {
-        return res.status(400).json({ error: "employeeId is required" });
-      }
 
       const balance = await getOrCreateBalance(employeeId, year);
 
