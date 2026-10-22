@@ -22,8 +22,8 @@ import {
   UserMinus,
   Webhook,
   X,
-  Building2,
 } from "lucide-react";
+import StaffifyLogo from "./StaffifyLogo";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
@@ -270,12 +270,7 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
       >
         {/* Drawer Header */}
         <div className="h-12 px-3.5 border-b border-[#DFE1E6] flex items-center justify-between bg-[#FAFBFC] shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-[#0052CC] flex items-center justify-center text-white shadow-xs">
-              <Building2 size={13} />
-            </div>
-            <span className="text-sm font-bold text-[#172B4D]">Staffify Navigation</span>
-          </div>
+          <StaffifyLogo size="xs" />
           <button
             type="button"
             onClick={onCloseMobile}

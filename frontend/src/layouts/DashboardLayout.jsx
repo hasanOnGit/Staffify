@@ -14,7 +14,7 @@ function DashboardLayout({ children }) {
 
   return (
     <div className="h-screen flex flex-col bg-[#F4F5F7] overflow-hidden">
-      {/* Top Navbar spans 100% full width (Jira style) */}
+      {/* Top Navbar spans 100% full width */}
       <Navbar
         onToggleMobileMenu={() => setMobileMenuOpen((prev) => !prev)}
         isMobileMenuOpen={mobileMenuOpen}

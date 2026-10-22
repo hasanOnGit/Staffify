@@ -1,3 +1,5 @@
+import StaffifyLogo from "../components/StaffifyLogo";
+
 function AuthLayout({ children }) {
   return (
     <div className="min-h-screen flex bg-[#F4F5F7]">
@@ -5,14 +7,9 @@ function AuthLayout({ children }) {
       <div className="hidden lg:flex w-1/2 bg-[#0747A6] text-white px-16 py-12 flex-col justify-between">
         {/* Top Content */}
         <div>
-          <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-9 h-9 rounded bg-[#0052CC] border border-white/20 flex items-center justify-center font-bold text-lg">
-              S
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight">Staffify</h1>
-          </div>
+          <StaffifyLogo size="lg" textLight={true} subtitle="Enterprise" className="mb-3" />
           <p className="text-xs font-semibold uppercase tracking-wider text-blue-200">
-            Staffify Enterprise Edition
+            Workforce Intelligence & HR Platform
           </p>
 
           <p className="mt-8 text-2xl font-semibold text-white leading-snug">

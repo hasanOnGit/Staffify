@@ -214,7 +214,7 @@ function Recruitment() {
               <span>Recruitment & Applicant Tracking System (ATS)</span>
             </h1>
             <p className="text-xs text-[#6B778C] mt-0.5">
-              Jira Agile Talent Acquisition • Candidate Pipeline Kanban, Job Requisitions, and 1-Click Onboarding
+              Agile Talent Acquisition • Candidate Pipeline Kanban, Job Requisitions, and 1-Click Onboarding
             </p>
           </div>
 
@@ -302,7 +302,7 @@ function Recruitment() {
         </div>
 
         {/* ========================================================
-            TAB 1: JIRA KANBAN CANDIDATE PIPELINE
+            TAB 1: KANBAN CANDIDATE PIPELINE
             ======================================================== */}
         {activeTab === "pipeline" && (
           <div className="space-y-4">

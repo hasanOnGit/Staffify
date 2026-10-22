@@ -242,7 +242,7 @@ function Payroll() {
   return (
     <DashboardLayout>
       <div className="space-y-6 max-w-7xl mx-auto">
-        {/* Top Jira Header with Controls */}
+        {/* Top Header with Controls */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[#DFE1E6]">
           <div>
             <h1 className="text-xl font-bold text-[#172B4D] flex items-center gap-2">
@@ -368,7 +368,7 @@ function Payroll() {
         </div>
 
         {/* ========================================================
-            2. JIRA TABS BAR
+            2. PAYROLL TABS BAR
             ======================================================== */}
         <div className="flex items-center gap-2 border-b border-[#DFE1E6] pb-2 flex-wrap">
           <button

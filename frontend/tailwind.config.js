@@ -14,7 +14,7 @@ export default {
           600: "#0747A6",
           700: "#00388B",
         },
-        jira: {
+        staffify: {
           dark: "#172B4D",
           text: "#172B4D",
           subtle: "#6B778C",

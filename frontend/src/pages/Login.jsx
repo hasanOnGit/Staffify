@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import AuthLayout from "../layouts/AuthLayout";
+import StaffifyLogo from "../components/StaffifyLogo";
 import { useAuth } from "../context/AuthContext";
 import { ShieldCheck, Briefcase, UserCheck, CheckCircle2, AlertCircle, KeyRound } from "lucide-react";
 
@@ -45,6 +46,11 @@ function Login() {
 
   return (
     <AuthLayout>
+      {/* Mobile-only logo display */}
+      <div className="lg:hidden mb-5 flex justify-center">
+        <StaffifyLogo size="md" subtitle="HRMS" />
+      </div>
+
       {/* Heading */}
       <h2 className="text-xl font-bold text-[#172B4D]">
         Sign in to Staffify

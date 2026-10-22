@@ -271,7 +271,7 @@ function Helpdesk() {
               <span>Helpdesk & Internal Asset Management</span>
             </h1>
             <p className="text-xs text-[#6B778C] mt-0.5">
-              Jira Service Desk Operations • Support Tickets, Incident Queues, and IT Asset Allocation
+              Helpdesk & Operations • Support Tickets, Incident Queues, and IT Asset Allocation
             </p>
           </div>
 

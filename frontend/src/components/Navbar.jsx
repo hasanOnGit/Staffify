@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import ClockWidget from "./ClockWidget";
+import StaffifyLogo from "./StaffifyLogo";
 import {
-  Grid,
   Search,
   Plus,
   Bell,
@@ -15,7 +15,6 @@ import {
   ShieldCheck,
   UserCheck,
   Briefcase,
-  Layers,
   CalendarDays,
   UserPlus,
   Clock,
@@ -62,8 +61,8 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
   return (
     <>
       <header className="h-12 bg-white border-b border-[#DFE1E6] flex items-center justify-between px-2.5 sm:px-3.5 sticky top-0 z-50 select-none">
-        {/* Left: Mobile Menu, Jira App Switcher, Staffify Brand & Search */}
-        <div className="flex items-center gap-1.5 sm:gap-3">
+        {/* Left: Mobile Menu, Staffify Brand & Search */}
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Mobile Hamburger Drawer Toggle */}
           <button
             type="button"
@@ -75,29 +74,14 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
             {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
 
-          {/* 9-Dots Jira App Switcher */}
-          <button
-            className="p-1.5 text-[#42526E] hover:text-[#172B4D] hover:bg-[#EBECF0] rounded transition cursor-pointer hidden sm:block"
-            title="Atlassian App Switcher"
-            onClick={() => {}}
-          >
-            <Grid size={18} />
-          </button>
-
-          {/* Staffify Logo / Mark */}
-          <div
+          {/* Proper Staffify Logo */}
+          <StaffifyLogo
+            size="sm"
             onClick={() => navigate("/dashboard")}
-            className="flex items-center gap-2 cursor-pointer group"
-          >
-            <div className="w-7 h-7 rounded bg-[#0052CC] flex items-center justify-center text-white shadow-xs">
-              <Building2 size={15} />
-            </div>
-            <span className="text-sm font-bold text-[#172B4D] tracking-tight group-hover:text-[#0052CC] transition hidden xs:inline">
-              Staffify
-            </span>
-          </div>
+            className="shrink-0"
+          />
 
-          {/* Jira Global Search Bar */}
+          {/* Staffify Global Search Bar */}
           <form onSubmit={handleSearchSubmit} className="relative ml-1 sm:ml-2">
             <div className="flex items-center bg-[#FAFBFC] hover:bg-white focus-within:bg-white border border-[#DFE1E6] focus-within:border-[#0052CC] rounded-md px-2 py-1 text-xs w-28 xs:w-36 sm:w-60 md:w-80 transition shadow-2xs">
               <Search size={13} className="text-[#6B778C] shrink-0 mr-1.5" />
@@ -115,9 +99,9 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
           </form>
         </div>
 
-        {/* Right: + Create, Web Clock-In, Apps, Notifications, Help, Settings & Avatar */}
+        {/* Right: + Create, Web Clock-In, Notifications, Help, Settings & Avatar */}
         <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Signature Jira "+ Create" Button */}
+          {/* Global Quick "+ Create" Action Button */}
           <button
             onClick={() => setShowCreateModal(true)}
             className="bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white px-2.5 sm:px-3 py-1 rounded text-xs font-semibold flex items-center gap-1 shadow-xs transition cursor-pointer shrink-0"
@@ -133,15 +117,7 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
 
           <div className="h-4 w-px bg-[#DFE1E6] hidden sm:block" />
 
-          {/* 4-Squares Jira Apps Icon */}
-          <button
-            className="p-1.5 text-[#42526E] hover:text-[#172B4D] hover:bg-[#EBECF0] rounded transition cursor-pointer hidden md:block"
-            title="Jira Apps & Spaces"
-          >
-            <Layers size={16} />
-          </button>
-
-          {/* Notifications Bell with Jira-style Badge */}
+          {/* Notifications Bell */}
           <button
             className="relative p-1.5 text-[#42526E] hover:text-[#172B4D] hover:bg-[#EBECF0] rounded transition cursor-pointer"
             title="Notifications"
@@ -151,10 +127,11 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
             <span className="absolute top-1 right-1 w-2 h-2 bg-[#FF5630] rounded-full border border-white" />
           </button>
 
-          {/* Help / Support Icon */}
+          {/* Helpdesk & Support */}
           <button
+            onClick={() => navigate("/helpdesk")}
             className="p-1.5 text-[#42526E] hover:text-[#172B4D] hover:bg-[#EBECF0] rounded transition cursor-pointer hidden sm:block"
-            title="Help & Documentation"
+            title="Helpdesk & Support"
           >
             <HelpCircle size={16} />
           </button>
@@ -168,7 +145,7 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
             <Settings size={16} />
           </button>
 
-          {/* User Profile Avatar (Jira Style Amber/Blue Pill) */}
+          {/* User Profile Avatar */}
           <div className="relative">
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
@@ -264,7 +241,7 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
         </div>
       </header>
 
-      {/* Jira "+ Create" Quick Action Modal */}
+      {/* Staffify "+ Create" Quick Action Modal */}
       {showCreateModal && (
         <div
           onClick={() => setShowCreateModal(false)}

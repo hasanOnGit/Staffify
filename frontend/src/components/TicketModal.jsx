@@ -132,7 +132,7 @@ function TicketModal({
               </h3>
               <p className="text-[11px] text-[#6B778C]">
                 {mode === "create"
-                  ? "Jira Service Desk enterprise incident & query management"
+                  ? "Staffify Helpdesk enterprise incident & query management"
                   : ticket?.title}
               </p>
             </div>

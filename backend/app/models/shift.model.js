@@ -39,7 +39,7 @@ const shiftSchema = new mongoose.Schema(
     },
     color: {
       type: String,
-      default: "#0052CC", // Jira blue
+      default: "#0052CC", // Staffify brand blue
     },
     bgColor: {
       type: String,
