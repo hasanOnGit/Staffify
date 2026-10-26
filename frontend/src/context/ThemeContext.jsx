@@ -9,10 +9,7 @@ export function ThemeProvider({ children }) {
     if (savedTheme === "dark" || savedTheme === "light") {
       return savedTheme;
     }
-    // 2. Check system preference
-    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      return "dark";
-    }
+    // 2. Default to light theme
     return "light";
   });
 
