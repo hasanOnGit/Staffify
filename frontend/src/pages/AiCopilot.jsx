@@ -379,6 +379,7 @@ export default function AiCopilot() {
                     <th className="px-3 py-2">Input Query</th>
                     <th className="px-3 py-2">Intent</th>
                     <th className="px-3 py-2">Module</th>
+                    <th className="px-3 py-2">Engine / Model</th>
                     <th className="px-3 py-2">Response Summary</th>
                     <th className="px-3 py-2">Latency</th>
                     <th className="px-3 py-2">Feedback</th>
@@ -387,13 +388,13 @@ export default function AiCopilot() {
                 <tbody className="divide-y divide-[#DFE1E6]">
                   {logsLoading ? (
                     <tr>
-                      <td colSpan={8} className="px-3 py-6 text-center text-xs text-[#6B778C]">
+                      <td colSpan={9} className="px-3 py-6 text-center text-xs text-[#6B778C]">
                         Loading query logs...
                       </td>
                     </tr>
                   ) : logs.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-3 py-6 text-center text-xs text-[#6B778C]">
+                      <td colSpan={9} className="px-3 py-6 text-center text-xs text-[#6B778C]">
                         No query logs found matching criteria.
                       </td>
                     </tr>
@@ -423,7 +424,12 @@ export default function AiCopilot() {
                         <td className="px-3 py-2 whitespace-nowrap text-[#42526E]">
                           {log.resolvedModule}
                         </td>
-                        <td className="px-3 py-2 max-w-[260px] truncate text-[#172B4D]" title={log.responseSummary}>
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#EAE6FF] text-[#403294] border border-[#D3CAFC]">
+                            {log.modelUsed && log.modelUsed.includes("gemini") ? "Google Gemini" : "DSQE"}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2 max-w-[240px] truncate text-[#172B4D]" title={log.responseSummary}>
                           {log.responseSummary || "—"}
                         </td>
                         <td className="px-3 py-2 whitespace-nowrap text-[#6B778C]">

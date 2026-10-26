@@ -115,6 +115,7 @@ export function AiAssistantProvider({ children }) {
             id: res.messageId || "ASST-" + Date.now(),
             role: "assistant",
             logId: res.logId || null,
+            modelUsed: res.modelUsed || null,
             content: res.message,
             summary: res.summary || "",
             description: res.description || "",

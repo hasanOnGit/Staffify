@@ -19,6 +19,7 @@ const aiQueryLogSchema = new mongoose.Schema(
     detailedDescription: { type: String },
     recordCount: { type: Number, default: 0 },
     executionTimeMs: { type: Number, default: 0 },
+    modelUsed: { type: String, default: "dsqe-deterministic" },
     clientRoute: { type: String, default: "" },
     feedback: { type: String, enum: ["up", "down", null], default: null },
     isTrainingSample: { type: Boolean, default: true, index: true },

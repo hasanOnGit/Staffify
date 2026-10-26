@@ -228,6 +228,11 @@ export default function AiMessageItem({ message }) {
                     : "Verified MongoDB Atlas"}
                 </span>
                 <ShieldCheck size={11} className="text-[#00875A]" title="Verified Database Grounding" />
+                {message.modelUsed && (
+                  <span className="ml-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#EAE6FF] text-[#403294] border border-[#D3CAFC]">
+                    {message.modelUsed.includes("gemini") ? "Google Gemini" : "DSQE Engine"}
+                  </span>
+                )}
               </div>
 
               {/* Action buttons & feedback */}

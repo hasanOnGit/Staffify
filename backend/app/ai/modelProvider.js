@@ -256,12 +256,15 @@ Feel free to ask another query or click one of the quick suggestions below.`,
 
   // 3. Optional: Call external LLM (Gemini or OpenAI) for linguistic polish if API key is present
   let naturalResponse = dalResult.summaryText;
+  let startingSummary = dalResult.startingSummary || dalResult.summaryText;
+  let modelUsed = "dsqe-deterministic";
 
-  // If Gemini or OpenAI API keys are present, synthesize a polished response
+  // If Gemini API key is present, synthesize a polished response via Google Gemini
   if (process.env.GEMINI_API_KEY) {
     try {
+      const geminiModel = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${process.env.GEMINI_API_KEY}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -290,6 +293,8 @@ Provide a polite, professional, concise response summarizing the findings:`,
         const geminiText = json.candidates?.[0]?.content?.parts?.[0]?.text;
         if (geminiText) {
           naturalResponse = geminiText.trim();
+          startingSummary = geminiText.trim();
+          modelUsed = `google-gemini (${geminiModel})`;
         }
       }
     } catch (llmErr) {
@@ -299,7 +304,8 @@ Provide a polite, professional, concise response summarizing the findings:`,
 
   return {
     message: naturalResponse,
-    summary: dalResult.startingSummary || dalResult.summaryText || naturalResponse,
+    summary: startingSummary || naturalResponse,
+    modelUsed,
     description: dalResult.detailedDescription || "",
     suggestedFollowUps: dalResult.suggestedFollowUps || [],
     records: dalResult.records,
