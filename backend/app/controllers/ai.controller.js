@@ -136,6 +136,11 @@ module.exports = function (app) {
         summary: aiResult.summary || "",
         description: aiResult.description || "",
         modelUsed: aiResult.modelUsed || "dsqe-deterministic",
+        geminiKeyPresent: Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim()),
+        aiModelEnabled: Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim()),
+        activeModel: Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim())
+          ? (process.env.GEMINI_MODEL || "gemini-3.1-flash-lite")
+          : "dsqe-deterministic",
         suggestedFollowUps: aiResult.suggestedFollowUps || [],
         records: aiResult.records || [],
         columns: aiResult.columns || [],
@@ -252,7 +257,40 @@ module.exports = function (app) {
     try {
       const role = req.user.role || "Employee";
       const capabilities = getCapabilitiesForRole(role);
-      return res.status(200).json({ success: true, role, data: capabilities });
+      const isGeminiPresent = Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim());
+      const geminiModel = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
+
+      return res.status(200).json({
+        success: true,
+        role,
+        geminiKeyPresent: isGeminiPresent,
+        aiModelEnabled: isGeminiPresent,
+        activeModel: isGeminiPresent ? geminiModel : "dsqe-deterministic",
+        engine: isGeminiPresent ? `Google Gemini (${geminiModel})` : "Deterministic Semantic Query Engine (DSQE)",
+        data: capabilities,
+      });
+    } catch (err) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  /* ========================================================
+     6B. GET AI MODEL STATUS & ENGINE HEALTH
+     ======================================================== */
+  apiRoutes.get("/status", authMiddleware, async (req, res) => {
+    try {
+      const isGeminiPresent = Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim());
+      const geminiModel = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
+
+      return res.status(200).json({
+        success: true,
+        geminiKeyPresent: isGeminiPresent,
+        aiModelEnabled: isGeminiPresent,
+        activeModel: isGeminiPresent ? geminiModel : "dsqe-deterministic",
+        engine: isGeminiPresent ? `Google Gemini (${geminiModel})` : "Deterministic Semantic Query Engine (DSQE)",
+        provider: isGeminiPresent ? "Google Generative AI" : "Internal DSQE",
+        status: "operational",
+      });
     } catch (err) {
       return res.status(500).json({ success: false, error: err.message });
     }

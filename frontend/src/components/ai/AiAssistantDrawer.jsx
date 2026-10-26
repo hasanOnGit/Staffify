@@ -12,6 +12,7 @@ export default function AiAssistantDrawer() {
     closeAssistant,
     messages,
     loading,
+    aiStatus,
     sendMessage,
     clearConversation,
   } = useAiAssistant();
@@ -72,13 +73,29 @@ export default function AiAssistantDrawer() {
           <div className="flex items-center gap-2">
             <StaffifyLogo size="xs" showText={false} />
             <div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="font-extrabold text-[#172B4D] text-sm tracking-tight">
                   Staffify AI Copilot
                 </span>
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#DEEBFF] text-[#0747A6] border border-[#B3D4FF] uppercase">
                   Enterprise
                 </span>
+                {aiStatus?.aiModelEnabled ? (
+                  <span
+                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1] flex items-center gap-1"
+                    title={`Google Gemini (${aiStatus.activeModel || "gemini-3.1-flash-lite"}) is active`}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#36B37E] inline-block animate-pulse"></span>
+                    Gemini Active
+                  </span>
+                ) : (
+                  <span
+                    className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[#F4F5F7] text-[#5E6C84] border border-[#DFE1E6]"
+                    title="Operating on built-in Deterministic Semantic Query Engine"
+                  >
+                    DSQE Engine
+                  </span>
+                )}
               </div>
               <div className="flex items-center gap-1 text-[10px] text-[#6B778C]">
                 <Database size={10} className="text-[#0052CC]" />

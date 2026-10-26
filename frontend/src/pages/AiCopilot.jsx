@@ -33,6 +33,7 @@ export default function AiCopilot() {
     sendMessage,
     clearConversation,
     capabilities,
+    aiStatus,
   } = useAiAssistant();
 
   const [activeTab, setActiveTab] = useState("chat"); // "chat" | "logs" | "knowledge"
@@ -143,6 +144,22 @@ export default function AiCopilot() {
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#DEEBFF] text-[#0747A6] border border-[#B3D4FF] uppercase">
                   Universal Analytics & Open Knowledge
                 </span>
+                {aiStatus?.aiModelEnabled ? (
+                  <span
+                    className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1] flex items-center gap-1.5"
+                    title={`Google Gemini (${aiStatus.activeModel || "gemini-3.1-flash-lite"}) is active`}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#36B37E] inline-block animate-pulse"></span>
+                    <span>Gemini Active</span>
+                  </span>
+                ) : (
+                  <span
+                    className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#F4F5F7] text-[#5E6C84] border border-[#DFE1E6]"
+                    title="Operating on built-in Deterministic Semantic Query Engine"
+                  >
+                    DSQE Engine
+                  </span>
+                )}
               </h1>
             </div>
             <p className="text-xs text-[#6B778C] mt-0.5 flex items-center gap-1.5">

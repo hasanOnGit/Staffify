@@ -22,15 +22,35 @@ export function AiAssistantProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [capabilities, setCapabilities] = useState([]);
   const [conversations, setConversations] = useState([]);
+  const [aiStatus, setAiStatus] = useState({
+    geminiKeyPresent: false,
+    aiModelEnabled: false,
+    activeModel: "dsqe-deterministic",
+    engine: "Deterministic Semantic Query Engine (DSQE)",
+  });
 
   const location = useLocation();
 
-  // Load capabilities once
+  // Load capabilities & AI model status on mount
   useEffect(() => {
     aiService
       .getCapabilities()
       .then((data) => setCapabilities(data || []))
       .catch((err) => console.warn("Failed to load AI capabilities:", err.message));
+
+    aiService
+      .getStatus()
+      .then((data) => {
+        if (data?.success) {
+          setAiStatus({
+            geminiKeyPresent: data.geminiKeyPresent || false,
+            aiModelEnabled: data.aiModelEnabled || false,
+            activeModel: data.activeModel || "dsqe-deterministic",
+            engine: data.engine || "Deterministic Semantic Query Engine (DSQE)",
+          });
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Load conversation list when opened
@@ -129,6 +149,17 @@ export function AiAssistantProvider({ children }) {
             context: res.context || {},
           },
         ]);
+
+        if (res.geminiKeyPresent !== undefined) {
+          setAiStatus({
+            geminiKeyPresent: res.geminiKeyPresent,
+            aiModelEnabled: res.aiModelEnabled,
+            activeModel: res.activeModel || "gemini-3.1-flash-lite",
+            engine: res.geminiKeyPresent
+              ? `Google Gemini (${res.activeModel || "gemini-3.1-flash-lite"})`
+              : "Deterministic Semantic Query Engine (DSQE)",
+          });
+        }
       } else {
         setMessages((prev) => [
           ...prev,
@@ -230,6 +261,7 @@ export function AiAssistantProvider({ children }) {
         loading,
         capabilities,
         conversations,
+        aiStatus,
         sendMessage,
         confirmAction,
         clearConversation,

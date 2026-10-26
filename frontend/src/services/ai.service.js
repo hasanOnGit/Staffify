@@ -58,6 +58,14 @@ export const aiService = {
   },
 
   /**
+   * Check AI model status, active engine, and Gemini availability flag
+   */
+  async getStatus() {
+    const res = await api.get("/api/ai/status");
+    return res.data;
+  },
+
+  /**
    * Export query results to CSV
    */
   async exportData(title = "staffify_export", records = [], columns = []) {
