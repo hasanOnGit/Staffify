@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useAiAssistant } from "../context/AiAssistantContext";
 import toast from "react-hot-toast";
 import ClockWidget from "./ClockWidget";
 import StaffifyLogo from "./StaffifyLogo";
@@ -25,10 +26,12 @@ import {
   ArrowLeftRight,
   LifeBuoy,
   Menu,
+  Sparkles,
 } from "lucide-react";
 
 function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
   const { user, logout, isAdmin, isManager } = useAuth();
+  const { toggleAssistant } = useAiAssistant();
   const navigate = useNavigate();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -108,6 +111,17 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
           >
             <Plus size={14} />
             <span>Create</span>
+          </button>
+
+          {/* Ask AI Copilot Button */}
+          <button
+            type="button"
+            onClick={toggleAssistant}
+            className="bg-[#DEEBFF] hover:bg-[#B3D4FF] text-[#0052CC] border border-[#B3D4FF] px-2.5 sm:px-3 py-1 rounded text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition cursor-pointer shrink-0"
+            title="Ask Staffify AI Copilot (Ctrl + J)"
+          >
+            <Sparkles size={13} className="text-[#0052CC]" />
+            <span className="hidden xs:inline">Ask AI</span>
           </button>
 
           {/* Web Clock Widget */}

@@ -20,8 +20,10 @@ import Analytics from "./pages/Analytics";
 import Timesheets from "./pages/Timesheets";
 import Offboarding from "./pages/Offboarding";
 import WebhookBridge from "./pages/WebhookBridge";
+import AiCopilot from "./pages/AiCopilot";
 
 import { useAuth } from "./context/AuthContext";
+import { AiAssistantProvider } from "./context/AiAssistantContext";
 
 /* ============================
    Auth & RBAC Helpers
@@ -82,7 +84,8 @@ function PublicRoute({ children }) {
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
+      <AiAssistantProvider>
+        <Routes>
         {/* Root Redirect */}
         <Route path="/" element={<RootRedirect />} />
 
@@ -195,6 +198,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/copilot"
+          element={
+            <ProtectedRoute>
+              <AiCopilot />
+            </ProtectedRoute>
+          }
+        />
 
         {/* =========================================
             Manager & Admin Only (MSS & Executive)
@@ -271,7 +282,8 @@ function App() {
         {/* Fallback for any unknown route */}
         <Route path="*" element={<RootRedirect />} />
       </Routes>
-    </BrowserRouter>
+    </AiAssistantProvider>
+  </BrowserRouter>
   );
 }
 

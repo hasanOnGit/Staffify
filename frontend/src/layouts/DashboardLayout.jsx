@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+import AiAssistantDrawer from "../components/ai/AiAssistantDrawer";
+import AiFloatingTrigger from "../components/ai/AiFloatingTrigger";
 
 function DashboardLayout({ children }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,6 +32,10 @@ function DashboardLayout({ children }) {
           {children}
         </main>
       </div>
+
+      {/* Global Staffify AI Copilot Drawer & Trigger */}
+      <AiAssistantDrawer />
+      <AiFloatingTrigger />
     </div>
   );
 }

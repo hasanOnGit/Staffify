@@ -22,6 +22,7 @@ import {
   UserMinus,
   Webhook,
   X,
+  Sparkles,
 } from "lucide-react";
 import StaffifyLogo from "./StaffifyLogo";
 import { useAuth } from "../context/AuthContext";
@@ -61,6 +62,16 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
         <NavLink to="/dashboard" className={getNavLinkClass} onClick={onCloseMobile}>
           <LayoutDashboard size={15} />
           <span>For you (Dashboard)</span>
+        </NavLink>
+
+        <NavLink to="/copilot" className={getNavLinkClass} onClick={onCloseMobile}>
+          <Sparkles size={15} className="text-[#0052CC]" />
+          <span className="flex items-center gap-1.5 font-semibold">
+            <span>AI Copilot</span>
+            <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-[#DEEBFF] text-[#0747A6] border border-[#B3D4FF]">
+              AI
+            </span>
+          </span>
         </NavLink>
 
         <NavLink to="/attendance" className={getNavLinkClass} onClick={onCloseMobile}>
