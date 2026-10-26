@@ -181,8 +181,8 @@ function Dashboard() {
         {/* Minimal Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
           <div>
-            <h1 className="text-xl font-bold text-[#172B4D]">Dashboard</h1>
-            <p className="text-xs text-[#6B778C] mt-0.5">
+            <h1 className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9]">Dashboard</h1>
+            <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
               {isAdmin
                 ? "Enterprise overview and workforce operations."
                 : isManager
@@ -192,8 +192,8 @@ function Dashboard() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 text-xs text-[#42526E] bg-white border border-[#DFE1E6] px-3 py-1.5 rounded-md font-medium shadow-2xs">
-              <Calendar size={13} className="text-[#6B778C]" />
+            <span className="inline-flex items-center gap-1.5 text-xs text-[#42526E] dark:text-[#CBD5E1] bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] px-3 py-1.5 rounded-md font-medium shadow-2xs">
+              <Calendar size={13} className="text-[#6B778C] dark:text-[#94A3B8]" />
               <span>{todayStr}</span>
             </span>
           </div>
@@ -253,11 +253,11 @@ function Dashboard() {
             ======================================================== */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-bold text-[#172B4D] uppercase tracking-wider flex items-center gap-1.5">
-              <Layers size={14} className="text-[#0052CC]" />
+            <h2 className="text-xs font-bold text-[#172B4D] dark:text-[#F1F5F9] uppercase tracking-wider flex items-center gap-1.5">
+              <Layers size={14} className="text-[#0052CC] dark:text-[#579DFF]" />
               <span>{isAdmin ? "Admin Command Hub" : isManager ? "Manager Actions" : "Self-Service Hub"}</span>
             </h2>
-            <span className="text-[11px] text-[#6B778C]">Quick access to frequent operations</span>
+            <span className="text-[11px] text-[#6B778C] dark:text-[#94A3B8]">Quick access to frequent operations</span>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -265,24 +265,24 @@ function Dashboard() {
               <>
                 <ActionTile
                   icon={UserPlus}
-                  iconBg="bg-[#DEEBFF]"
-                  iconColor="text-[#0052CC]"
+                  iconBg="bg-[#DEEBFF] dark:bg-[#1C2536]"
+                  iconColor="text-[#0052CC] dark:text-[#579DFF]"
                   title="Onboard Employee"
                   subtitle="New hire & statutory profile"
                   onClick={() => navigate("/employees")}
                 />
                 <ActionTile
                   icon={Building2}
-                  iconBg="bg-[#EAE6FF]"
-                  iconColor="text-[#403294]"
+                  iconBg="bg-[#EAE6FF] dark:bg-purple-950/40"
+                  iconColor="text-[#403294] dark:text-purple-300"
                   title="Configure Squads"
                   subtitle="Department teams & leads"
                   onClick={() => navigate("/teams")}
                 />
                 <ActionTile
                   icon={CheckSquare}
-                  iconBg="bg-[#E3FCEF]"
-                  iconColor="text-[#00875A]"
+                  iconBg="bg-[#E3FCEF] dark:bg-emerald-950/40"
+                  iconColor="text-[#00875A] dark:text-emerald-400"
                   title="Leave Approvals"
                   subtitle={
                     pendingLeaves.length > 0
@@ -294,8 +294,8 @@ function Dashboard() {
                 />
                 <ActionTile
                   icon={Clock}
-                  iconBg="bg-[#FFF0B3]"
-                  iconColor="text-[#B9770E]"
+                  iconBg="bg-[#FFF0B3] dark:bg-amber-950/40"
+                  iconColor="text-[#B9770E] dark:text-amber-300"
                   title="Attendance Swipes"
                   subtitle="Punch audit & regularizations"
                   onClick={() => navigate("/attendance")}
@@ -305,16 +305,16 @@ function Dashboard() {
               <>
                 <ActionTile
                   icon={Users}
-                  iconBg="bg-[#DEEBFF]"
-                  iconColor="text-[#0052CC]"
+                  iconBg="bg-[#DEEBFF] dark:bg-[#1C2536]"
+                  iconColor="text-[#0052CC] dark:text-[#579DFF]"
                   title="My Squad Roster"
                   subtitle="View assigned team members"
                   onClick={() => navigate("/teams")}
                 />
                 <ActionTile
                   icon={CheckSquare}
-                  iconBg="bg-[#E3FCEF]"
-                  iconColor="text-[#00875A]"
+                  iconBg="bg-[#E3FCEF] dark:bg-emerald-950/40"
+                  iconColor="text-[#00875A] dark:text-emerald-400"
                   title="Team Approvals"
                   subtitle={
                     pendingLeaves.length > 0
@@ -326,16 +326,16 @@ function Dashboard() {
                 />
                 <ActionTile
                   icon={Clock}
-                  iconBg="bg-[#FFF0B3]"
-                  iconColor="text-[#B9770E]"
+                  iconBg="bg-[#FFF0B3] dark:bg-amber-950/40"
+                  iconColor="text-[#B9770E] dark:text-amber-300"
                   title="Shift Attendance"
                   subtitle="Squad daily attendance log"
                   onClick={() => navigate("/attendance")}
                 />
                 <ActionTile
                   icon={CalendarDays}
-                  iconBg="bg-[#EAE6FF]"
-                  iconColor="text-[#403294]"
+                  iconBg="bg-[#EAE6FF] dark:bg-purple-950/40"
+                  iconColor="text-[#403294] dark:text-purple-300"
                   title="Apply for Leave"
                   subtitle="Submit personal leave request"
                   onClick={() => navigate("/leaves")}
@@ -345,32 +345,32 @@ function Dashboard() {
               <>
                 <ActionTile
                   icon={Clock}
-                  iconBg="bg-[#DEEBFF]"
-                  iconColor="text-[#0052CC]"
+                  iconBg="bg-[#DEEBFF] dark:bg-[#1C2536]"
+                  iconColor="text-[#0052CC] dark:text-[#579DFF]"
                   title="Attendance & Swipes"
                   subtitle="View punch logs & regularize"
                   onClick={() => navigate("/attendance")}
                 />
                 <ActionTile
                   icon={CalendarDays}
-                  iconBg="bg-[#E3FCEF]"
-                  iconColor="text-[#00875A]"
+                  iconBg="bg-[#E3FCEF] dark:bg-emerald-950/40"
+                  iconColor="text-[#00875A] dark:text-emerald-400"
                   title="Apply Leave"
                   subtitle="Submit time-off application"
                   onClick={() => navigate("/leaves")}
                 />
                 <ActionTile
                   icon={User}
-                  iconBg="bg-[#EAE6FF]"
-                  iconColor="text-[#403294]"
+                  iconBg="bg-[#EAE6FF] dark:bg-purple-950/40"
+                  iconColor="text-[#403294] dark:text-purple-300"
                   title="My Profile 360"
                   subtitle="Job, banking & emergency data"
                   onClick={() => navigate("/profile")}
                 />
                 <ActionTile
                   icon={Calendar}
-                  iconBg="bg-[#FFF0B3]"
-                  iconColor="text-[#B9770E]"
+                  iconBg="bg-[#FFF0B3] dark:bg-amber-950/40"
+                  iconColor="text-[#B9770E] dark:text-amber-300"
                   title="Holiday Calendar"
                   subtitle="View upcoming gazetted off"
                   onClick={() => navigate("/leaves")}
@@ -442,14 +442,14 @@ function Dashboard() {
           {/* ===================== LEFT COLUMN (8 COLS) ===================== */}
           <div className="lg:col-span-8 space-y-6">
             {/* Workforce Attendance Pulse Card */}
-            <div className="bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-xl p-5 shadow-sm transition-colors">
+            <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-5 shadow-sm transition-colors">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                 <div>
-                  <h3 className="font-bold text-[#172B4D] dark:text-neutral-100 text-sm flex items-center gap-2">
-                    <TrendingUp size={16} className="text-[#0052CC] dark:text-[#4C9AFF]" />
+                  <h3 className="font-bold text-[#172B4D] dark:text-[#F1F5F9] text-sm flex items-center gap-2">
+                    <TrendingUp size={16} className="text-[#0052CC] dark:text-[#579DFF]" />
                     <span>Workforce Attendance Pulse</span>
                   </h3>
-                  <p className="text-xs text-[#6B778C] dark:text-neutral-400 mt-0.5">
+                  <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
                     Real-time punch distribution for today ({todayStr})
                   </p>
                 </div>
@@ -460,7 +460,7 @@ function Dashboard() {
                   </span>
                   <button
                     onClick={() => navigate("/attendance")}
-                    className="text-xs font-medium text-[#0052CC] dark:text-[#4C9AFF] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-xs font-medium text-[#0052CC] dark:text-[#579DFF] hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <span>View Logs</span>
                     <ArrowRight size={12} />
@@ -469,7 +469,7 @@ function Dashboard() {
               </div>
 
               {/* Segmented Distribution Progress Bar */}
-              <div className="w-full bg-[#F4F5F7] dark:bg-[#16224A] h-3.5 rounded-full overflow-hidden flex p-0.5 border border-[#DFE1E6] dark:border-[#202E5C] mb-4">
+              <div className="w-full bg-[#F4F5F7] dark:bg-[#1C2331] h-3.5 rounded-full overflow-hidden flex p-0.5 border border-[#DFE1E6] dark:border-[#263042] mb-4">
                 {stats.presentToday > 0 && (
                   <div
                     style={{
@@ -501,53 +501,53 @@ function Dashboard() {
 
               {/* 4 Clean Pulse Stat Chips */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <div className="bg-[#E3FCEF]/40 border border-[#ABF5D1] rounded-lg p-2.5">
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#006644] uppercase tracking-wide">
-                    <span className="w-2 h-2 rounded-full bg-[#00875A]" />
+                <div className="bg-[#E3FCEF]/40 dark:bg-emerald-950/30 border border-[#ABF5D1] dark:border-emerald-800/60 rounded-lg p-2.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#006644] dark:text-emerald-400 uppercase tracking-wide">
+                    <span className="w-2 h-2 rounded-full bg-[#00875A] dark:bg-emerald-400" />
                     <span>Present</span>
                   </div>
                   <div className="flex items-baseline gap-1.5 mt-1">
-                    <span className="text-xl font-bold text-[#006644]">{stats.presentToday}</span>
-                    <span className="text-[11px] text-[#00875A] font-medium">
+                    <span className="text-xl font-bold text-[#006644] dark:text-emerald-300">{stats.presentToday}</span>
+                    <span className="text-[11px] text-[#00875A] dark:text-emerald-400 font-medium">
                       ({Math.round((stats.presentToday / Math.max(1, stats.totalEmployees)) * 100)}%)
                     </span>
                   </div>
                 </div>
 
-                <div className="bg-[#FFEBE6]/40 border border-[#FFBDAD] rounded-lg p-2.5">
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#DE350B] uppercase tracking-wide">
-                    <span className="w-2 h-2 rounded-full bg-[#DE350B]" />
+                <div className="bg-[#FFEBE6]/40 dark:bg-rose-950/30 border border-[#FFBDAD] dark:border-rose-800/60 rounded-lg p-2.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#DE350B] dark:text-rose-400 uppercase tracking-wide">
+                    <span className="w-2 h-2 rounded-full bg-[#DE350B] dark:bg-rose-400" />
                     <span>Absent</span>
                   </div>
                   <div className="flex items-baseline gap-1.5 mt-1">
-                    <span className="text-xl font-bold text-[#DE350B]">{stats.absentToday}</span>
-                    <span className="text-[11px] text-[#DE350B] font-medium">
+                    <span className="text-xl font-bold text-[#DE350B] dark:text-rose-300">{stats.absentToday}</span>
+                    <span className="text-[11px] text-[#DE350B] dark:text-rose-400 font-medium">
                       ({Math.round((stats.absentToday / Math.max(1, stats.totalEmployees)) * 100)}%)
                     </span>
                   </div>
                 </div>
 
-                <div className="bg-[#FFF0B3]/40 border border-[#FFE380] rounded-lg p-2.5">
-                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#B9770E] uppercase tracking-wide">
-                    <span className="w-2 h-2 rounded-full bg-[#FF991F]" />
+                <div className="bg-[#FFF0B3]/40 dark:bg-amber-950/30 border border-[#FFE380] dark:border-amber-800/60 rounded-lg p-2.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#B9770E] dark:text-amber-400 uppercase tracking-wide">
+                    <span className="w-2 h-2 rounded-full bg-[#FF991F] dark:bg-amber-400" />
                     <span>On Leave</span>
                   </div>
                   <div className="flex items-baseline gap-1.5 mt-1">
-                    <span className="text-xl font-bold text-[#B9770E]">{stats.onLeave}</span>
-                    <span className="text-[11px] text-[#B9770E] font-medium">
+                    <span className="text-xl font-bold text-[#B9770E] dark:text-amber-300">{stats.onLeave}</span>
+                    <span className="text-[11px] text-[#B9770E] dark:text-amber-400 font-medium">
                       ({Math.round((stats.onLeave / Math.max(1, stats.totalEmployees)) * 100)}%)
                     </span>
                   </div>
                 </div>
 
-                <div className="bg-[#F4F5F7] dark:bg-[#16224A] border border-[#DFE1E6] dark:border-[#202E5C] rounded-lg p-2.5">
+                <div className="bg-[#F4F5F7] dark:bg-[#1C2331] border border-[#DFE1E6] dark:border-[#263042] rounded-lg p-2.5">
                   <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[#42526E] dark:text-neutral-300 uppercase tracking-wide">
-                    <span className="w-2 h-2 rounded-full bg-[#0052CC] dark:bg-[#4C9AFF]" />
+                    <span className="w-2 h-2 rounded-full bg-[#0052CC] dark:bg-[#579DFF]" />
                     <span>Late Punches</span>
                   </div>
                   <div className="flex items-baseline gap-1.5 mt-1">
-                    <span className="text-xl font-bold text-[#172B4D] dark:text-neutral-100">{stats.lateArrivals}</span>
-                    <span className="text-[11px] text-[#6B778C] dark:text-neutral-400 font-medium">&gt; 09:30 AM</span>
+                    <span className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9]">{stats.lateArrivals}</span>
+                    <span className="text-[11px] text-[#6B778C] dark:text-[#94A3B8] font-medium">&gt; 09:30 AM</span>
                   </div>
                 </div>
               </div>
@@ -555,11 +555,11 @@ function Dashboard() {
 
             {/* Pending Approvals Tray (Admins & Managers) */}
             {(isAdmin || isManager) && (
-              <div className="bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-xl p-5 shadow-sm transition-colors">
+              <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-5 shadow-sm transition-colors">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-[#172B4D] dark:text-neutral-100 text-sm">
+                      <h3 className="font-bold text-[#172B4D] dark:text-[#F1F5F9] text-sm">
                         Pending Leave Applications
                       </h3>
                       {pendingLeaves.length > 0 && (
@@ -568,14 +568,14 @@ function Dashboard() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-[#6B778C] dark:text-neutral-400 mt-0.5">
+                    <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
                       Review and take action directly on employee time-off requests
                     </p>
                   </div>
 
                   <button
                     onClick={() => navigate("/leaves")}
-                    className="text-xs font-semibold text-[#0052CC] dark:text-[#4C9AFF] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-xs font-semibold text-[#0052CC] dark:text-[#579DFF] hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <span>View All Leaves</span>
                     <ArrowRight size={12} />
@@ -583,19 +583,19 @@ function Dashboard() {
                 </div>
 
                 {pendingLeaves.length === 0 ? (
-                  <div className="text-center py-8 bg-[#F4F5F7]/60 dark:bg-[#0B132B]/50 border border-dashed border-[#DFE1E6] dark:border-[#202E5C] rounded-lg">
+                  <div className="text-center py-8 bg-[#F4F5F7]/60 dark:bg-[#090D14]/50 border border-dashed border-[#DFE1E6] dark:border-[#263042] rounded-lg">
                     <div className="w-10 h-10 rounded-full bg-[#E3FCEF] dark:bg-emerald-950/40 text-[#00875A] dark:text-emerald-400 flex items-center justify-center mx-auto mb-2">
                       <CheckCircle2 size={20} />
                     </div>
-                    <p className="text-xs font-semibold text-[#172B4D] dark:text-neutral-100">All Caught Up!</p>
-                    <p className="text-[11px] text-[#6B778C] dark:text-neutral-400 mt-0.5">
+                    <p className="text-xs font-semibold text-[#172B4D] dark:text-[#F1F5F9]">All Caught Up!</p>
+                    <p className="text-[11px] text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
                       There are no pending leave requests awaiting approval.
                     </p>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto border border-[#DFE1E6] dark:border-[#202E5C] rounded-lg">
-                    <table className="min-w-full text-xs divide-y divide-[#DFE1E6] dark:divide-[#202E5C]">
-                      <thead className="bg-[#F4F5F7] dark:bg-[#0B132B] text-[#6B778C] dark:text-neutral-400 font-semibold uppercase text-[11px]">
+                  <div className="overflow-x-auto border border-[#DFE1E6] dark:border-[#263042] rounded-lg">
+                    <table className="min-w-full text-xs divide-y divide-[#DFE1E6] dark:divide-[#263042]">
+                      <thead className="bg-[#F4F5F7] dark:bg-[#090D14] text-[#6B778C] dark:text-[#94A3B8] font-semibold uppercase text-[11px]">
                         <tr>
                           <th className="px-3.5 py-2.5 text-left">Employee</th>
                           <th className="px-3.5 py-2.5 text-left">Type</th>
@@ -604,7 +604,7 @@ function Dashboard() {
                           <th className="px-3.5 py-2.5 text-right">Quick Action</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#DFE1E6] dark:divide-[#202E5C] bg-white dark:bg-[#111C3D]">
+                      <tbody className="divide-y divide-[#DFE1E6] dark:divide-[#263042] bg-white dark:bg-[#151B26]">
                         {pendingLeaves.slice(0, 4).map((leave) => {
                           const fromDateStr = new Date(leave.fromDate).toLocaleDateString("en-US", {
                             month: "short",
@@ -616,23 +616,23 @@ function Dashboard() {
                           });
 
                           return (
-                            <tr key={leave._id || leave.leaveId} className="hover:bg-[#F4F5F7]/50 dark:hover:bg-[#16224A]/50 transition-colors">
+                            <tr key={leave._id || leave.leaveId} className="hover:bg-[#F4F5F7]/50 dark:hover:bg-[#1C2331]/50 transition-colors">
                               <td className="px-3.5 py-2.5">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-7 h-7 rounded-full bg-[#DEEBFF] dark:bg-[#16224A] text-[#0052CC] dark:text-[#4C9AFF] font-bold text-xs flex items-center justify-center shrink-0">
+                                  <div className="w-7 h-7 rounded-full bg-[#DEEBFF] dark:bg-[#1C2331] text-[#0052CC] dark:text-[#579DFF] font-bold text-xs flex items-center justify-center shrink-0">
                                     {leave.employeeName ? leave.employeeName.charAt(0) : "E"}
                                   </div>
                                   <div>
-                                    <p className="font-semibold text-[#172B4D] dark:text-neutral-100">
+                                    <p className="font-semibold text-[#172B4D] dark:text-[#F1F5F9]">
                                       {leave.employeeName || "Employee"}
                                     </p>
-                                    <p className="text-[10px] text-[#6B778C] dark:text-neutral-400">{leave.leaveId}</p>
+                                    <p className="text-[10px] text-[#6B778C] dark:text-[#94A3B8]">{leave.leaveId}</p>
                                   </div>
                                 </div>
                               </td>
 
                               <td className="px-3.5 py-2.5">
-                                <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-[#DEEBFF] dark:bg-[#16224A] text-[#0747A6] dark:text-[#4C9AFF] border border-[#B3D4FF] dark:border-[#202E5C] capitalize">
+                                <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-[#DEEBFF] dark:bg-[#1C2331] text-[#0747A6] dark:text-[#579DFF] border border-[#B3D4FF] dark:border-[#263042] capitalize">
                                   {leave.leaveType} Leave
                                 </span>
                               </td>
@@ -642,7 +642,7 @@ function Dashboard() {
                                   <span className="font-medium">
                                     {fromDateStr} – {toDateStr}
                                   </span>
-                                  <span className="text-[10px] text-[#6B778C] dark:text-neutral-400 block">
+                                  <span className="text-[10px] text-[#6B778C] dark:text-[#94A3B8] block">
                                     {leave.daysCount} {leave.daysCount === 1 ? "day" : "days"}
                                   </span>
                                 </div>
@@ -670,7 +670,7 @@ function Dashboard() {
                                     onClick={() =>
                                       handleQuickLeaveAction(leave.leaveId, "Rejected")
                                     }
-                                    className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#F4F5F7] dark:bg-[#16224A] hover:bg-[#FFEBE6] dark:hover:bg-[#DE350B]/10 text-[#DE350B] border border-[#DFE1E6] dark:border-[#202E5C] hover:border-[#FFBDAD] rounded text-xs font-medium cursor-pointer transition disabled:opacity-50"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#F4F5F7] dark:bg-[#1C2331] hover:bg-[#FFEBE6] dark:hover:bg-[#DE350B]/10 text-[#DE350B] border border-[#DFE1E6] dark:border-[#263042] hover:border-[#FFBDAD] rounded text-xs font-medium cursor-pointer transition disabled:opacity-50"
                                     title="Reject Leave"
                                   >
                                     <X size={12} />
@@ -690,8 +690,8 @@ function Dashboard() {
 
             {/* Employee View: Leave Balances & Punch Status */}
             {!isAdmin && !isManager && (
-              <div className="bg-white border border-[#DFE1E6] rounded-xl p-5 shadow-sm space-y-4">
-                <h3 className="font-bold text-[#172B4D] text-sm flex items-center gap-2">
+              <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-5 shadow-sm space-y-4">
+                <h3 className="font-bold text-[#172B4D] dark:text-[#F1F5F9] text-sm flex items-center gap-2">
                   <CalendarDays size={16} className="text-[#0052CC]" />
                   <span>My Leave Balances & Quotas</span>
                 </h3>
@@ -762,14 +762,14 @@ function Dashboard() {
           {/* ===================== RIGHT COLUMN (4 COLS) ===================== */}
           <div className="lg:col-span-4 space-y-6">
             {/* Upcoming Holiday Spotlight Card */}
-            <div className="bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-xl p-5 shadow-sm transition-colors">
+            <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-5 shadow-sm transition-colors">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-bold text-[#0052CC] dark:text-[#4C9AFF] uppercase tracking-wider flex items-center gap-1">
+                <span className="text-[11px] font-bold text-[#0052CC] dark:text-[#579DFF] uppercase tracking-wider flex items-center gap-1">
                   <Calendar size={13} />
                   <span>Upcoming Holiday</span>
                 </span>
                 {daysUntilHoliday !== null && (
-                  <span className="text-[11px] font-semibold bg-[#DEEBFF] dark:bg-[#16224A] text-[#0052CC] dark:text-[#4C9AFF] px-2 py-0.5 rounded-full border border-[#B3D4FF] dark:border-[#202E5C]">
+                  <span className="text-[11px] font-semibold bg-[#DEEBFF] dark:bg-[#1C2331] text-[#0052CC] dark:text-[#579DFF] px-2 py-0.5 rounded-full border border-[#B3D4FF] dark:border-[#263042]">
                     {daysUntilHoliday === 0
                       ? "Today!"
                       : daysUntilHoliday === 1
@@ -780,8 +780,8 @@ function Dashboard() {
               </div>
 
               {upcomingHoliday ? (
-                <div className="bg-gradient-to-br from-[#DEEBFF]/50 to-[#F4F5F7] dark:from-[#16224A] dark:to-[#0B132B] border border-[#B3D4FF] dark:border-[#202E5C] rounded-lg p-3.5 mb-3">
-                  <h4 className="font-bold text-[#172B4D] dark:text-neutral-100 text-sm">{upcomingHoliday.name}</h4>
+                <div className="bg-gradient-to-br from-[#DEEBFF]/50 to-[#F4F5F7] dark:from-[#1C2331] dark:to-[#090D14] border border-[#B3D4FF] dark:border-[#263042] rounded-lg p-3.5 mb-3">
+                  <h4 className="font-bold text-[#172B4D] dark:text-[#F1F5F9] text-sm">{upcomingHoliday.name}</h4>
                   <div className="flex items-center gap-2 text-xs text-[#42526E] dark:text-neutral-300 mt-1">
                     <span className="font-medium">
                       {new Date(upcomingHoliday.date).toLocaleDateString("en-US", {
@@ -792,26 +792,26 @@ function Dashboard() {
                       })}
                     </span>
                     <span className="text-[#6B778C] dark:text-neutral-500">•</span>
-                    <span className="text-[11px] font-semibold text-[#0052CC] dark:text-[#4C9AFF]">
+                    <span className="text-[11px] font-semibold text-[#0052CC] dark:text-[#579DFF]">
                       {upcomingHoliday.type} Holiday
                     </span>
                   </div>
                   {upcomingHoliday.description && (
-                    <p className="text-[11px] text-[#6B778C] dark:text-neutral-400 mt-2 italic">
+                    <p className="text-[11px] text-[#6B778C] dark:text-[#94A3B8] mt-2 italic">
                       "{upcomingHoliday.description}"
                     </p>
                   )}
                 </div>
               ) : (
-                <div className="py-4 text-center text-xs text-[#6B778C] dark:text-neutral-400">
+                <div className="py-4 text-center text-xs text-[#6B778C] dark:text-[#94A3B8]">
                   No upcoming holidays in the immediate horizon.
                 </div>
               )}
 
               {/* Next 2 upcoming holidays list */}
               {holidays.length > 1 && (
-                <div className="space-y-2 pt-1 border-t border-[#DFE1E6] dark:border-[#202E5C]">
-                  <span className="text-[10px] font-semibold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider block">
+                <div className="space-y-2 pt-1 border-t border-[#DFE1E6] dark:border-[#263042]">
+                  <span className="text-[10px] font-semibold text-[#6B778C] dark:text-[#94A3B8] uppercase tracking-wider block">
                     Upcoming Next
                   </span>
                   {holidays
@@ -823,7 +823,7 @@ function Dashboard() {
                         className="flex items-center justify-between text-xs py-1"
                       >
                         <span className="font-medium text-[#172B4D] dark:text-neutral-200 truncate pr-2">{h.name}</span>
-                        <span className="text-[11px] text-[#6B778C] dark:text-neutral-400 shrink-0">
+                        <span className="text-[11px] text-[#6B778C] dark:text-[#94A3B8] shrink-0">
                           {new Date(h.date).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
@@ -836,7 +836,7 @@ function Dashboard() {
 
               <button
                 onClick={() => navigate("/leaves")}
-                className="w-full mt-3 pt-2 border-t border-[#DFE1E6] dark:border-[#202E5C] text-xs font-semibold text-[#0052CC] dark:text-[#4C9AFF] hover:text-[#0747A6] flex items-center justify-center gap-1 cursor-pointer"
+                className="w-full mt-3 pt-2 border-t border-[#DFE1E6] dark:border-[#263042] text-xs font-semibold text-[#0052CC] dark:text-[#579DFF] hover:text-[#0747A6] flex items-center justify-center gap-1 cursor-pointer"
               >
                 <span>View Full 2026 Calendar</span>
                 <ChevronRight size={13} />
@@ -844,22 +844,22 @@ function Dashboard() {
             </div>
 
             {/* Who's Away Today (Team Out-of-Office Pulse) */}
-            <div className="bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-xl p-5 shadow-sm transition-colors">
+            <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-5 shadow-sm transition-colors">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-bold text-[#172B4D] dark:text-neutral-100 uppercase tracking-wider flex items-center gap-1.5">
+                <span className="text-[11px] font-bold text-[#172B4D] dark:text-[#F1F5F9] uppercase tracking-wider flex items-center gap-1.5">
                   <CalendarX2 size={13} className="text-[#FF991F]" />
                   <span>Who's Away Today</span>
                 </span>
-                <span className="text-[11px] text-[#6B778C] dark:text-neutral-400 font-semibold">
+                <span className="text-[11px] text-[#6B778C] dark:text-[#94A3B8] font-semibold">
                   {teamOnLeave.length} On Leave
                 </span>
               </div>
 
               {teamOnLeave.length === 0 ? (
-                <div className="py-5 text-center bg-[#F4F5F7]/50 dark:bg-[#0B132B]/50 rounded-lg border border-dashed border-[#DFE1E6] dark:border-[#202E5C]">
+                <div className="py-5 text-center bg-[#F4F5F7]/50 dark:bg-[#090D14]/50 rounded-lg border border-dashed border-[#DFE1E6] dark:border-[#263042]">
                   <UserCheck size={20} className="text-[#00875A] dark:text-emerald-400 mx-auto mb-1.5" />
-                  <p className="text-xs font-semibold text-[#172B4D] dark:text-neutral-100">Full Squad Active</p>
-                  <p className="text-[11px] text-[#6B778C] dark:text-neutral-400 mt-0.5">
+                  <p className="text-xs font-semibold text-[#172B4D] dark:text-[#F1F5F9]">Full Squad Active</p>
+                  <p className="text-[11px] text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
                     No colleagues are scheduled on leave today.
                   </p>
                 </div>
@@ -868,17 +868,17 @@ function Dashboard() {
                   {teamOnLeave.map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between p-2.5 bg-[#F4F5F7] dark:bg-[#0B132B] rounded-lg border border-[#DFE1E6] dark:border-[#202E5C]"
+                      className="flex items-center justify-between p-2.5 bg-[#F4F5F7] dark:bg-[#090D14] rounded-lg border border-[#DFE1E6] dark:border-[#263042]"
                     >
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-full bg-[#FFEBE6] dark:bg-rose-950/40 text-[#DE350B] dark:text-rose-300 font-bold text-xs flex items-center justify-center">
                           {item.employeeName?.charAt(0) || "U"}
                         </div>
                         <div>
-                          <p className="text-xs font-semibold text-[#172B4D] dark:text-neutral-100">
+                          <p className="text-xs font-semibold text-[#172B4D] dark:text-[#F1F5F9]">
                             {item.employeeName}
                           </p>
-                          <p className="text-[10px] text-[#6B778C] dark:text-neutral-400 capitalize">
+                          <p className="text-[10px] text-[#6B778C] dark:text-[#94A3B8] capitalize">
                             {item.leaveType} Leave
                           </p>
                         </div>
@@ -893,30 +893,30 @@ function Dashboard() {
             </div>
 
             {/* HR Compliance & Policy Links */}
-            <div className="bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-xl p-5 shadow-sm transition-colors">
-              <span className="text-[11px] font-bold text-[#172B4D] dark:text-neutral-100 uppercase tracking-wider block mb-3">
+            <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-5 shadow-sm transition-colors">
+              <span className="text-[11px] font-bold text-[#172B4D] dark:text-[#F1F5F9] uppercase tracking-wider block mb-3">
                 HR & Organization Shortcuts
               </span>
               <div className="space-y-2">
                 <button
                   onClick={() => navigate("/teams")}
-                  className="w-full text-left p-2.5 rounded-lg border border-[#DFE1E6] dark:border-[#202E5C] hover:bg-[#DEEBFF]/30 dark:hover:bg-[#16224A] hover:border-[#0052CC] transition flex items-center justify-between group cursor-pointer"
+                  className="w-full text-left p-2.5 rounded-lg border border-[#DFE1E6] dark:border-[#263042] hover:bg-[#DEEBFF]/30 dark:hover:bg-[#1C2331] hover:border-[#0052CC] transition flex items-center justify-between group cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
-                    <Building2 size={15} className="text-[#0052CC] dark:text-[#4C9AFF]" />
+                    <Building2 size={15} className="text-[#0052CC] dark:text-[#579DFF]" />
                     <span className="text-xs font-medium text-[#172B4D] dark:text-neutral-200">
                       Squad Directory & Structure
                     </span>
                   </div>
                   <ChevronRight
                     size={14}
-                    className="text-[#6B778C] dark:text-neutral-400 group-hover:text-[#0052CC] dark:group-hover:text-[#4C9AFF] transition"
+                    className="text-[#6B778C] dark:text-[#94A3B8] group-hover:text-[#0052CC] dark:group-hover:text-[#579DFF] transition"
                   />
                 </button>
 
                 <button
                   onClick={() => navigate("/employees")}
-                  className="w-full text-left p-2.5 rounded-lg border border-[#DFE1E6] dark:border-[#202E5C] hover:bg-[#DEEBFF]/30 dark:hover:bg-[#16224A] hover:border-[#0052CC] transition flex items-center justify-between group cursor-pointer"
+                  className="w-full text-left p-2.5 rounded-lg border border-[#DFE1E6] dark:border-[#263042] hover:bg-[#DEEBFF]/30 dark:hover:bg-[#1C2331] hover:border-[#0052CC] transition flex items-center justify-between group cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
                     <FileText size={15} className="text-[#00875A] dark:text-emerald-400" />
@@ -926,13 +926,13 @@ function Dashboard() {
                   </div>
                   <ChevronRight
                     size={14}
-                    className="text-[#6B778C] dark:text-neutral-400 group-hover:text-[#0052CC] dark:group-hover:text-[#4C9AFF] transition"
+                    className="text-[#6B778C] dark:text-[#94A3B8] group-hover:text-[#0052CC] dark:group-hover:text-[#579DFF] transition"
                   />
                 </button>
 
                 <button
                   onClick={() => navigate("/attendance")}
-                  className="w-full text-left p-2.5 rounded-lg border border-[#DFE1E6] dark:border-[#202E5C] hover:bg-[#DEEBFF]/30 dark:hover:bg-[#16224A] hover:border-[#0052CC] transition flex items-center justify-between group cursor-pointer"
+                  className="w-full text-left p-2.5 rounded-lg border border-[#DFE1E6] dark:border-[#263042] hover:bg-[#DEEBFF]/30 dark:hover:bg-[#1C2331] hover:border-[#0052CC] transition flex items-center justify-between group cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
                     <Clock size={15} className="text-[#B9770E] dark:text-amber-400" />
@@ -942,7 +942,7 @@ function Dashboard() {
                   </div>
                   <ChevronRight
                     size={14}
-                    className="text-[#6B778C] dark:text-neutral-400 group-hover:text-[#0052CC] dark:group-hover:text-[#4C9AFF] transition"
+                    className="text-[#6B778C] dark:text-[#94A3B8] group-hover:text-[#0052CC] dark:group-hover:text-[#579DFF] transition"
                   />
                 </button>
               </div>
@@ -965,7 +965,7 @@ function ActionTile({ icon: Icon, iconBg, iconColor, title, subtitle, badge, onC
   return (
     <div
       onClick={onClick}
-      className="bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-xl p-3.5 hover:border-[#0052CC] dark:hover:border-[#4C9AFF] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group flex items-start gap-3 relative"
+      className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-3.5 hover:border-[#0052CC] dark:hover:border-[#579DFF] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group flex items-start gap-3 relative"
     >
       <div className={`w-10 h-10 rounded-lg ${iconBg} ${iconColor} flex items-center justify-center shrink-0`}>
         <Icon size={19} />
@@ -973,7 +973,7 @@ function ActionTile({ icon: Icon, iconBg, iconColor, title, subtitle, badge, onC
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-1">
-          <h4 className="text-xs font-bold text-[#172B4D] dark:text-neutral-100 group-hover:text-[#0052CC] dark:group-hover:text-[#4C9AFF] transition truncate">
+          <h4 className="text-xs font-bold text-[#172B4D] dark:text-[#F1F5F9] group-hover:text-[#0052CC] dark:group-hover:text-[#579DFF] transition truncate">
             {title}
           </h4>
           {badge && (
@@ -982,12 +982,12 @@ function ActionTile({ icon: Icon, iconBg, iconColor, title, subtitle, badge, onC
             </span>
           )}
         </div>
-        <p className="text-[11px] text-[#6B778C] dark:text-neutral-400 truncate mt-0.5">{subtitle}</p>
+        <p className="text-[11px] text-[#6B778C] dark:text-[#94A3B8] truncate mt-0.5">{subtitle}</p>
       </div>
 
       <ChevronRight
         size={14}
-        className="text-[#DFE1E6] dark:text-[#202E5C] group-hover:text-[#0052CC] dark:group-hover:text-[#4C9AFF] group-hover:translate-x-0.5 transition self-center shrink-0"
+        className="text-[#DFE1E6] dark:text-[#263042] group-hover:text-[#0052CC] dark:group-hover:text-[#579DFF] group-hover:translate-x-0.5 transition self-center shrink-0"
       />
     </div>
   );
@@ -1006,15 +1006,15 @@ function KpiMetricCard({
 }) {
   return (
     <div
-      className="bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-xl p-4 shadow-sm relative overflow-hidden transition-colors"
+      className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-4 shadow-sm relative overflow-hidden transition-colors"
       style={{ borderTop: `3px solid ${accentColor}` }}
     >
       <div className="flex items-start justify-between">
         <div>
-          <span className="text-[11px] font-semibold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider block">
+          <span className="text-[11px] font-semibold text-[#6B778C] dark:text-[#94A3B8] uppercase tracking-wider block">
             {title}
           </span>
-          <p className="text-2xl font-bold text-[#172B4D] dark:text-neutral-100 mt-1 tracking-tight">{value}</p>
+          <p className="text-2xl font-bold text-[#172B4D] dark:text-[#F1F5F9] mt-1 tracking-tight">{value}</p>
         </div>
 
         <div className={`w-9 h-9 rounded-lg ${iconBg} ${iconColor} flex items-center justify-center shrink-0`}>
@@ -1024,20 +1024,20 @@ function KpiMetricCard({
 
       {progressBar ? (
         <div className="mt-2.5">
-          <div className="w-full bg-[#EBECF0] dark:bg-[#16224A] h-1.5 rounded-full overflow-hidden">
+          <div className="w-full bg-[#EBECF0] dark:bg-[#1C2331] h-1.5 rounded-full overflow-hidden">
             <div
               style={{ width: `${progressBar.percent}%` }}
               className={`h-full ${progressBar.color} rounded-full transition-all duration-500`}
             />
           </div>
-          <div className="flex items-center justify-between mt-1 text-[10px] text-[#6B778C] dark:text-neutral-400">
+          <div className="flex items-center justify-between mt-1 text-[10px] text-[#6B778C] dark:text-[#94A3B8]">
             <span>{context}</span>
             <span className="font-semibold text-[#00875A] dark:text-emerald-400">{badgeText}</span>
           </div>
         </div>
       ) : (
         <div className="flex items-center justify-between mt-2.5 text-[11px]">
-          <span className="text-[#6B778C] dark:text-neutral-400">{context}</span>
+          <span className="text-[#6B778C] dark:text-[#94A3B8]">{context}</span>
           {badgeText && (
             <span
               className="text-[10px] font-semibold px-2 py-0.5 rounded-full"

@@ -34,8 +34,8 @@ const baseLinkClasses =
 const getNavLinkClass = ({ isActive }) =>
   `${baseLinkClasses} ${
     isActive
-      ? "bg-[#DEEBFF] dark:bg-[#16224A] text-[#0052CC] dark:text-[#4C9AFF] font-semibold border-l-3 border-[#0052CC]"
-      : "text-[#42526E] dark:text-neutral-300 hover:bg-[#EBECF0] dark:hover:bg-[#16224A] hover:text-[#172B4D] dark:hover:text-white"
+      ? "bg-[#DEEBFF] dark:bg-[#1C2331] text-[#0052CC] dark:text-[#579DFF] font-semibold border-l-3 border-[#0052CC] dark:border-[#579DFF]"
+      : "text-[#42526E] dark:text-neutral-300 hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] hover:text-[#172B4D] dark:hover:text-white"
   }`;
 
 function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
@@ -54,7 +54,7 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
       {/* ESS - Employee Self Service */}
       <div className="space-y-0.5">
         <div className="px-3 pb-1">
-          <p className="text-[10px] font-bold text-[#6B778C] uppercase tracking-wider">
+          <p className="text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
             Self Service (ESS)
           </p>
         </div>
@@ -127,12 +127,12 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
 
       {/* MSS - Manager Self Service */}
       {isManager && !isAdmin && (
-        <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6] dark:border-[#202E5C]">
+        <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6] dark:border-[#263042]">
           <div className="flex items-center justify-between px-3 pb-1">
             <p className="text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
               Manager Services
             </p>
-            <span className="text-[9px] font-semibold text-[#0747A6] dark:text-[#4C9AFF] bg-[#DEEBFF] dark:bg-[#16224A] px-1.5 py-0.2 rounded border border-[#B3D4FF] dark:border-[#202E5C]">
+            <span className="text-[9px] font-semibold text-[#0747A6] dark:text-[#579DFF] bg-[#DEEBFF] dark:bg-[#1C2331] px-1.5 py-0.2 rounded border border-[#B3D4FF] dark:border-[#263042]">
               Manager
             </span>
           </div>
@@ -166,7 +166,7 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
 
       {/* HR & System Administration */}
       {isAdmin && (
-        <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6] dark:border-[#202E5C]">
+        <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6] dark:border-[#263042]">
           <div className="flex items-center justify-between px-3 pb-1">
             <p className="text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
               HR & Administration
@@ -216,15 +216,15 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
   );
 
   const renderFooter = () => (
-    <div className="p-3 border-t border-[#DFE1E6] dark:border-[#202E5C] bg-[#F4F5F7] dark:bg-[#0B132B] flex items-center justify-between text-xs shrink-0">
+    <div className="p-3 border-t border-[#DFE1E6] dark:border-[#263042] bg-[#F4F5F7] dark:bg-[#090D14] flex items-center justify-between text-xs shrink-0">
       <div className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded bg-white dark:bg-[#16224A] border border-[#DFE1E6] dark:border-[#202E5C] flex items-center justify-center text-[#42526E] dark:text-neutral-300">
+        <div className="w-6 h-6 rounded bg-white dark:bg-[#1C2331] border border-[#DFE1E6] dark:border-[#263042] flex items-center justify-center text-[#42526E] dark:text-neutral-300">
           {role === "Admin" ? (
             <ShieldCheck size={13} className="text-[#403294] dark:text-purple-400" />
           ) : role === "Manager" ? (
-            <Briefcase size={13} className="text-[#0747A6] dark:text-[#4C9AFF]" />
+            <Briefcase size={13} className="text-[#0747A6] dark:text-[#579DFF]" />
           ) : (
-            <User size={13} className="text-[#0052CC] dark:text-[#4C9AFF]" />
+            <User size={13} className="text-[#0052CC] dark:text-[#579DFF]" />
           )}
         </div>
         <div>
@@ -255,7 +255,7 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
       {/* =========================================
           1. Desktop Static Left Sidebar (md and up)
          ========================================= */}
-      <aside className="w-56 lg:w-60 bg-white dark:bg-[#111C3D] border-r border-[#DFE1E6] dark:border-[#202E5C] hidden md:flex flex-col shrink-0 h-full select-none transition-colors">
+      <aside className="w-56 lg:w-60 bg-white dark:bg-[#0F131C] border-r border-[#DFE1E6] dark:border-[#263042] hidden md:flex flex-col shrink-0 h-full select-none transition-colors">
         {renderNavLinks()}
         {renderFooter()}
       </aside>
@@ -274,18 +274,18 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
 
       {/* Drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-white dark:bg-[#111C3D] z-50 shadow-2xl flex flex-col md:hidden transform transition-transform duration-250 ease-in-out select-none border-r border-transparent dark:border-[#202E5C] ${
+        className={`fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-white dark:bg-[#0F131C] z-50 shadow-2xl flex flex-col md:hidden transform transition-transform duration-250 ease-in-out select-none border-r border-transparent dark:border-[#263042] ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         aria-label="Mobile Navigation Drawer"
       >
         {/* Drawer Header */}
-        <div className="h-12 px-3.5 border-b border-[#DFE1E6] dark:border-[#202E5C] flex items-center justify-between bg-[#FAFBFC] dark:bg-[#111C3D] shrink-0">
+        <div className="h-12 px-3.5 border-b border-[#DFE1E6] dark:border-[#263042] flex items-center justify-between bg-[#FAFBFC] dark:bg-[#0F131C] shrink-0">
           <StaffifyLogo size="xs" />
           <button
             type="button"
             onClick={onCloseMobile}
-            className="p-1.5 text-[#6B778C] dark:text-neutral-400 hover:text-[#172B4D] dark:hover:text-white hover:bg-[#EBECF0] dark:hover:bg-[#16224A] rounded transition cursor-pointer"
+            className="p-1.5 text-[#6B778C] dark:text-neutral-400 hover:text-[#172B4D] dark:hover:text-white hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded transition cursor-pointer"
             title="Close Menu"
             aria-label="Close navigation"
           >

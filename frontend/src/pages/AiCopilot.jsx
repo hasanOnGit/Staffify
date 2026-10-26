@@ -184,13 +184,13 @@ export default function AiCopilot() {
     <DashboardLayout>
       <div className="max-w-7xl mx-auto h-[calc(100vh-5rem)] flex flex-col space-y-3">
         {/* Top Header */}
-        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-2 border-b border-[#DFE1E6] dark:border-[#202E5C]">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-2 border-b border-[#DFE1E6] dark:border-[#263042]">
           <div>
             <div className="flex items-center gap-2">
               <StaffifyLogo size="sm" showText={false} />
               <h1 className="text-xl font-bold text-[#172B4D] dark:text-neutral-100 flex items-center gap-2 flex-wrap">
                 <span>Staffify AI Copilot Workspace</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#DEEBFF] dark:bg-[#16224A] text-[#0747A6] dark:text-[#4C9AFF] border border-[#B3D4FF] dark:border-[#202E5C] uppercase">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#DEEBFF] dark:bg-[#1C2331] text-[#0747A6] dark:text-[#579DFF] border border-[#B3D4FF] dark:border-[#263042] uppercase">
                   Universal Analytics & Open Knowledge
                 </span>
                 {aiStatus?.aiModelEnabled ? (
@@ -203,7 +203,7 @@ export default function AiCopilot() {
                   </span>
                 ) : (
                   <span
-                    className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#F4F5F7] dark:bg-[#16224A] text-[#5E6C84] dark:text-neutral-400 border border-[#DFE1E6] dark:border-[#202E5C]"
+                    className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#F4F5F7] dark:bg-[#1C2331] text-[#5E6C84] dark:text-neutral-400 border border-[#DFE1E6] dark:border-[#263042]"
                     title="Operating on built-in Deterministic Semantic Query Engine"
                   >
                     DSQE Engine
@@ -212,20 +212,20 @@ export default function AiCopilot() {
               </h1>
             </div>
             <p className="text-xs text-[#6B778C] dark:text-neutral-400 mt-0.5 flex items-center gap-1.5">
-              <Database size={12} className="text-[#0052CC] dark:text-[#4C9AFF]" />
+              <Database size={12} className="text-[#0052CC] dark:text-[#579DFF]" />
               <span>Grounded on live MongoDB operational collections and statutory open-source HR knowledge.</span>
             </p>
           </div>
 
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 shrink-0 max-w-full">
             {/* Tab Switcher */}
-            <div className="flex items-center bg-[#EBECF0] dark:bg-[#16224A] p-0.5 rounded-md border border-[#DFE1E6] dark:border-[#202E5C] shrink-0">
+            <div className="flex items-center bg-[#EBECF0] dark:bg-[#1C2331] p-0.5 rounded-md border border-[#DFE1E6] dark:border-[#263042] shrink-0">
               <button
                 type="button"
                 onClick={() => setActiveTab("chat")}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer whitespace-nowrap ${
                   activeTab === "chat"
-                    ? "bg-white dark:bg-[#111C3D] text-[#0052CC] dark:text-[#4C9AFF] shadow-xs"
+                    ? "bg-white dark:bg-[#151B26] text-[#0052CC] dark:text-[#579DFF] shadow-xs"
                     : "text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white"
                 }`}
               >
@@ -237,7 +237,7 @@ export default function AiCopilot() {
                 onClick={() => setActiveTab("logs")}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer whitespace-nowrap ${
                   activeTab === "logs"
-                    ? "bg-white dark:bg-[#111C3D] text-[#0052CC] dark:text-[#4C9AFF] shadow-xs"
+                    ? "bg-white dark:bg-[#151B26] text-[#0052CC] dark:text-[#579DFF] shadow-xs"
                     : "text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white"
                 }`}
               >
@@ -249,7 +249,7 @@ export default function AiCopilot() {
                 onClick={() => setActiveTab("knowledge")}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer whitespace-nowrap ${
                   activeTab === "knowledge"
-                    ? "bg-white dark:bg-[#111C3D] text-[#0052CC] dark:text-[#4C9AFF] shadow-xs"
+                    ? "bg-white dark:bg-[#151B26] text-[#0052CC] dark:text-[#579DFF] shadow-xs"
                     : "text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white"
                 }`}
               >
@@ -261,7 +261,7 @@ export default function AiCopilot() {
                 onClick={() => setActiveTab("watchdog")}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer whitespace-nowrap ${
                   activeTab === "watchdog"
-                    ? "bg-white dark:bg-[#111C3D] text-[#DE350B] dark:text-rose-400 shadow-xs font-bold"
+                    ? "bg-white dark:bg-[#151B26] text-[#DE350B] dark:text-rose-400 shadow-xs font-bold"
                     : "text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white"
                 }`}
               >
@@ -287,7 +287,7 @@ export default function AiCopilot() {
               <button
                 type="button"
                 onClick={clearConversation}
-                className="px-3 py-1.5 bg-white dark:bg-[#16224A] hover:bg-[#F4F5F7] dark:hover:bg-[#202E5C] border border-[#DFE1E6] dark:border-[#202E5C] text-[#172B4D] dark:text-neutral-100 rounded text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs shrink-0 whitespace-nowrap"
+                className="px-3 py-1.5 bg-white dark:bg-[#1C2331] hover:bg-[#F4F5F7] dark:hover:bg-[#263042] border border-[#DFE1E6] dark:border-[#263042] text-[#172B4D] dark:text-neutral-100 rounded text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs shrink-0 whitespace-nowrap"
               >
                 <RefreshCw size={13} />
                 <span>New Session</span>
@@ -300,13 +300,13 @@ export default function AiCopilot() {
         {activeTab === "chat" && (
           <div className="flex-1 flex gap-4 overflow-hidden">
             {/* Left Panel: Capabilities Directory */}
-            <div className="hidden lg:flex w-72 flex-col bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-lg p-3 overflow-y-auto shrink-0 shadow-2xs">
-              <div className="flex items-center gap-1.5 font-bold text-xs text-[#172B4D] dark:text-neutral-100 pb-2 border-b border-[#DFE1E6] dark:border-[#202E5C]">
-                <Layers size={14} className="text-[#0052CC] dark:text-[#4C9AFF]" />
+            <div className="hidden lg:flex w-72 flex-col bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg p-3 overflow-y-auto shrink-0 shadow-2xs">
+              <div className="flex items-center gap-1.5 font-bold text-xs text-[#172B4D] dark:text-neutral-100 pb-2 border-b border-[#DFE1E6] dark:border-[#263042]">
+                <Layers size={14} className="text-[#0052CC] dark:text-[#579DFF]" />
                 <span>Grounded Data Domains</span>
               </div>
 
-              <div className="divide-y divide-[#DFE1E6] dark:divide-[#202E5C] mt-2 space-y-1">
+              <div className="divide-y divide-[#DFE1E6] dark:divide-[#263042] mt-2 space-y-1">
                 {capabilities.map((cap) => (
                   <div key={cap.id} className="pt-2 text-[11px]">
                     <p className="font-semibold text-[#172B4D] dark:text-neutral-100">{cap.displayName}</p>
@@ -319,10 +319,10 @@ export default function AiCopilot() {
                           key={pIdx}
                           type="button"
                           onClick={() => sendMessage(prompt)}
-                          className="text-[9px] text-[#0747A6] dark:text-[#4C9AFF] bg-[#DEEBFF]/40 dark:bg-[#16224A] hover:bg-[#DEEBFF] dark:hover:bg-[#202E5C] px-1.5 py-0.5 rounded text-left truncate max-w-full cursor-pointer transition flex items-center gap-1 border border-transparent dark:border-[#202E5C]"
+                          className="text-[9px] text-[#0747A6] dark:text-[#579DFF] bg-[#DEEBFF]/40 dark:bg-[#1C2331] hover:bg-[#DEEBFF] dark:hover:bg-[#263042] px-1.5 py-0.5 rounded text-left truncate max-w-full cursor-pointer transition flex items-center gap-1 border border-transparent dark:border-[#263042]"
                           title={prompt}
                         >
-                          <ArrowRight size={10} className="shrink-0 text-[#0052CC] dark:text-[#4C9AFF]" />
+                          <ArrowRight size={10} className="shrink-0 text-[#0052CC] dark:text-[#579DFF]" />
                           <span className="truncate">{prompt}</span>
                         </button>
                       ))}
@@ -333,7 +333,7 @@ export default function AiCopilot() {
             </div>
 
             {/* Center: Conversation Canvas */}
-            <div className="flex-1 flex flex-col bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-lg overflow-hidden shadow-2xs">
+            <div className="flex-1 flex flex-col bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg overflow-hidden shadow-2xs">
               {/* Messages Feed */}
               <div className="flex-1 overflow-y-auto p-4 space-y-2">
                 {messages.map((msg) => (
@@ -341,7 +341,7 @@ export default function AiCopilot() {
                 ))}
 
                 {loading && (
-                  <div className="my-3 w-fit bg-[#FAFBFC] dark:bg-[#0B132B] border border-[#DFE1E6] dark:border-[#202E5C] rounded-lg p-3 shadow-2xs">
+                  <div className="my-3 w-fit bg-[#FAFBFC] dark:bg-[#090D14] border border-[#DFE1E6] dark:border-[#263042] rounded-lg p-3 shadow-2xs">
                     <StaffifyLoader size="sm" mode="card" text="Staffify Copilot is synthesizing verified database insights..." showText={false} />
                   </div>
                 )}
@@ -350,11 +350,11 @@ export default function AiCopilot() {
               </div>
 
               {/* Bottom Canvas Input */}
-              <div className="p-3 bg-[#FAFBFC] dark:bg-[#0B132B] border-t border-[#DFE1E6] dark:border-[#202E5C] shrink-0">
+              <div className="p-3 bg-[#FAFBFC] dark:bg-[#090D14] border-t border-[#DFE1E6] dark:border-[#263042] shrink-0">
                 <AiPromptSuggestions />
 
                 <form onSubmit={handleSubmit} className="mt-1">
-                  <div className="flex items-end bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] focus-within:border-[#0052CC] rounded-lg p-2.5 shadow-xs transition">
+                  <div className="flex items-end bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] focus-within:border-[#0052CC] rounded-lg p-2.5 shadow-xs transition">
                     <textarea
                       ref={inputRef}
                       rows={2}

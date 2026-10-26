@@ -65,12 +65,12 @@ export default function AiAssistantDrawer() {
       {/* Drawer Container */}
       <aside
         id="ai-copilot-drawer"
-        className="fixed inset-y-0 right-0 w-full sm:w-[460px] md:w-[500px] bg-[#F4F5F7] dark:bg-[#0B132B] z-50 shadow-2xl flex flex-col border-l border-[#DFE1E6] dark:border-[#202E5C] select-none transform transition-transform duration-250 ease-out"
+        className="fixed inset-y-0 right-0 w-full sm:w-[460px] md:w-[500px] bg-[#F4F5F7] dark:bg-[#090D14] z-50 shadow-2xl flex flex-col border-l border-[#DFE1E6] dark:border-[#263042] select-none transform transition-transform duration-250 ease-out"
         role="dialog"
         aria-label="Staffify AI Copilot Assistant"
       >
         {/* Drawer Header */}
-        <div className="h-14 px-4 bg-white dark:bg-[#111C3D] border-b border-[#DFE1E6] dark:border-[#202E5C] flex items-center justify-between shrink-0 shadow-2xs transition-colors">
+        <div className="h-14 px-4 bg-white dark:bg-[#151B26] border-b border-[#DFE1E6] dark:border-[#263042] flex items-center justify-between shrink-0 shadow-2xs transition-colors">
           <div className="flex items-center gap-2">
             <StaffifyLogo size="xs" showText={false} />
             <div>
@@ -78,7 +78,7 @@ export default function AiAssistantDrawer() {
                 <span className="font-extrabold text-[#172B4D] dark:text-neutral-100 text-sm tracking-tight">
                   Staffify AI Copilot
                 </span>
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#DEEBFF] dark:bg-[#16224A] text-[#0747A6] dark:text-[#4C9AFF] border border-[#B3D4FF] dark:border-[#202E5C] uppercase">
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#DEEBFF] dark:bg-[#1C2331] text-[#0747A6] dark:text-[#579DFF] border border-[#B3D4FF] dark:border-[#263042] uppercase">
                   Enterprise
                 </span>
                 {aiStatus?.aiModelEnabled ? (
@@ -91,7 +91,7 @@ export default function AiAssistantDrawer() {
                   </span>
                 ) : (
                   <span
-                    className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[#F4F5F7] dark:bg-[#16224A] text-[#5E6C84] dark:text-neutral-400 border border-[#DFE1E6] dark:border-[#202E5C]"
+                    className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[#F4F5F7] dark:bg-[#1C2331] text-[#5E6C84] dark:text-neutral-400 border border-[#DFE1E6] dark:border-[#263042]"
                     title="Operating on built-in Deterministic Semantic Query Engine"
                   >
                     DSQE Engine
@@ -99,7 +99,7 @@ export default function AiAssistantDrawer() {
                 )}
               </div>
               <div className="flex items-center gap-1 text-[10px] text-[#6B778C] dark:text-neutral-400">
-                <Database size={10} className="text-[#0052CC] dark:text-[#4C9AFF]" />
+                <Database size={10} className="text-[#0052CC] dark:text-[#579DFF]" />
                 <span>Verified Database Grounding • Zero Hallucination</span>
               </div>
             </div>
@@ -113,7 +113,7 @@ export default function AiAssistantDrawer() {
                 closeAssistant();
                 navigate("/copilot");
               }}
-              className="p-1.5 text-[#6B778C] dark:text-neutral-400 hover:text-[#0052CC] dark:hover:text-[#4C9AFF] hover:bg-[#DEEBFF]/50 dark:hover:bg-[#16224A] rounded transition cursor-pointer"
+              className="p-1.5 text-[#6B778C] dark:text-neutral-400 hover:text-[#0052CC] dark:hover:text-[#579DFF] hover:bg-[#DEEBFF]/50 dark:hover:bg-[#1C2331] rounded transition cursor-pointer"
               title="Open Fullscreen Workspace"
             >
               <ArrowUpRight size={16} />
@@ -123,7 +123,7 @@ export default function AiAssistantDrawer() {
             <button
               type="button"
               onClick={clearConversation}
-              className="p-1.5 text-[#6B778C] dark:text-neutral-400 hover:text-[#172B4D] dark:hover:text-white hover:bg-[#EBECF0] dark:hover:bg-[#16224A] rounded transition cursor-pointer"
+              className="p-1.5 text-[#6B778C] dark:text-neutral-400 hover:text-[#172B4D] dark:hover:text-white hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded transition cursor-pointer"
               title="Start New Session"
             >
               <RefreshCw size={15} />
@@ -149,7 +149,7 @@ export default function AiAssistantDrawer() {
 
           {/* Loading Indicator */}
           {loading && (
-            <div className="my-3 w-fit bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-lg p-2.5 shadow-2xs">
+            <div className="my-3 w-fit bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg p-2.5 shadow-2xs">
               <StaffifyLoader size="sm" mode="card" text="Analyzing database & synthesizing insights..." showText={false} />
             </div>
           )}
@@ -158,11 +158,11 @@ export default function AiAssistantDrawer() {
         </div>
 
         {/* Drawer Footer with Input & Context Prompts */}
-        <div className="p-3 bg-white dark:bg-[#111C3D] border-t border-[#DFE1E6] dark:border-[#202E5C] shrink-0 transition-colors">
+        <div className="p-3 bg-white dark:bg-[#151B26] border-t border-[#DFE1E6] dark:border-[#263042] shrink-0 transition-colors">
           <AiPromptSuggestions />
 
           <form onSubmit={handleSubmit} className="mt-1 relative">
-            <div className="flex items-end bg-[#FAFBFC] dark:bg-[#0B132B] focus-within:bg-white dark:focus-within:bg-[#16224A] border border-[#DFE1E6] dark:border-[#202E5C] focus-within:border-[#0052CC] rounded-lg p-2 transition shadow-2xs">
+            <div className="flex items-end bg-[#FAFBFC] dark:bg-[#090D14] focus-within:bg-white dark:focus-within:bg-[#1C2331] border border-[#DFE1E6] dark:border-[#263042] focus-within:border-[#0052CC] rounded-lg p-2 transition shadow-2xs">
               <textarea
                 ref={inputRef}
                 rows={2}
@@ -183,7 +183,7 @@ export default function AiAssistantDrawer() {
             </div>
             <div className="flex items-center justify-between mt-1.5 px-1 text-[10px] text-[#6B778C] dark:text-neutral-400">
               <span>Press Enter to send • Shift+Enter for new line</span>
-              <span className="font-mono bg-[#EBECF0] dark:bg-[#16224A] px-1 py-0.5 rounded border border-[#DFE1E6] dark:border-[#202E5C]">
+              <span className="font-mono bg-[#EBECF0] dark:bg-[#1C2331] px-1 py-0.5 rounded border border-[#DFE1E6] dark:border-[#263042]">
                 Ctrl + J
               </span>
             </div>

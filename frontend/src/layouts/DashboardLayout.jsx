@@ -15,7 +15,7 @@ function DashboardLayout({ children }) {
   }, [location.pathname]);
 
   return (
-    <div className="h-screen flex flex-col bg-[#F4F5F7] dark:bg-[#0B132B] overflow-hidden transition-colors">
+    <div className="h-screen flex flex-col bg-[#F4F5F7] dark:bg-[#090D14] overflow-hidden transition-colors">
       {/* Top Navbar spans 100% full width */}
       <Navbar
         onToggleMobileMenu={() => setMobileMenuOpen((prev) => !prev)}
@@ -28,7 +28,7 @@ function DashboardLayout({ children }) {
           mobileOpen={mobileMenuOpen}
           onCloseMobile={() => setMobileMenuOpen(false)}
         />
-        <main className="flex-1 overflow-y-auto p-3.5 sm:p-5 md:p-6 bg-[#F4F5F7] dark:bg-[#0B132B] text-[#172B4D] dark:text-[#F4F5F7] transition-colors">
+        <main className="flex-1 overflow-y-auto p-3.5 sm:p-5 md:p-6 bg-[#F4F5F7] dark:bg-[#090D14] text-[#172B4D] dark:text-[#F1F5F9] transition-colors">
           {children}
         </main>
       </div>

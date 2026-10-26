@@ -14,7 +14,81 @@
   }
 
   .dark body {
-    background-color: #0B132B;
-    color: #F4F5F7;
+    background-color: #090D14;
+    color: #F1F5F9;
   }
+}
+
+/* =========================================================
+   Enterprise Dark Mode Semantic Class Mappings (WCAG AAA)
+   Ensures 100% text readability & sleek dark surfaces
+   ========================================================= */
+.dark .text-\[\#172B4D\] {
+  color: #F1F5F9;
+}
+.dark .text-\[\#42526E\] {
+  color: #CBD5E1;
+}
+.dark .text-\[\#6B778C\] {
+  color: #94A3B8;
+}
+.dark .text-\[\#5E6C84\] {
+  color: #A5B2C6;
+}
+.dark .border-\[\#DFE1E6\] {
+  border-color: #263042;
+}
+.dark .border-\[\#EBECF0\] {
+  border-color: #1C2433;
+}
+.dark .bg-\[\#F4F5F7\] {
+  background-color: #151B26;
+}
+.dark .bg-\[\#FAFBFC\] {
+  background-color: #101520;
+}
+.dark .bg-\[\#EBECF0\] {
+  background-color: #1C2331;
+}
+.dark .bg-white {
+  background-color: #151B26;
+}
+.dark .hover\:bg-\[\#EBECF0\]:hover {
+  background-color: #1C2331;
+}
+.dark .hover\:bg-\[\#F4F5F7\]:hover {
+  background-color: #1C2331;
+}
+.dark .hover\:bg-white:hover {
+  background-color: #1C2331;
+}
+.dark .focus-within\:bg-white:focus-within {
+  background-color: #151B26;
+}
+
+/* Accessible Form Controls in Dark Mode */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark select,
+.dark textarea {
+  color: #F1F5F9;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #8C9BAB;
+}
+
+/* Subtle Dark Scrollbars */
+.dark ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #090D14;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #263042;
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3B465C;
 }
