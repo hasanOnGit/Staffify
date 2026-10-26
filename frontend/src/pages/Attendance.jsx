@@ -3,6 +3,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import AttendanceTable from "../components/AttendanceTable";
 import GeofenceModal from "../components/GeofenceModal";
 import BiometricManagerModal from "../components/BiometricManagerModal";
+import StaffifyLoader from "../components/StaffifyLoader";
 import { getAttendanceByDate, requestRegularization } from "../services/attendance";
 import { getGeofenceZones } from "../services/geofence";
 import { getEmployees } from "../services/employee";
@@ -269,9 +270,8 @@ function Attendance() {
 
       {/* Attendance Table */}
       {loading ? (
-        <div className="bg-white border border-[#DFE1E6] rounded p-12 text-center text-[#6B778C]">
-          <RefreshCw size={24} className="animate-spin mx-auto mb-2 text-[#0052CC]" />
-          <p className="text-sm font-medium">Loading live attendance records...</p>
+        <div className="bg-white border border-[#DFE1E6] rounded p-8 text-center shadow-xs">
+          <StaffifyLoader mode="card" size="md" text="Loading live attendance & biometric punch records..." />
         </div>
       ) : (
         <AttendanceTable

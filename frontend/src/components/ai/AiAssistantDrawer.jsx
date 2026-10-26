@@ -3,6 +3,7 @@ import { X, Send, RefreshCw, Sparkles, Database, ShieldCheck, ArrowUpRight } fro
 import { useNavigate } from "react-router-dom";
 import { useAiAssistant } from "../../context/AiAssistantContext";
 import StaffifyLogo from "../StaffifyLogo";
+import StaffifyLoader from "../StaffifyLoader";
 import AiMessageItem from "./AiMessageItem";
 import AiPromptSuggestions from "./AiPromptSuggestions";
 
@@ -148,9 +149,8 @@ export default function AiAssistantDrawer() {
 
           {/* Loading Indicator */}
           {loading && (
-            <div className="flex items-center gap-2.5 my-3 text-xs text-[#6B778C] bg-white border border-[#DFE1E6] rounded-lg p-3 w-fit shadow-2xs">
-              <Sparkles size={14} className="text-[#0052CC] animate-spin" />
-              <span>Querying database and computing metrics...</span>
+            <div className="my-3 w-fit bg-white border border-[#DFE1E6] rounded-lg p-2.5 shadow-2xs">
+              <StaffifyLoader size="sm" mode="card" text="Analyzing database & synthesizing insights..." showText={false} />
             </div>
           )}
 

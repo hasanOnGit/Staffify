@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import TeamTable from "../components/TeamTable";
 import TeamForm from "../components/TeamForm";
+import StaffifyLoader from "../components/StaffifyLoader";
 import { getTeams, createTeam, deleteTeam } from "../services/team";
 import { Plus, X, Search, CheckCircle2 } from "lucide-react";
 
@@ -182,9 +183,8 @@ function Teams() {
 
       {/* Team List Table */}
       {loading ? (
-        <div className="bg-white border border-[#DFE1E6] rounded p-12 text-center text-[#6B778C]">
-          <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-[#0052CC] mx-auto mb-3"></div>
-          <p className="text-xs">Loading organization teams...</p>
+        <div className="bg-white border border-[#DFE1E6] rounded p-8 text-center shadow-xs">
+          <StaffifyLoader mode="card" size="md" text="Loading organizational squad structures..." />
         </div>
       ) : (
         <TeamTable teams={filteredTeams} onDelete={handleDeleteTeam} />

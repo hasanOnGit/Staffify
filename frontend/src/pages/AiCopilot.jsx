@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import StaffifyLogo from "../components/StaffifyLogo";
+import StaffifyLoader from "../components/StaffifyLoader";
 import AiMessageItem from "../components/ai/AiMessageItem";
 import AiPromptSuggestions from "../components/ai/AiPromptSuggestions";
 import { useAiAssistant } from "../context/AiAssistantContext";
@@ -267,9 +268,8 @@ export default function AiCopilot() {
                 ))}
 
                 {loading && (
-                  <div className="flex items-center gap-2.5 my-3 text-xs text-[#6B778C] bg-[#FAFBFC] border border-[#DFE1E6] rounded-lg p-3 w-fit shadow-2xs">
-                    <Sparkles size={14} className="text-[#0052CC] animate-spin" />
-                    <span>Computing metrics and retrieving verified database records...</span>
+                  <div className="my-3 w-fit bg-[#FAFBFC] border border-[#DFE1E6] rounded-lg p-3 shadow-2xs">
+                    <StaffifyLoader size="sm" mode="card" text="Staffify Copilot is synthesizing verified database insights..." showText={false} />
                   </div>
                 )}
 
@@ -405,8 +405,8 @@ export default function AiCopilot() {
                 <tbody className="divide-y divide-[#DFE1E6]">
                   {logsLoading ? (
                     <tr>
-                      <td colSpan={9} className="px-3 py-6 text-center text-xs text-[#6B778C]">
-                        Loading query logs...
+                      <td colSpan={9} className="px-3 py-10 text-center">
+                        <StaffifyLoader size="sm" mode="card" text="Retrieving audit logs & training records..." showText={false} />
                       </td>
                     </tr>
                   ) : logs.length === 0 ? (

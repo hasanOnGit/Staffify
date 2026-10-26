@@ -8,6 +8,7 @@ import {
   deleteEmployee,
 } from "../services/employee";
 import DocumentGeneratorModal from "../components/DocumentGeneratorModal";
+import StaffifyLoader from "../components/StaffifyLoader";
 import { Users, Search, PlusCircle, Filter, RefreshCw, X, Shield, Landmark, User, Briefcase, FileText } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -310,9 +311,8 @@ function Employees() {
 
       {/* Directory Table */}
       {pageLoading ? (
-        <div className="bg-white border rounded-xl p-12 text-center text-gray-400">
-          <RefreshCw size={24} className="animate-spin mx-auto mb-2 text-purple-600" />
-          <p className="text-sm font-medium">Loading employee records...</p>
+        <div className="bg-white border border-[#DFE1E6] rounded-xl p-8 text-center shadow-xs">
+          <StaffifyLoader mode="card" size="md" text="Loading workforce records and department directories..." />
         </div>
       ) : (
         <EmployeeTable

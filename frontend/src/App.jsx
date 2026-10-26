@@ -21,6 +21,7 @@ import Timesheets from "./pages/Timesheets";
 import Offboarding from "./pages/Offboarding";
 import WebhookBridge from "./pages/WebhookBridge";
 import AiCopilot from "./pages/AiCopilot";
+import StaffifyLoader from "./components/StaffifyLoader";
 
 import { useAuth } from "./context/AuthContext";
 import { AiAssistantProvider } from "./context/AiAssistantContext";
@@ -38,11 +39,7 @@ function ProtectedRoute({ children, allowedRoles }) {
   const { user, isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAFBFC]">
-        <div className="w-6 h-6 border-2 border-[#0052CC] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <StaffifyLoader mode="fullscreen" size="lg" text="Authenticating secure workforce session..." />;
   }
 
   if (!isAuthenticated) {
@@ -65,11 +62,7 @@ function PublicRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAFBFC]">
-        <div className="w-6 h-6 border-2 border-[#0052CC] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <StaffifyLoader mode="fullscreen" size="lg" text="Loading Staffify portal..." />;
   }
 
   if (isAuthenticated) {

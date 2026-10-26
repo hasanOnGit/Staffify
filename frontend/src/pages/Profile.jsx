@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
+import StaffifyLoader from "../components/StaffifyLoader";
 import { useAuth } from "../context/AuthContext";
 import { getEmployeeByUserId, updateEmployee } from "../services/employee";
 import { getDocuments } from "../services/hrDocument";
@@ -183,9 +184,8 @@ function Profile() {
       )}
 
       {loading ? (
-        <div className="bg-white border border-[#DFE1E6] rounded p-12 text-center text-[#6B778C]">
-          <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-[#0052CC] mx-auto mb-3"></div>
-          <p className="text-xs">Loading employee dossier...</p>
+        <div className="bg-white border border-[#DFE1E6] rounded p-8 text-center shadow-xs">
+          <StaffifyLoader mode="card" size="md" text="Loading employee 360 profile & statutory dossier..." />
         </div>
       ) : !employee ? (
         <div className="bg-white border border-[#DFE1E6] rounded p-12 text-center text-[#6B778C] text-sm">
