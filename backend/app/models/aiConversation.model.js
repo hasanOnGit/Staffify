@@ -11,7 +11,9 @@ const messageSchema = new mongoose.Schema(
     kpis: { type: mongoose.Schema.Types.Mixed },
     actionDraft: { type: mongoose.Schema.Types.Mixed },
     actionResult: { type: mongoose.Schema.Types.Mixed },
-    citations: [{ source: String, recordCount: Number, timestamp: Date }],
+    summary: { type: String },
+    description: { type: String },
+    suggestedFollowUps: [{ type: String }],
     error: { type: String },
   },
   { _id: false }

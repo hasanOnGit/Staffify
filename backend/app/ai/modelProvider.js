@@ -94,6 +94,9 @@ Provide a polite, professional, concise response summarizing the findings:`,
 
   return {
     message: naturalResponse,
+    summary: dalResult.startingSummary || dalResult.summaryText || naturalResponse,
+    description: dalResult.detailedDescription || "",
+    suggestedFollowUps: dalResult.suggestedFollowUps || [],
     records: dalResult.records,
     columns: dalResult.columns,
     kpis: dalResult.kpis,
