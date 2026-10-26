@@ -52,20 +52,24 @@ export default function StaffifyLogo({
           <defs>
             <linearGradient id="staffifyBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#0052CC" />
-              <stop offset="60%" stopColor="#0747A6" />
+              <stop offset="50%" stopColor="#0747A6" />
               <stop offset="100%" stopColor="#00388B" />
             </linearGradient>
-            <linearGradient id="staffifyAccentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#00C7E6" />
-              <stop offset="100%" stopColor="#4C9AFF" />
+            <linearGradient id="staffifySGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#00F0FF" />
+              <stop offset="40%" stopColor="#FFFFFF" />
+              <stop offset="100%" stopColor="#38B6FF" />
             </linearGradient>
+            <filter id="staffifyDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodColor="#000000" floodOpacity="0.28" />
+            </filter>
           </defs>
 
           {/* Squircle Background Container */}
           <rect
             width="40"
             height="40"
-            rx="11"
+            rx="10"
             fill="url(#staffifyBgGrad)"
           />
           <rect
@@ -73,32 +77,24 @@ export default function StaffifyLogo({
             y="0.75"
             width="38.5"
             height="38.5"
-            rx="10.25"
+            rx="9.25"
             stroke="white"
-            strokeOpacity="0.18"
+            strokeOpacity="0.2"
             strokeWidth="1.5"
           />
 
-          {/* Upper Synergy Curve (White) */}
+          {/* Iconic 'S' Monogram */}
           <path
-            d="M13 18C13 13.58 16.58 10 21 10H23.5C26.54 10 29 12.46 29 15.5C29 18.54 26.54 21 23.5 21H18"
-            stroke="white"
-            strokeWidth="3.6"
+            d="M 27 12 C 22.5 9.5 13 11 13 16.5 C 13 21.8 27 19.2 27 24.5 C 27 30 17.5 31 13 28.2"
+            stroke="url(#staffifySGrad)"
+            strokeWidth="4.2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            filter="url(#staffifyDropShadow)"
           />
 
-          {/* Lower Synergy Curve (Cyan / Blue Accent) */}
-          <path
-            d="M27 22C27 26.42 23.42 30 19 30H16.5C13.46 30 11 27.54 11 24.5C11 21.46 13.46 19 16.5 19H22"
-            stroke="url(#staffifyAccentGrad)"
-            strokeWidth="3.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          {/* Workforce Connection Spark (Interlocking Center Dot) */}
-          <circle cx="20" cy="20" r="1.6" fill="#FFFFFF" />
+          {/* Workforce Connection Spark */}
+          <circle cx="20" cy="20.5" r="1.6" fill="#00F0FF" />
         </svg>
       </div>
 
