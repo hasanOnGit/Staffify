@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const User = require("../models/user.model");
 
+const { seedOpenSourceKnowledgeBase } = require("../ai/knowledgeSeeder");
+
 const demoUsers = [
   { email: "admin@staffify.com", password: "Admin@123", role: "Admin", name: "Staffify Admin" },
   { email: "manager@staffify.com", password: "Manager@123", role: "Manager", name: "Staffify Manager" },
@@ -45,6 +47,7 @@ module.exports = (app) => {
       console.log("MongoDB connection successful");
       await ensureDemoUsers();
       console.log("Demo users verified");
+      await seedOpenSourceKnowledgeBase();
     })
     .catch((err) => {
       console.error("Error connecting to MongoDB:", err);

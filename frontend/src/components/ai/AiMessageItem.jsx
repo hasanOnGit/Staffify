@@ -17,6 +17,7 @@ import AiKpiCards from "./AiKpiCards";
 import AiDataTable from "./AiDataTable";
 import AiActionCard from "./AiActionCard";
 import { useAiAssistant } from "../../context/AiAssistantContext";
+import aiService from "../../services/ai.service";
 import toast from "react-hot-toast";
 
 export default function AiMessageItem({ message }) {
@@ -46,8 +47,14 @@ export default function AiMessageItem({ message }) {
     }
   };
 
-  const handleFeedback = (type) => {
-    setFeedback((prev) => (prev === type ? null : type));
+  const handleFeedback = async (type) => {
+    const nextVal = feedback === type ? null : type;
+    setFeedback(nextVal);
+    if (message.logId) {
+      try {
+        await aiService.submitFeedback(message.logId, nextVal);
+      } catch (_) {}
+    }
     toast.success(type === "up" ? "Thank you for the feedback!" : "Feedback recorded.");
   };
 

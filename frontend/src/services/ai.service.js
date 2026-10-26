@@ -75,6 +75,45 @@ export const aiService = {
     link.remove();
     window.URL.revokeObjectURL(url);
   },
+
+  /**
+   * Get query audit logs with pagination and search
+   */
+  async getLogs(params = {}) {
+    const res = await api.get("/api/ai/logs", { params });
+    return res.data;
+  },
+
+  /**
+   * Submit helpfulness feedback on specific query log
+   */
+  async submitFeedback(logId, feedback) {
+    const res = await api.post(`/api/ai/logs/${logId}/feedback`, { feedback });
+    return res.data;
+  },
+
+  /**
+   * Retrieve open-source HR knowledge base articles
+   */
+  async getKnowledgeBase(params = {}) {
+    const res = await api.get("/api/ai/knowledge", { params });
+    return res.data?.data || [];
+  },
+
+  /**
+   * Download AI instruction-tuning training dataset (JSONL)
+   */
+  async downloadTrainingDataset() {
+    const res = await api.get("/api/ai/training-dataset", { responseType: "blob" });
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `staffify_ai_training_dataset_${Date.now()}.jsonl`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  },
 };
 
 export default aiService;

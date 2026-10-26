@@ -89,8 +89,117 @@ function extractStatus(text = "") {
 function planQuery(messageText = "", previousContext = {}, userRole = "Employee") {
   const text = messageText.trim();
   const lower = text.toLowerCase();
+  const cleanText = lower.replace(/[^\w\s]/g, "").trim();
 
-  // 1. Check if user is asking for an actionable workflow
+  // 1. Check for Conversational Intents (Greetings, Identity, Help, Gratitude, Farewells)
+  const greetingWords = [
+    "hi",
+    "hello",
+    "hey",
+    "good morning",
+    "good afternoon",
+    "good evening",
+    "howdy",
+    "greetings",
+    "yo",
+    "sup",
+  ];
+  const isGreeting =
+    greetingWords.includes(cleanText) ||
+    cleanText.startsWith("hi ") ||
+    cleanText.startsWith("hello ") ||
+    cleanText.startsWith("hey ");
+
+  const isHelpOrCapabilities =
+    cleanText === "help" ||
+    cleanText.includes("who are you") ||
+    cleanText.includes("what can you do") ||
+    cleanText.includes("how can you help") ||
+    cleanText.includes("what are your capabilities") ||
+    cleanText.includes("how do you work") ||
+    cleanText.includes("what are your features") ||
+    cleanText === "guide me" ||
+    cleanText === "commands" ||
+    cleanText === "start";
+
+  const isGratitude =
+    cleanText === "thank you" ||
+    cleanText === "thanks" ||
+    cleanText === "thanks a lot" ||
+    cleanText === "great job" ||
+    cleanText === "awesome" ||
+    cleanText === "perfect" ||
+    cleanText === "nice";
+
+  const isFarewell =
+    cleanText === "bye" ||
+    cleanText === "goodbye" ||
+    cleanText === "see you" ||
+    cleanText === "take care" ||
+    cleanText === "exit";
+
+  if (isGreeting || isHelpOrCapabilities || isGratitude || isFarewell) {
+    let subtype = "GREETING";
+    if (isHelpOrCapabilities) subtype = "HELP";
+    else if (isGratitude) subtype = "GRATITUDE";
+    else if (isFarewell) subtype = "FAREWELL";
+
+    return {
+      type: "CONVERSATIONAL",
+      subtype,
+      messageText: text,
+      module: "conversational",
+    };
+  }
+
+  // 2. Check for Open-Source Knowledge Base & Statutory Policy Inquiries
+  const policyKeywords = [
+    "what is sandwich leave",
+    "sandwich leave policy",
+    "sandwich rule",
+    "what is epf",
+    "epf rate",
+    "epf wage ceiling",
+    "esic guidelines",
+    "esic benefit",
+    "esic threshold",
+    "how is gratuity calculated",
+    "gratuity formula",
+    "gratuity eligibility",
+    "posh act",
+    "posh compliance",
+    "internal complaints committee",
+    "icc committee",
+    "probation period rule",
+    "probation policy",
+    "probation confirmation",
+    "maternity benefit",
+    "creche rule",
+    "overtime calculation",
+    "statutory working hours",
+    "night shift regulation",
+    "fnf settlement timeline",
+    "full and final timeline",
+    "notice period buyout",
+  ];
+
+  const isKnowledgeQuery =
+    policyKeywords.some((kw) => lower.includes(kw)) ||
+    ((lower.startsWith("what is the policy") ||
+      lower.startsWith("explain the policy") ||
+      lower.startsWith("what are the rules for")) &&
+      !lower.includes("leave balance") &&
+      !lower.includes("my "));
+
+  if (isKnowledgeQuery) {
+    return {
+      type: "KNOWLEDGE_BASE",
+      queryText: text,
+      module: "knowledge_base",
+    };
+  }
+
+  // 3. Check if user is asking for an actionable workflow
   if (
     lower.startsWith("apply for leave") ||
     lower.startsWith("request leave") ||
