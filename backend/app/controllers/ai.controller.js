@@ -253,4 +253,5 @@ module.exports = function (app) {
   });
 
   app.use("/api/ai", apiRoutes);
+  app.use("/ai", apiRoutes);
 };

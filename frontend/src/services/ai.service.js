@@ -5,7 +5,7 @@ export const aiService = {
    * Send a query or follow-up to Staffify AI Copilot
    */
   async sendMessage(message, conversationId = null, currentRoute = "") {
-    const res = await api.post("/ai/chat", {
+    const res = await api.post("/api/ai/chat", {
       message,
       conversationId,
       currentRoute,
@@ -17,7 +17,7 @@ export const aiService = {
    * Execute an authorized action draft
    */
   async confirmAction(actionType, params, conversationId = null) {
-    const res = await api.post("/ai/action/confirm", {
+    const res = await api.post("/api/ai/action/confirm", {
       actionType,
       params,
       conversationId,
@@ -29,7 +29,7 @@ export const aiService = {
    * List conversation history threads
    */
   async getConversations() {
-    const res = await api.get("/ai/conversations");
+    const res = await api.get("/api/ai/conversations");
     return res.data?.data || [];
   },
 
@@ -37,7 +37,7 @@ export const aiService = {
    * Get specific conversation thread by ID
    */
   async getConversation(id) {
-    const res = await api.get(`/ai/conversations/${id}`);
+    const res = await api.get(`/api/ai/conversations/${id}`);
     return res.data?.data;
   },
 
@@ -45,7 +45,7 @@ export const aiService = {
    * Delete conversation thread
    */
   async deleteConversation(id) {
-    const res = await api.delete(`/ai/conversations/${id}`);
+    const res = await api.delete(`/api/ai/conversations/${id}`);
     return res.data;
   },
 
@@ -53,7 +53,7 @@ export const aiService = {
    * Get role-tailored capabilities and suggested prompts
    */
   async getCapabilities() {
-    const res = await api.get("/ai/capabilities");
+    const res = await api.get("/api/ai/capabilities");
     return res.data?.data || [];
   },
 
@@ -62,7 +62,7 @@ export const aiService = {
    */
   async exportData(title = "staffify_export", records = [], columns = []) {
     const res = await api.post(
-      "/ai/export",
+      "/api/ai/export",
       { title, records, columns },
       { responseType: "blob" }
     );
