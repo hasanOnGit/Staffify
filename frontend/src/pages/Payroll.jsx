@@ -45,6 +45,7 @@ import {
   FileCheck,
   ExternalLink,
   Plus,
+  CreditCard,
 } from "lucide-react";
 
 const MONTHS = [
