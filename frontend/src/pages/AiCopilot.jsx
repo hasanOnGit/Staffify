@@ -184,18 +184,18 @@ export default function AiCopilot() {
     <DashboardLayout>
       <div className="max-w-7xl mx-auto h-[calc(100vh-5rem)] flex flex-col space-y-3">
         {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#DFE1E6]">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-2 border-b border-[#DFE1E6] dark:border-[#202E5C]">
           <div>
             <div className="flex items-center gap-2">
               <StaffifyLogo size="sm" showText={false} />
-              <h1 className="text-xl font-bold text-[#172B4D] flex items-center gap-2">
+              <h1 className="text-xl font-bold text-[#172B4D] dark:text-neutral-100 flex items-center gap-2 flex-wrap">
                 <span>Staffify AI Copilot Workspace</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#DEEBFF] text-[#0747A6] border border-[#B3D4FF] uppercase">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#DEEBFF] dark:bg-[#16224A] text-[#0747A6] dark:text-[#4C9AFF] border border-[#B3D4FF] dark:border-[#202E5C] uppercase">
                   Universal Analytics & Open Knowledge
                 </span>
                 {aiStatus?.aiModelEnabled ? (
                   <span
-                    className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1] flex items-center gap-1.5"
+                    className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#E3FCEF] dark:bg-emerald-950/40 text-[#006644] dark:text-emerald-400 border border-[#ABF5D1] dark:border-emerald-800 flex items-center gap-1.5"
                     title={`Google Gemini (${aiStatus.activeModel || "gemini-3.1-flash-lite"}) is active`}
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-[#36B37E] inline-block animate-pulse"></span>
@@ -203,7 +203,7 @@ export default function AiCopilot() {
                   </span>
                 ) : (
                   <span
-                    className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#F4F5F7] text-[#5E6C84] border border-[#DFE1E6]"
+                    className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#F4F5F7] dark:bg-[#16224A] text-[#5E6C84] dark:text-neutral-400 border border-[#DFE1E6] dark:border-[#202E5C]"
                     title="Operating on built-in Deterministic Semantic Query Engine"
                   >
                     DSQE Engine
@@ -211,22 +211,22 @@ export default function AiCopilot() {
                 )}
               </h1>
             </div>
-            <p className="text-xs text-[#6B778C] mt-0.5 flex items-center gap-1.5">
-              <Database size={12} className="text-[#0052CC]" />
+            <p className="text-xs text-[#6B778C] dark:text-neutral-400 mt-0.5 flex items-center gap-1.5">
+              <Database size={12} className="text-[#0052CC] dark:text-[#4C9AFF]" />
               <span>Grounded on live MongoDB operational collections and statutory open-source HR knowledge.</span>
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 shrink-0 max-w-full">
             {/* Tab Switcher */}
-            <div className="flex items-center bg-[#EBECF0] p-0.5 rounded-md border border-[#DFE1E6]">
+            <div className="flex items-center bg-[#EBECF0] dark:bg-[#16224A] p-0.5 rounded-md border border-[#DFE1E6] dark:border-[#202E5C] shrink-0">
               <button
                 type="button"
                 onClick={() => setActiveTab("chat")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer whitespace-nowrap ${
                   activeTab === "chat"
-                    ? "bg-white text-[#0052CC] shadow-xs"
-                    : "text-[#42526E] hover:text-[#172B4D]"
+                    ? "bg-white dark:bg-[#111C3D] text-[#0052CC] dark:text-[#4C9AFF] shadow-xs"
+                    : "text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white"
                 }`}
               >
                 <MessageSquare size={13} />
@@ -235,10 +235,10 @@ export default function AiCopilot() {
               <button
                 type="button"
                 onClick={() => setActiveTab("logs")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer whitespace-nowrap ${
                   activeTab === "logs"
-                    ? "bg-white text-[#0052CC] shadow-xs"
-                    : "text-[#42526E] hover:text-[#172B4D]"
+                    ? "bg-white dark:bg-[#111C3D] text-[#0052CC] dark:text-[#4C9AFF] shadow-xs"
+                    : "text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white"
                 }`}
               >
                 <History size={13} />
@@ -247,10 +247,10 @@ export default function AiCopilot() {
               <button
                 type="button"
                 onClick={() => setActiveTab("knowledge")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer whitespace-nowrap ${
                   activeTab === "knowledge"
-                    ? "bg-white text-[#0052CC] shadow-xs"
-                    : "text-[#42526E] hover:text-[#172B4D]"
+                    ? "bg-white dark:bg-[#111C3D] text-[#0052CC] dark:text-[#4C9AFF] shadow-xs"
+                    : "text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white"
                 }`}
               >
                 <BookOpen size={13} />
@@ -259,16 +259,16 @@ export default function AiCopilot() {
               <button
                 type="button"
                 onClick={() => setActiveTab("watchdog")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer whitespace-nowrap ${
                   activeTab === "watchdog"
-                    ? "bg-white text-[#DE350B] shadow-xs font-bold"
-                    : "text-[#42526E] hover:text-[#172B4D]"
+                    ? "bg-white dark:bg-[#111C3D] text-[#DE350B] dark:text-rose-400 shadow-xs font-bold"
+                    : "text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white"
                 }`}
               >
-                <ShieldAlert size={13} className="text-[#DE350B]" />
+                <ShieldAlert size={13} className="text-[#DE350B] dark:text-rose-400" />
                 <span>Workforce Watchdog</span>
                 {watchdogDigest?.criticalCount > 0 && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#DE350B] inline-block animate-ping" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#DE350B] inline-block animate-ping ml-1" />
                 )}
               </button>
             </div>
@@ -277,7 +277,7 @@ export default function AiCopilot() {
             <button
               type="button"
               onClick={() => setShowDocModal(true)}
-              className="px-3 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+              className="px-3 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs shrink-0 whitespace-nowrap"
             >
               <FileText size={13} />
               <span>HR Document Studio</span>
@@ -287,7 +287,7 @@ export default function AiCopilot() {
               <button
                 type="button"
                 onClick={clearConversation}
-                className="px-3 py-1.5 bg-white hover:bg-[#F4F5F7] border border-[#DFE1E6] text-[#172B4D] rounded text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+                className="px-3 py-1.5 bg-white dark:bg-[#16224A] hover:bg-[#F4F5F7] dark:hover:bg-[#202E5C] border border-[#DFE1E6] dark:border-[#202E5C] text-[#172B4D] dark:text-neutral-100 rounded text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs shrink-0 whitespace-nowrap"
               >
                 <RefreshCw size={13} />
                 <span>New Session</span>
@@ -300,17 +300,17 @@ export default function AiCopilot() {
         {activeTab === "chat" && (
           <div className="flex-1 flex gap-4 overflow-hidden">
             {/* Left Panel: Capabilities Directory */}
-            <div className="hidden lg:flex w-72 flex-col bg-white border border-[#DFE1E6] rounded-lg p-3 overflow-y-auto shrink-0 shadow-2xs">
-              <div className="flex items-center gap-1.5 font-bold text-xs text-[#172B4D] pb-2 border-b border-[#DFE1E6]">
-                <Layers size={14} className="text-[#0052CC]" />
+            <div className="hidden lg:flex w-72 flex-col bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-lg p-3 overflow-y-auto shrink-0 shadow-2xs">
+              <div className="flex items-center gap-1.5 font-bold text-xs text-[#172B4D] dark:text-neutral-100 pb-2 border-b border-[#DFE1E6] dark:border-[#202E5C]">
+                <Layers size={14} className="text-[#0052CC] dark:text-[#4C9AFF]" />
                 <span>Grounded Data Domains</span>
               </div>
 
-              <div className="divide-y divide-[#DFE1E6] mt-2 space-y-1">
+              <div className="divide-y divide-[#DFE1E6] dark:divide-[#202E5C] mt-2 space-y-1">
                 {capabilities.map((cap) => (
                   <div key={cap.id} className="pt-2 text-[11px]">
-                    <p className="font-semibold text-[#172B4D]">{cap.displayName}</p>
-                    <p className="text-[#6B778C] text-[10px] line-clamp-2 mt-0.5 leading-tight">
+                    <p className="font-semibold text-[#172B4D] dark:text-neutral-100">{cap.displayName}</p>
+                    <p className="text-[#6B778C] dark:text-neutral-400 text-[10px] line-clamp-2 mt-0.5 leading-tight">
                       {cap.description}
                     </p>
                     <div className="mt-1 flex flex-wrap gap-1">
@@ -319,10 +319,10 @@ export default function AiCopilot() {
                           key={pIdx}
                           type="button"
                           onClick={() => sendMessage(prompt)}
-                          className="text-[9px] text-[#0747A6] bg-[#DEEBFF]/40 hover:bg-[#DEEBFF] px-1.5 py-0.5 rounded text-left truncate max-w-full cursor-pointer transition flex items-center gap-1"
+                          className="text-[9px] text-[#0747A6] dark:text-[#4C9AFF] bg-[#DEEBFF]/40 dark:bg-[#16224A] hover:bg-[#DEEBFF] dark:hover:bg-[#202E5C] px-1.5 py-0.5 rounded text-left truncate max-w-full cursor-pointer transition flex items-center gap-1 border border-transparent dark:border-[#202E5C]"
                           title={prompt}
                         >
-                          <ArrowRight size={10} className="shrink-0 text-[#0052CC]" />
+                          <ArrowRight size={10} className="shrink-0 text-[#0052CC] dark:text-[#4C9AFF]" />
                           <span className="truncate">{prompt}</span>
                         </button>
                       ))}
@@ -333,7 +333,7 @@ export default function AiCopilot() {
             </div>
 
             {/* Center: Conversation Canvas */}
-            <div className="flex-1 flex flex-col bg-white border border-[#DFE1E6] rounded-lg overflow-hidden shadow-2xs">
+            <div className="flex-1 flex flex-col bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-lg overflow-hidden shadow-2xs">
               {/* Messages Feed */}
               <div className="flex-1 overflow-y-auto p-4 space-y-2">
                 {messages.map((msg) => (
@@ -341,7 +341,7 @@ export default function AiCopilot() {
                 ))}
 
                 {loading && (
-                  <div className="my-3 w-fit bg-[#FAFBFC] border border-[#DFE1E6] rounded-lg p-3 shadow-2xs">
+                  <div className="my-3 w-fit bg-[#FAFBFC] dark:bg-[#0B132B] border border-[#DFE1E6] dark:border-[#202E5C] rounded-lg p-3 shadow-2xs">
                     <StaffifyLoader size="sm" mode="card" text="Staffify Copilot is synthesizing verified database insights..." showText={false} />
                   </div>
                 )}
@@ -350,11 +350,11 @@ export default function AiCopilot() {
               </div>
 
               {/* Bottom Canvas Input */}
-              <div className="p-3 bg-[#FAFBFC] border-t border-[#DFE1E6] shrink-0">
+              <div className="p-3 bg-[#FAFBFC] dark:bg-[#0B132B] border-t border-[#DFE1E6] dark:border-[#202E5C] shrink-0">
                 <AiPromptSuggestions />
 
                 <form onSubmit={handleSubmit} className="mt-1">
-                  <div className="flex items-end bg-white border border-[#DFE1E6] focus-within:border-[#0052CC] rounded-lg p-2.5 shadow-xs transition">
+                  <div className="flex items-end bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] focus-within:border-[#0052CC] rounded-lg p-2.5 shadow-xs transition">
                     <textarea
                       ref={inputRef}
                       rows={2}
@@ -362,7 +362,7 @@ export default function AiCopilot() {
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder="Say hello, ask about payroll, request leave, or ask about statutory HR policies..."
-                      className="w-full bg-transparent outline-none text-xs text-[#172B4D] placeholder-[#6B778C] resize-none"
+                      className="w-full bg-transparent outline-none text-xs text-[#172B4D] dark:text-neutral-100 placeholder-[#6B778C] dark:placeholder-neutral-500 resize-none"
                     />
                     <button
                       type="submit"

@@ -225,7 +225,7 @@ function ClockWidget() {
   const isSwipeLocked = geoStatus?.isStrict && !geoStatus?.isWithinGeofence;
 
   return (
-    <div className="flex items-center gap-2 bg-[#F4F5F7] border border-[#DFE1E6] rounded px-2.5 py-1 relative">
+    <div className="flex items-center gap-2 bg-[#F4F5F7] dark:bg-[#0B132B] border border-[#DFE1E6] dark:border-[#202E5C] rounded px-2.5 py-1 relative">
       {/* Status indicator & live timer */}
       <div className="flex items-center gap-2">
         <span
@@ -236,16 +236,16 @@ function ClockWidget() {
           }`}
         />
         <div className="text-xs">
-          <p className="font-semibold text-[#172B4D] font-mono leading-none">
+          <p className="font-semibold text-[#172B4D] dark:text-neutral-100 font-mono leading-none">
             {isClockedIn ? formatTimer(elapsedSeconds) : "00:00:00"}
           </p>
-          <p className="text-[10px] text-[#6B778C] leading-none mt-0.5">
+          <p className="text-[10px] text-[#6B778C] dark:text-neutral-400 leading-none mt-0.5">
             {isClockedIn ? "Session Active" : "Work Timer"}
           </p>
         </div>
       </div>
 
-      <div className="h-5 w-px bg-[#DFE1E6] mx-0.5" />
+      <div className="h-5 w-px bg-[#DFE1E6] dark:bg-[#202E5C] mx-0.5" />
 
       {/* Geofence Status Pill & Popover Trigger */}
       <div className="relative" ref={menuRef}>
@@ -280,16 +280,16 @@ function ClockWidget() {
 
         {/* Location Dropdown Modal */}
         {showLocationMenu && (
-          <div className="absolute top-full left-0 mt-1.5 w-64 bg-white rounded shadow-lg border border-[#DFE1E6] p-3 z-50 animate-in fade-in zoom-in-95 duration-100">
-            <div className="flex items-center justify-between pb-2 border-b border-[#DFE1E6] mb-2">
+          <div className="absolute top-full left-0 mt-1.5 w-64 bg-white dark:bg-[#111C3D] rounded shadow-lg border border-[#DFE1E6] dark:border-[#202E5C] p-3 z-50 animate-in fade-in zoom-in-95 duration-100">
+            <div className="flex items-center justify-between pb-2 border-b border-[#DFE1E6] dark:border-[#202E5C] mb-2">
               <div className="flex items-center gap-1.5">
                 <MapPin size={13} className="text-[#0052CC]" />
-                <span className="text-xs font-semibold text-[#172B4D]">GPS Geofence Status</span>
+                <span className="text-xs font-semibold text-[#172B4D] dark:text-neutral-100">GPS Geofence Status</span>
               </div>
               <button
                 type="button"
                 onClick={() => refreshLocation()}
-                className="text-[#6B778C] hover:text-[#172B4D] p-1 rounded hover:bg-[#F4F5F7] cursor-pointer"
+                className="text-[#6B778C] dark:text-neutral-400 hover:text-[#172B4D] dark:hover:text-white p-1 rounded hover:bg-[#F4F5F7] dark:hover:bg-[#16224A] cursor-pointer"
                 title="Refresh GPS"
               >
                 <RefreshCw size={11} className={geoLoading ? "animate-spin" : ""} />
@@ -297,16 +297,16 @@ function ClockWidget() {
             </div>
 
             <div className="space-y-1.5 text-xs">
-              <div className="flex justify-between items-center text-[#6B778C]">
+              <div className="flex justify-between items-center text-[#6B778C] dark:text-neutral-400">
                 <span>Assigned Zone:</span>
-                <span className="font-semibold text-[#172B4D] truncate max-w-[130px]">
+                <span className="font-semibold text-[#172B4D] dark:text-neutral-100 truncate max-w-[130px]">
                   {geoStatus?.zoneName || "Default HQ"}
                 </span>
               </div>
 
-              <div className="flex justify-between items-center text-[#6B778C]">
+              <div className="flex justify-between items-center text-[#6B778C] dark:text-neutral-400">
                 <span>Distance to Office:</span>
-                <span className="font-mono font-medium text-[#172B4D]">
+                <span className="font-mono font-medium text-[#172B4D] dark:text-neutral-100">
                   {geoStatus?.distanceMeters !== undefined
                     ? geoStatus.distanceMeters < 1000
                       ? `${geoStatus.distanceMeters} m`
@@ -315,14 +315,14 @@ function ClockWidget() {
                 </span>
               </div>
 
-              <div className="flex justify-between items-center text-[#6B778C]">
+              <div className="flex justify-between items-center text-[#6B778C] dark:text-neutral-400">
                 <span>Allowed Radius:</span>
-                <span className="font-mono text-[#172B4D]">
+                <span className="font-mono text-[#172B4D] dark:text-neutral-100">
                   {geoStatus?.radiusMeters ? `${geoStatus.radiusMeters} m` : "300 m"}
                 </span>
               </div>
 
-              <div className="flex justify-between items-center text-[#6B778C]">
+              <div className="flex justify-between items-center text-[#6B778C] dark:text-neutral-400">
                 <span>Swipe Status:</span>
                 <span
                   className={`font-semibold px-1.5 py-0.5 rounded text-[10px] ${
@@ -337,8 +337,8 @@ function ClockWidget() {
             </div>
 
             {/* Test Simulation Controls */}
-            <div className="mt-3 pt-2.5 border-t border-[#DFE1E6]">
-              <div className="flex items-center gap-1 text-[11px] font-semibold text-[#6B778C] mb-1.5">
+            <div className="mt-3 pt-2.5 border-t border-[#DFE1E6] dark:border-[#202E5C]">
+              <div className="flex items-center gap-1 text-[11px] font-semibold text-[#6B778C] dark:text-neutral-400 mb-1.5">
                 <Crosshair size={11} />
                 <span>GPS Simulation Mode</span>
               </div>
@@ -352,7 +352,7 @@ function ClockWidget() {
                   className={`py-1 px-1 rounded text-center font-medium transition cursor-pointer border ${
                     gpsSimMode === "auto"
                       ? "bg-[#0052CC] text-white border-[#0052CC]"
-                      : "bg-[#F4F5F7] text-[#172B4D] border-[#DFE1E6] hover:bg-[#EBECF0]"
+                      : "bg-[#F4F5F7] dark:bg-[#16224A] text-[#172B4D] dark:text-neutral-200 border-[#DFE1E6] dark:border-[#202E5C] hover:bg-[#EBECF0] dark:hover:bg-[#202E5C]"
                   }`}
                 >
                   Device GPS
@@ -366,7 +366,7 @@ function ClockWidget() {
                   className={`py-1 px-1 rounded text-center font-medium transition cursor-pointer border ${
                     gpsSimMode === "office"
                       ? "bg-[#00875A] text-white border-[#00875A]"
-                      : "bg-[#F4F5F7] text-[#172B4D] border-[#DFE1E6] hover:bg-[#EBECF0]"
+                      : "bg-[#F4F5F7] dark:bg-[#16224A] text-[#172B4D] dark:text-neutral-200 border-[#DFE1E6] dark:border-[#202E5C] hover:bg-[#EBECF0] dark:hover:bg-[#202E5C]"
                   }`}
                 >
                   In Office
@@ -380,7 +380,7 @@ function ClockWidget() {
                   className={`py-1 px-1 rounded text-center font-medium transition cursor-pointer border ${
                     gpsSimMode === "outside"
                       ? "bg-[#DE350B] text-white border-[#DE350B]"
-                      : "bg-[#F4F5F7] text-[#172B4D] border-[#DFE1E6] hover:bg-[#EBECF0]"
+                      : "bg-[#F4F5F7] dark:bg-[#16224A] text-[#172B4D] dark:text-neutral-200 border-[#DFE1E6] dark:border-[#202E5C] hover:bg-[#EBECF0] dark:hover:bg-[#202E5C]"
                   }`}
                 >
                   Outside

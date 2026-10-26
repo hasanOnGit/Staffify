@@ -25,6 +25,7 @@ import StaffifyLoader from "./components/StaffifyLoader";
 
 import { useAuth } from "./context/AuthContext";
 import { AiAssistantProvider } from "./context/AiAssistantContext";
+import { ThemeProvider } from "./context/ThemeContext";
 
 /* ============================
    Auth & RBAC Helpers
@@ -77,8 +78,9 @@ function PublicRoute({ children }) {
 function App() {
   return (
     <BrowserRouter>
-      <AiAssistantProvider>
-        <Routes>
+      <ThemeProvider>
+        <AiAssistantProvider>
+          <Routes>
         {/* Root Redirect */}
         <Route path="/" element={<RootRedirect />} />
 
@@ -276,6 +278,7 @@ function App() {
         <Route path="*" element={<RootRedirect />} />
       </Routes>
     </AiAssistantProvider>
+    </ThemeProvider>
   </BrowserRouter>
   );
 }

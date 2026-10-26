@@ -73,8 +73,8 @@ export default function AiMessageItem({ message }) {
       if (trimmed.startsWith("### ")) {
         const headerText = trimmed.replace(/^###\s+/, "");
         return (
-          <div key={lIdx} className="pt-2 pb-0.5 flex items-center gap-1.5 font-bold text-xs text-[#172B4D]">
-            <Lightbulb size={12} className="text-[#0052CC]" />
+          <div key={lIdx} className="pt-2 pb-0.5 flex items-center gap-1.5 font-bold text-xs text-[#172B4D] dark:text-neutral-100">
+            <Lightbulb size={12} className="text-[#0052CC] dark:text-[#4C9AFF]" />
             <span>{headerText}</span>
           </div>
         );
@@ -85,13 +85,13 @@ export default function AiMessageItem({ message }) {
         const bulletText = trimmed.replace(/^-\s+/, "");
         const parts = bulletText.split(/(\*\*.*?\*\*)/g);
         return (
-          <div key={lIdx} className="flex items-start gap-1.5 pl-1 my-0.5 text-[11px] text-[#253858]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#0052CC] shrink-0 mt-1.5" />
+          <div key={lIdx} className="flex items-start gap-1.5 pl-1 my-0.5 text-[11px] text-[#253858] dark:text-neutral-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0052CC] dark:bg-[#4C9AFF] shrink-0 mt-1.5" />
             <div className="leading-snug">
               {parts.map((part, pIdx) => {
                 if (part.startsWith("**") && part.endsWith("**")) {
                   return (
-                    <strong key={pIdx} className="font-semibold text-[#172B4D]">
+                    <strong key={pIdx} className="font-semibold text-[#172B4D] dark:text-white">
                       {part.slice(2, -2)}
                     </strong>
                   );
@@ -106,11 +106,11 @@ export default function AiMessageItem({ message }) {
       // Standard paragraph with bold support
       const parts = line.split(/(\*\*.*?\*\*)/g);
       return (
-        <p key={lIdx} className="text-xs leading-relaxed text-[#172B4D]">
+        <p key={lIdx} className="text-xs leading-relaxed text-[#172B4D] dark:text-neutral-200">
           {parts.map((part, pIdx) => {
             if (part.startsWith("**") && part.endsWith("**")) {
               return (
-                <strong key={pIdx} className="font-bold text-[#0747A6]">
+                <strong key={pIdx} className="font-bold text-[#0747A6] dark:text-[#4C9AFF]">
                   {part.slice(2, -2)}
                 </strong>
               );
@@ -147,8 +147,8 @@ export default function AiMessageItem({ message }) {
           isUser
             ? "bg-[#0052CC] text-white rounded-tr-none shadow-xs"
             : isError
-            ? "bg-[#FFEBE6] text-[#DE350B] border border-[#FFBDAD] rounded-tl-none"
-            : "bg-white text-[#172B4D] border border-[#DFE1E6] rounded-tl-none shadow-2xs"
+            ? "bg-[#FFEBE6] dark:bg-rose-950/40 text-[#DE350B] dark:text-rose-300 border border-[#FFBDAD] dark:border-rose-900 rounded-tl-none"
+            : "bg-white dark:bg-[#111C3D] text-[#172B4D] dark:text-[#F4F5F7] border border-[#DFE1E6] dark:border-[#202E5C] rounded-tl-none shadow-2xs"
         }`}
       >
         {/* User Message View */}
@@ -158,8 +158,8 @@ export default function AiMessageItem({ message }) {
         {!isUser && (
           <div className="space-y-3">
             {/* 1. STARTING EXECUTIVE SUMMARY */}
-            <div className="bg-[#FAFBFC] border border-[#DFE1E6] rounded-md p-2.5">
-              <div className="flex items-center gap-1.5 pb-1 mb-1.5 border-b border-[#EBECF0] text-[10px] font-bold uppercase tracking-wider text-[#0052CC]">
+            <div className="bg-[#FAFBFC] dark:bg-[#0B132B] border border-[#DFE1E6] dark:border-[#202E5C] rounded-md p-2.5">
+              <div className="flex items-center gap-1.5 pb-1 mb-1.5 border-b border-[#EBECF0] dark:border-[#202E5C] text-[10px] font-bold uppercase tracking-wider text-[#0052CC] dark:text-[#4C9AFF]">
                 <Sparkles size={11} />
                 <span>Executive Summary</span>
               </div>
@@ -187,9 +187,9 @@ export default function AiMessageItem({ message }) {
 
             {/* 5. DETAILED BREAKDOWN & ANALYTICAL DESCRIPTION */}
             {detailedDescription && (
-              <div className="bg-[#FAFBFC] border border-[#DFE1E6] rounded-md p-3">
-                <div className="flex items-center gap-1.5 pb-1 mb-2 border-b border-[#EBECF0] text-[10px] font-bold uppercase tracking-wider text-[#42526E]">
-                  <FileText size={11} className="text-[#0052CC]" />
+              <div className="bg-[#FAFBFC] dark:bg-[#0B132B] border border-[#DFE1E6] dark:border-[#202E5C] rounded-md p-3">
+                <div className="flex items-center gap-1.5 pb-1 mb-2 border-b border-[#EBECF0] dark:border-[#202E5C] text-[10px] font-bold uppercase tracking-wider text-[#42526E] dark:text-neutral-300">
+                  <FileText size={11} className="text-[#0052CC] dark:text-[#4C9AFF]" />
                   <span>Analytical Breakdown & Insights</span>
                 </div>
                 <div className="space-y-1 text-xs">{renderFormattedText(detailedDescription)}</div>
@@ -201,9 +201,9 @@ export default function AiMessageItem({ message }) {
 
             {/* 6. INTERACTIVE CLICKABLE SUGGESTED FOLLOW-UPS */}
             {followUps.length > 0 && (
-              <div className="pt-2 border-t border-[#EBECF0]">
-                <p className="text-[10px] font-semibold text-[#6B778C] mb-1.5 flex items-center gap-1">
-                  <CornerDownRight size={11} className="text-[#0052CC]" />
+              <div className="pt-2 border-t border-[#EBECF0] dark:border-[#202E5C]">
+                <p className="text-[10px] font-semibold text-[#6B778C] dark:text-neutral-400 mb-1.5 flex items-center gap-1">
+                  <CornerDownRight size={11} className="text-[#0052CC] dark:text-[#4C9AFF]" />
                   <span>Suggested Next Questions:</span>
                 </p>
                 <div className="flex flex-wrap gap-1.5">
@@ -212,9 +212,9 @@ export default function AiMessageItem({ message }) {
                       key={idx}
                       type="button"
                       onClick={() => sendMessage(prompt)}
-                      className="px-2.5 py-1 rounded-full bg-[#FAFBFC] hover:bg-[#DEEBFF] hover:border-[#0052CC] border border-[#DFE1E6] text-[11px] text-[#0747A6] font-medium transition cursor-pointer text-left flex items-center gap-1 shadow-2xs"
+                      className="px-2.5 py-1 rounded-full bg-[#FAFBFC] dark:bg-[#0B132B] hover:bg-[#DEEBFF] dark:hover:bg-[#16224A] hover:border-[#0052CC] dark:hover:border-[#4C9AFF] border border-[#DFE1E6] dark:border-[#202E5C] text-[11px] text-[#0747A6] dark:text-[#4C9AFF] font-medium transition cursor-pointer text-left flex items-center gap-1 shadow-2xs"
                     >
-                      <Sparkles size={10} className="text-[#0052CC] shrink-0" />
+                      <Sparkles size={10} className="text-[#0052CC] dark:text-[#4C9AFF] shrink-0" />
                       <span>{prompt}</span>
                     </button>
                   ))}
@@ -223,23 +223,23 @@ export default function AiMessageItem({ message }) {
             )}
 
             {/* 7. UTILITY FOOTER: CITATION, FEEDBACK & TIMESTAMP */}
-            <div className="pt-2 border-t border-[#DFE1E6] flex flex-wrap items-center justify-between gap-2 text-[10px] text-[#6B778C]">
+            <div className="pt-2 border-t border-[#DFE1E6] dark:border-[#202E5C] flex flex-wrap items-center justify-between gap-2 text-[10px] text-[#6B778C] dark:text-neutral-400">
               {/* Database citation badge & model/language info */}
               <div className="flex items-center gap-1.5">
-                <Database size={11} className="text-[#0052CC]" />
+                <Database size={11} className="text-[#0052CC] dark:text-[#4C9AFF]" />
                 <span>
                   {message.citations && message.citations.length > 0
                     ? message.citations.map((c) => `${c.source} (${c.recordCount || 0} records)`).join(" • ")
                     : "Verified MongoDB Atlas"}
                 </span>
-                <ShieldCheck size={11} className="text-[#00875A]" title="Verified Database Grounding" />
+                <ShieldCheck size={11} className="text-[#00875A] dark:text-emerald-400" title="Verified Database Grounding" />
                 {message.modelUsed && (
-                  <span className="ml-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#EAE6FF] text-[#403294] border border-[#D3CAFC]">
+                  <span className="ml-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#EAE6FF] dark:bg-purple-950/40 text-[#403294] dark:text-purple-300 border border-[#D3CAFC] dark:border-purple-800">
                     {message.modelUsed.includes("gemini") ? "Google Gemini" : "DSQE Engine"}
                   </span>
                 )}
                 {message.detectedLanguage && message.detectedLanguage !== "en" && (
-                  <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                     <Globe size={9} />
                     <span>
                       {message.detectedLanguage === "hi"
@@ -260,20 +260,20 @@ export default function AiMessageItem({ message }) {
                 <button
                   type="button"
                   onClick={handleCopyMessage}
-                  className="p-1 hover:bg-[#EBECF0] rounded text-[#6B778C] hover:text-[#172B4D] transition cursor-pointer flex items-center gap-1"
+                  className="p-1 hover:bg-[#EBECF0] dark:hover:bg-[#16224A] rounded text-[#6B778C] dark:text-neutral-400 hover:text-[#172B4D] dark:hover:text-white transition cursor-pointer flex items-center gap-1"
                   title="Copy analysis text"
                 >
-                  {copied ? <Check size={11} className="text-[#00875A]" /> : <Copy size={11} />}
+                  {copied ? <Check size={11} className="text-[#00875A] dark:text-emerald-400" /> : <Copy size={11} />}
                   <span>{copied ? "Copied" : "Copy"}</span>
                 </button>
 
                 {/* Helpful feedback */}
-                <div className="flex items-center gap-1 border-l border-[#DFE1E6] pl-2">
+                <div className="flex items-center gap-1 border-l border-[#DFE1E6] dark:border-[#202E5C] pl-2">
                   <button
                     type="button"
                     onClick={() => handleFeedback("up")}
                     className={`p-1 rounded transition cursor-pointer ${
-                      feedback === "up" ? "text-[#00875A] bg-[#E3FCEF]" : "text-[#6B778C] hover:text-[#172B4D]"
+                      feedback === "up" ? "text-[#00875A] dark:text-emerald-400 bg-[#E3FCEF] dark:bg-emerald-950/40" : "text-[#6B778C] dark:text-neutral-400 hover:text-[#172B4D] dark:hover:text-white"
                     }`}
                     title="Helpful response"
                   >
@@ -283,7 +283,7 @@ export default function AiMessageItem({ message }) {
                     type="button"
                     onClick={() => handleFeedback("down")}
                     className={`p-1 rounded transition cursor-pointer ${
-                      feedback === "down" ? "text-[#DE350B] bg-[#FFEBE6]" : "text-[#6B778C] hover:text-[#172B4D]"
+                      feedback === "down" ? "text-[#DE350B] dark:text-rose-400 bg-[#FFEBE6] dark:bg-rose-950/40" : "text-[#6B778C] dark:text-neutral-400 hover:text-[#172B4D] dark:hover:text-white"
                     }`}
                     title="Not helpful"
                   >

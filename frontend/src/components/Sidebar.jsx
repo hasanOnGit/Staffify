@@ -34,8 +34,8 @@ const baseLinkClasses =
 const getNavLinkClass = ({ isActive }) =>
   `${baseLinkClasses} ${
     isActive
-      ? "bg-[#DEEBFF] text-[#0052CC] font-semibold border-l-3 border-[#0052CC]"
-      : "text-[#42526E] hover:bg-[#EBECF0] hover:text-[#172B4D]"
+      ? "bg-[#DEEBFF] dark:bg-[#16224A] text-[#0052CC] dark:text-[#4C9AFF] font-semibold border-l-3 border-[#0052CC]"
+      : "text-[#42526E] dark:text-neutral-300 hover:bg-[#EBECF0] dark:hover:bg-[#16224A] hover:text-[#172B4D] dark:hover:text-white"
   }`;
 
 function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
@@ -127,12 +127,12 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
 
       {/* MSS - Manager Self Service */}
       {isManager && !isAdmin && (
-        <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6]">
+        <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6] dark:border-[#202E5C]">
           <div className="flex items-center justify-between px-3 pb-1">
-            <p className="text-[10px] font-bold text-[#6B778C] uppercase tracking-wider">
+            <p className="text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
               Manager Services
             </p>
-            <span className="text-[9px] font-semibold text-[#0747A6] bg-[#DEEBFF] px-1.5 py-0.2 rounded border border-[#B3D4FF]">
+            <span className="text-[9px] font-semibold text-[#0747A6] dark:text-[#4C9AFF] bg-[#DEEBFF] dark:bg-[#16224A] px-1.5 py-0.2 rounded border border-[#B3D4FF] dark:border-[#202E5C]">
               Manager
             </span>
           </div>
@@ -166,12 +166,12 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
 
       {/* HR & System Administration */}
       {isAdmin && (
-        <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6]">
+        <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6] dark:border-[#202E5C]">
           <div className="flex items-center justify-between px-3 pb-1">
-            <p className="text-[10px] font-bold text-[#6B778C] uppercase tracking-wider">
+            <p className="text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
               HR & Administration
             </p>
-            <span className="text-[9px] font-semibold text-[#403294] bg-[#EAE6FF] px-1.5 py-0.2 rounded border border-[#C0B6F2]">
+            <span className="text-[9px] font-semibold text-[#403294] dark:text-purple-300 bg-[#EAE6FF] dark:bg-purple-950/40 px-1.5 py-0.2 rounded border border-[#C0B6F2] dark:border-purple-800">
               Admin
             </span>
           </div>
@@ -216,32 +216,32 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
   );
 
   const renderFooter = () => (
-    <div className="p-3 border-t border-[#DFE1E6] bg-[#F4F5F7] flex items-center justify-between text-xs shrink-0">
+    <div className="p-3 border-t border-[#DFE1E6] dark:border-[#202E5C] bg-[#F4F5F7] dark:bg-[#0B132B] flex items-center justify-between text-xs shrink-0">
       <div className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded bg-white border border-[#DFE1E6] flex items-center justify-center text-[#42526E]">
+        <div className="w-6 h-6 rounded bg-white dark:bg-[#16224A] border border-[#DFE1E6] dark:border-[#202E5C] flex items-center justify-center text-[#42526E] dark:text-neutral-300">
           {role === "Admin" ? (
-            <ShieldCheck size={13} className="text-[#403294]" />
+            <ShieldCheck size={13} className="text-[#403294] dark:text-purple-400" />
           ) : role === "Manager" ? (
-            <Briefcase size={13} className="text-[#0747A6]" />
+            <Briefcase size={13} className="text-[#0747A6] dark:text-[#4C9AFF]" />
           ) : (
-            <User size={13} className="text-[#0052CC]" />
+            <User size={13} className="text-[#0052CC] dark:text-[#4C9AFF]" />
           )}
         </div>
         <div>
-          <span className="font-semibold text-[#172B4D] capitalize text-[11px] leading-tight block">
+          <span className="font-semibold text-[#172B4D] dark:text-neutral-100 capitalize text-[11px] leading-tight block">
             {role === "Admin" ? "Administrator" : role === "Manager" ? "Manager" : "Employee"}
           </span>
         </div>
       </div>
       <div className="flex items-center gap-1.5">
-        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
           <Circle size={5} className="fill-emerald-500 text-emerald-500" />
           Online
         </span>
         <button
           type="button"
           onClick={handleLogout}
-          className="p-1.5 text-[#6B778C] hover:text-[#DE350B] hover:bg-[#FFEBE6] rounded transition cursor-pointer"
+          className="p-1.5 text-[#6B778C] dark:text-neutral-400 hover:text-[#DE350B] hover:bg-[#FFEBE6] dark:hover:bg-[#DE350B]/10 rounded transition cursor-pointer"
           title="Log Out of Staffify"
         >
           <LogOut size={13} />
@@ -255,7 +255,7 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
       {/* =========================================
           1. Desktop Static Left Sidebar (md and up)
          ========================================= */}
-      <aside className="w-56 lg:w-60 bg-white border-r border-[#DFE1E6] hidden md:flex flex-col shrink-0 h-full select-none">
+      <aside className="w-56 lg:w-60 bg-white dark:bg-[#111C3D] border-r border-[#DFE1E6] dark:border-[#202E5C] hidden md:flex flex-col shrink-0 h-full select-none transition-colors">
         {renderNavLinks()}
         {renderFooter()}
       </aside>
@@ -274,18 +274,18 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
 
       {/* Drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-white z-50 shadow-2xl flex flex-col md:hidden transform transition-transform duration-250 ease-in-out select-none ${
+        className={`fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-white dark:bg-[#111C3D] z-50 shadow-2xl flex flex-col md:hidden transform transition-transform duration-250 ease-in-out select-none border-r border-transparent dark:border-[#202E5C] ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         aria-label="Mobile Navigation Drawer"
       >
         {/* Drawer Header */}
-        <div className="h-12 px-3.5 border-b border-[#DFE1E6] flex items-center justify-between bg-[#FAFBFC] shrink-0">
+        <div className="h-12 px-3.5 border-b border-[#DFE1E6] dark:border-[#202E5C] flex items-center justify-between bg-[#FAFBFC] dark:bg-[#111C3D] shrink-0">
           <StaffifyLogo size="xs" />
           <button
             type="button"
             onClick={onCloseMobile}
-            className="p-1.5 text-[#6B778C] hover:text-[#172B4D] hover:bg-[#EBECF0] rounded transition cursor-pointer"
+            className="p-1.5 text-[#6B778C] dark:text-neutral-400 hover:text-[#172B4D] dark:hover:text-white hover:bg-[#EBECF0] dark:hover:bg-[#16224A] rounded transition cursor-pointer"
             title="Close Menu"
             aria-label="Close navigation"
           >

@@ -110,7 +110,7 @@ export default function StaffifyLogo({
               className={`font-extrabold tracking-tight ${current.text} ${
                 textLight
                   ? "text-white"
-                  : "text-[#172B4D] group-hover:text-[#0052CC] transition-colors"
+                  : "text-[#172B4D] dark:text-white group-hover:text-[#0052CC] transition-colors"
               }`}
             >
               Staff<span className={textLight ? "text-[#4C9AFF]" : "text-[#0052CC]"}>ify</span>

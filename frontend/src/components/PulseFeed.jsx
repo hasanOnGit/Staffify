@@ -194,14 +194,14 @@ function PulseFeed() {
   return (
     <div className="space-y-6">
       {/* Pulse Header & Action Buttons */}
-      <div className="bg-white border border-[#DFE1E6] rounded-xl p-4 shadow-sm flex items-center justify-between gap-3">
+      <div className="bg-white dark:bg-[#111C3D] border border-[#DFE1E6] dark:border-[#202E5C] rounded-xl p-4 shadow-sm flex items-center justify-between gap-3 transition-colors">
         <div className="flex items-center gap-2.5">
-          <span className="p-2 rounded-lg bg-[#DEEBFF] text-[#0052CC] border border-[#B3D4FF]">
+          <span className="p-2 rounded-lg bg-[#DEEBFF] dark:bg-[#16224A] text-[#0052CC] dark:text-[#4C9AFF] border border-[#B3D4FF] dark:border-[#202E5C]">
             <Sparkles size={18} />
           </span>
           <div>
-            <h3 className="font-bold text-sm text-[#172B4D]">Company Pulse & Community</h3>
-            <p className="text-xs text-[#6B778C]">Corporate announcements, peer appreciation & team milestones</p>
+            <h3 className="font-bold text-sm text-[#172B4D] dark:text-neutral-100">Company Pulse & Community</h3>
+            <p className="text-xs text-[#6B778C] dark:text-neutral-400">Corporate announcements, peer appreciation & team milestones</p>
           </div>
         </div>
 
@@ -209,7 +209,7 @@ function PulseFeed() {
           <button
             type="button"
             onClick={handleOpenKudos}
-            className="px-3 py-1.5 bg-gradient-to-r from-[#0052CC] to-[#0747A6] hover:opacity-95 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+            className="px-3 py-1.5 bg-gradient-to-r from-[#0052CC] to-[#0747A6] hover:opacity-95 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer shadow-xs shrink-0"
           >
             <Award size={13} />
             <span>Give Kudos</span>
@@ -219,9 +219,9 @@ function PulseFeed() {
             <button
               type="button"
               onClick={() => setShowBroadcastModal(true)}
-              className="px-3 py-1.5 bg-[#F4F5F7] hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] text-xs font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-1.5 bg-[#F4F5F7] dark:bg-[#16224A] hover:bg-[#EBECF0] dark:hover:bg-[#202E5C] text-[#172B4D] dark:text-neutral-100 border border-[#DFE1E6] dark:border-[#202E5C] text-xs font-semibold rounded-lg transition flex items-center gap-1.5 cursor-pointer shrink-0"
             >
-              <Megaphone size={13} className="text-[#0052CC]" />
+              <Megaphone size={13} className="text-[#0052CC] dark:text-[#4C9AFF]" />
               <span>Broadcast</span>
             </button>
           )}
@@ -237,10 +237,10 @@ function PulseFeed() {
           return (
             <div
               key={b._id || b.broadcastId}
-              className={`bg-white border rounded-xl p-4 shadow-sm transition-all duration-150 ${
+              className={`bg-white dark:bg-[#111C3D] border rounded-xl p-4 shadow-sm transition-all duration-150 ${
                 b.pinned
-                  ? "border-[#0052CC]/40 bg-gradient-to-r from-[#DEEBFF]/15 via-white to-white"
-                  : "border-[#DFE1E6]"
+                  ? "border-[#0052CC]/40 dark:border-[#0052CC]/60 bg-gradient-to-r from-[#DEEBFF]/15 via-white to-white dark:from-[#16224A]/40 dark:via-[#111C3D] dark:to-[#111C3D]"
+                  : "border-[#DFE1E6] dark:border-[#202E5C]"
               }`}
             >
               <div className="flex items-start justify-between gap-3">
