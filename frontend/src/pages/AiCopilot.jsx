@@ -25,7 +25,14 @@ import {
   ThumbsDown,
   Tag,
   Filter,
+  ShieldAlert,
+  AlertTriangle,
+  CheckCircle2,
+  Activity,
+  FileText,
+  ChevronRight,
 } from "lucide-react";
+import AiDocumentModal from "../components/ai/AiDocumentModal";
 
 export default function AiCopilot() {
   const {
@@ -37,10 +44,17 @@ export default function AiCopilot() {
     aiStatus,
   } = useAiAssistant();
 
-  const [activeTab, setActiveTab] = useState("chat"); // "chat" | "logs" | "knowledge"
+  const [activeTab, setActiveTab] = useState("chat"); // "chat" | "logs" | "knowledge" | "watchdog"
   const [input, setInput] = useState("");
+  const [showDocModal, setShowDocModal] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Watchdog state
+  const [watchdogDigest, setWatchdogDigest] = useState(null);
+  const [watchdogAlerts, setWatchdogAlerts] = useState([]);
+  const [watchdogLoading, setWatchdogLoading] = useState(false);
+  const [selectedAlertCategory, setSelectedAlertCategory] = useState("");
 
   // Query logs state
   const [logs, setLogs] = useState([]);
@@ -61,14 +75,48 @@ export default function AiCopilot() {
     }
   }, [messages, loading, activeTab]);
 
-  // Load logs when switching to logs tab
+  // Load logs or watchdog when switching tabs
   useEffect(() => {
     if (activeTab === "logs") {
       loadLogs();
     } else if (activeTab === "knowledge") {
       loadKnowledge();
+    } else if (activeTab === "watchdog") {
+      loadWatchdog();
     }
-  }, [activeTab]);
+  }, [activeTab, selectedAlertCategory]);
+
+  const loadWatchdog = async () => {
+    setWatchdogLoading(true);
+    try {
+      const [digest, alerts] = await Promise.all([
+        aiService.getWatchdogDigest(),
+        aiService.getWatchdogAlerts({ category: selectedAlertCategory || undefined }),
+      ]);
+      setWatchdogDigest(digest);
+      setWatchdogAlerts(alerts || []);
+    } catch (err) {
+      toast.error("Failed to load Watchdog digest: " + err.message);
+    } finally {
+      setWatchdogLoading(false);
+    }
+  };
+
+  const handleResolveAlert = async (alertId) => {
+    try {
+      await aiService.resolveAnomalyAlert(alertId, "Acknowledged and resolved by HR administrator");
+      toast.success("Anomaly alert marked as resolved");
+      loadWatchdog();
+    } catch (err) {
+      toast.error("Failed to resolve alert: " + err.message);
+    }
+  };
+
+  const handleInvestigateAlert = (alert) => {
+    setActiveTab("chat");
+    const query = `Investigate anomaly in ${alert.category}: ${alert.title}. ${alert.description}`;
+    sendMessage(query);
+  };
 
   const loadLogs = async () => {
     setLogsLoading(true);
@@ -208,7 +256,32 @@ export default function AiCopilot() {
                 <BookOpen size={13} />
                 <span>HR Knowledge Base</span>
               </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("watchdog")}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition cursor-pointer ${
+                  activeTab === "watchdog"
+                    ? "bg-white text-[#DE350B] shadow-xs font-bold"
+                    : "text-[#42526E] hover:text-[#172B4D]"
+                }`}
+              >
+                <ShieldAlert size={13} className="text-[#DE350B]" />
+                <span>Workforce Watchdog</span>
+                {watchdogDigest?.criticalCount > 0 && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#DE350B] inline-block animate-ping" />
+                )}
+              </button>
             </div>
+
+            {/* Document Studio Trigger */}
+            <button
+              type="button"
+              onClick={() => setShowDocModal(true)}
+              className="px-3 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+            >
+              <FileText size={13} />
+              <span>HR Document Studio</span>
+            </button>
 
             {activeTab === "chat" && (
               <button
@@ -575,7 +648,199 @@ export default function AiCopilot() {
             </div>
           </div>
         )}
+
+        {/* TAB 4: AUTONOMOUS WORKFORCE WATCHDOG */}
+        {activeTab === "watchdog" && (
+          <div className="flex-1 overflow-hidden flex flex-col space-y-3">
+            {/* Executive Digest KPI Banner */}
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <div className="bg-white border border-[#DFE1E6] rounded-lg p-3.5 shadow-2xs flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] font-semibold text-[#6B778C]">Workforce Health Score</p>
+                  <h3 className="text-2xl font-bold text-[#172B4D] mt-0.5">
+                    {watchdogDigest?.healthScore || 92}
+                    <span className="text-xs font-normal text-[#6B778C]"> / 100</span>
+                  </h3>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#00875A]">
+                    {watchdogDigest?.status || "HEALTHY"}
+                  </span>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-[#E3FCEF] flex items-center justify-center text-[#00875A]">
+                  <Activity size={20} />
+                </div>
+              </div>
+
+              <div className="bg-white border border-[#DFE1E6] rounded-lg p-3.5 shadow-2xs flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] font-semibold text-[#6B778C]">Critical Anomalies</p>
+                  <h3 className="text-2xl font-bold text-[#DE350B] mt-0.5">
+                    {watchdogDigest?.criticalCount || 0}
+                  </h3>
+                  <span className="text-[10px] text-[#6B778C]">Immediate attention required</span>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-[#FFEBE6] flex items-center justify-center text-[#DE350B]">
+                  <AlertTriangle size={20} />
+                </div>
+              </div>
+
+              <div className="bg-white border border-[#DFE1E6] rounded-lg p-3.5 shadow-2xs flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] font-semibold text-[#6B778C]">High Severity Alerts</p>
+                  <h3 className="text-2xl font-bold text-[#FF8B00] mt-0.5">
+                    {watchdogDigest?.highCount || 0}
+                  </h3>
+                  <span className="text-[10px] text-[#6B778C]">Threshold breach review</span>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-[#FFF0B3] flex items-center justify-center text-[#FF8B00]">
+                  <ShieldAlert size={20} />
+                </div>
+              </div>
+
+              <div className="bg-white border border-[#DFE1E6] rounded-lg p-3.5 shadow-2xs flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] font-semibold text-[#6B778C]">Total Active Alerts</p>
+                  <h3 className="text-2xl font-bold text-[#0052CC] mt-0.5">
+                    {watchdogDigest?.totalActiveAnomalies || watchdogAlerts.length}
+                  </h3>
+                  <span className="text-[10px] text-[#6B778C]">Across 5 HR pillars</span>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-[#DEEBFF] flex items-center justify-center text-[#0052CC]">
+                  <CheckCircle2 size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* Filter Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-white p-2.5 rounded-lg border border-[#DFE1E6]">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-[#172B4D] flex items-center gap-1">
+                  <Filter size={12} className="text-[#0052CC]" />
+                  <span>Category Filter:</span>
+                </span>
+                {["", "ATTENDANCE", "LEAVES", "PAYROLL", "RECRUITMENT", "HELPDESK"].map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                      setSelectedAlertCategory(cat);
+                    }}
+                    className={`px-2.5 py-1 rounded text-xs font-medium transition cursor-pointer ${
+                      selectedAlertCategory === cat
+                        ? "bg-[#0052CC] text-white font-semibold"
+                        : "bg-[#FAFBFC] text-[#42526E] hover:bg-[#EBECF0]"
+                    }`}
+                  >
+                    {cat || "All Domains"}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={loadWatchdog}
+                className="px-2.5 py-1 text-xs rounded bg-[#FAFBFC] hover:bg-[#EBECF0] border border-[#DFE1E6] text-[#172B4D] flex items-center gap-1 cursor-pointer"
+              >
+                <RefreshCw size={11} className={watchdogLoading ? "animate-spin" : ""} />
+                <span>Refresh Watchdog</span>
+              </button>
+            </div>
+
+            {/* Alerts Stream */}
+            <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
+              {watchdogLoading ? (
+                <div className="py-12 text-center text-xs text-[#6B778C]">
+                  Scanning workforce data for operational anomalies...
+                </div>
+              ) : watchdogAlerts.length === 0 ? (
+                <div className="py-12 text-center bg-white rounded-lg border border-[#DFE1E6]">
+                  <CheckCircle2 size={36} className="mx-auto text-[#00875A] mb-2" />
+                  <h4 className="text-sm font-bold text-[#172B4D]">Workforce Metrics Nominal</h4>
+                  <p className="text-xs text-[#6B778C] mt-1">
+                    No active anomalies detected across attendance, leaves, payroll, recruitment, or support tickets.
+                  </p>
+                </div>
+              ) : (
+                watchdogAlerts.map((alert) => (
+                  <div
+                    key={alert.alertId}
+                    className="p-3.5 bg-white rounded-lg border border-[#DFE1E6] hover:border-[#0052CC] transition shadow-2xs space-y-2.5"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${
+                            alert.severity === "CRITICAL"
+                              ? "bg-[#FFEBE6] text-[#DE350B] border border-[#FFBDAD]"
+                              : alert.severity === "HIGH"
+                              ? "bg-[#FFF0B3] text-[#172B4D] border border-[#FFE380]"
+                              : "bg-[#DEEBFF] text-[#0747A6] border border-[#B3D4FF]"
+                          }`}
+                        >
+                          {alert.severity}
+                        </span>
+                        <span className="text-xs font-bold text-[#172B4D]">{alert.title}</span>
+                        <span className="text-[10px] text-[#6B778C] px-1.5 py-0.2 rounded bg-[#F4F5F7]">
+                          {alert.category}
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-[#A5ADBA] font-mono">
+                        {new Date(alert.detectedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-[#42526E] leading-relaxed">{alert.description}</p>
+
+                    {alert.metricVariance && (
+                      <div className="flex flex-wrap items-center gap-3 text-[11px] p-2 bg-[#FAFBFC] rounded border border-[#EBECF0]">
+                        <span className="text-[#6B778C]">
+                          Baseline Metric: <strong className="text-[#172B4D]">{alert.metricVariance.baseline}</strong>
+                        </span>
+                        <span className="text-[#6B778C]">
+                          Observed Metric: <strong className="text-[#DE350B]">{alert.metricVariance.observed}</strong>
+                        </span>
+                        {alert.metricVariance.variancePercent && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-[#FFEBE6] text-[#DE350B]">
+                            {alert.metricVariance.variancePercent > 0 ? "+" : ""}
+                            {alert.metricVariance.variancePercent}%
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between pt-2 border-t border-[#EBECF0]">
+                      <div className="flex items-center gap-2 text-xs text-[#6B778C]">
+                        <span>Suggested Remedy:</span>
+                        <span className="font-medium text-[#172B4D]">{alert.suggestedAction}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleInvestigateAlert(alert)}
+                          className="px-2.5 py-1 bg-[#DEEBFF] hover:bg-[#B3D4FF] text-[#0052CC] rounded text-xs font-semibold flex items-center gap-1 cursor-pointer transition"
+                        >
+                          <Sparkles size={11} />
+                          <span>Investigate with Copilot</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleResolveAlert(alert.alertId)}
+                          className="px-2.5 py-1 bg-white hover:bg-[#F4F5F7] border border-[#DFE1E6] text-[#42526E] hover:text-[#172B4D] rounded text-xs font-semibold cursor-pointer transition"
+                        >
+                          Resolve Alert
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* HR Document Studio Modal */}
+      <AiDocumentModal
+        isOpen={showDocModal}
+        onClose={() => setShowDocModal(false)}
+      />
     </DashboardLayout>
   );
 }

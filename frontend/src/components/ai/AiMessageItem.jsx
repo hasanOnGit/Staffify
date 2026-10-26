@@ -12,9 +12,11 @@ import {
   ThumbsDown,
   FileText,
   Lightbulb,
+  Globe,
 } from "lucide-react";
 import AiKpiCards from "./AiKpiCards";
 import AiDataTable from "./AiDataTable";
+import AiDataChart from "./AiDataChart";
 import AiActionCard from "./AiActionCard";
 import { useAiAssistant } from "../../context/AiAssistantContext";
 import aiService from "../../services/ai.service";
@@ -167,7 +169,10 @@ export default function AiMessageItem({ message }) {
             {/* 2. KPI METRIC SUMMARY CARDS */}
             {message.kpis && message.kpis.length > 0 && <AiKpiCards kpis={message.kpis} />}
 
-            {/* 3. INTERACTIVE DATA EXPLORER / TABLE */}
+            {/* 3. INTERACTIVE SVG DATA VISUALIZATION (DONUT / BAR / FUNNEL) */}
+            {message.chartConfig && <AiDataChart chartConfig={message.chartConfig} />}
+
+            {/* 4. INTERACTIVE DATA EXPLORER / TABLE */}
             {message.records && message.records.length > 0 && (
               <AiDataTable
                 records={message.records}
@@ -180,7 +185,7 @@ export default function AiMessageItem({ message }) {
               />
             )}
 
-            {/* 4. DETAILED BREAKDOWN & ANALYTICAL DESCRIPTION */}
+            {/* 5. DETAILED BREAKDOWN & ANALYTICAL DESCRIPTION */}
             {detailedDescription && (
               <div className="bg-[#FAFBFC] border border-[#DFE1E6] rounded-md p-3">
                 <div className="flex items-center gap-1.5 pb-1 mb-2 border-b border-[#EBECF0] text-[10px] font-bold uppercase tracking-wider text-[#42526E]">
@@ -194,7 +199,7 @@ export default function AiMessageItem({ message }) {
             {/* Action Draft Confirmation Card */}
             {message.actionDraft && <AiActionCard draft={message.actionDraft} />}
 
-            {/* 5. INTERACTIVE CLICKABLE SUGGESTED FOLLOW-UPS */}
+            {/* 6. INTERACTIVE CLICKABLE SUGGESTED FOLLOW-UPS */}
             {followUps.length > 0 && (
               <div className="pt-2 border-t border-[#EBECF0]">
                 <p className="text-[10px] font-semibold text-[#6B778C] mb-1.5 flex items-center gap-1">
@@ -217,9 +222,9 @@ export default function AiMessageItem({ message }) {
               </div>
             )}
 
-            {/* 6. UTILITY FOOTER: CITATION, FEEDBACK & TIMESTAMP */}
+            {/* 7. UTILITY FOOTER: CITATION, FEEDBACK & TIMESTAMP */}
             <div className="pt-2 border-t border-[#DFE1E6] flex flex-wrap items-center justify-between gap-2 text-[10px] text-[#6B778C]">
-              {/* Database citation badge */}
+              {/* Database citation badge & model/language info */}
               <div className="flex items-center gap-1.5">
                 <Database size={11} className="text-[#0052CC]" />
                 <span>
@@ -231,6 +236,20 @@ export default function AiMessageItem({ message }) {
                 {message.modelUsed && (
                   <span className="ml-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#EAE6FF] text-[#403294] border border-[#D3CAFC]">
                     {message.modelUsed.includes("gemini") ? "Google Gemini" : "DSQE Engine"}
+                  </span>
+                )}
+                {message.detectedLanguage && message.detectedLanguage !== "en" && (
+                  <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <Globe size={9} />
+                    <span>
+                      {message.detectedLanguage === "hi"
+                        ? "Hindi / Hinglish"
+                        : message.detectedLanguage === "es"
+                        ? "Spanish"
+                        : message.detectedLanguage === "fr"
+                        ? "French"
+                        : message.detectedLanguage.toUpperCase()}
+                    </span>
                   </span>
                 )}
               </div>

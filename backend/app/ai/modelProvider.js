@@ -254,15 +254,24 @@ Feel free to ask another query or click one of the quick suggestions below.`,
     };
   }
 
-  // 3. Optional: Call external LLM (Gemini or OpenAI) for linguistic polish if API key is present
+  // 3. Construct visual chart config if requested or data is categorical/numerical
+  const chartConfig = buildChartConfig(plan, dalResult);
+
+  // 4. Optional: Call external LLM (Gemini) for linguistic polish and multilingual synthesis
   let naturalResponse = dalResult.summaryText;
   let startingSummary = dalResult.startingSummary || dalResult.summaryText;
   let modelUsed = "dsqe-deterministic";
 
-  // If Gemini API key is present, synthesize a polished response via Google Gemini
   if (process.env.GEMINI_API_KEY) {
     try {
       const geminiModel = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
+      let langInstruction = "";
+      if (plan.detectedLanguage && plan.detectedLanguage !== "en") {
+        const langNames = { hi: "Hindi/Hinglish", es: "Spanish", fr: "French" };
+        const langName = langNames[plan.detectedLanguage] || plan.detectedLanguage;
+        langInstruction = `\nLanguage Instruction: The user communicated in ${langName}. You MUST respond in natural, fluent ${langName} while keeping technical HR terms (such as Department, Leaves, EPF, Staffify, INR) and exact numeric metrics grounded and intact.`;
+      }
+
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${process.env.GEMINI_API_KEY}`,
         {
@@ -279,7 +288,7 @@ Grounding Rule: Only state facts from the provided verified database results. Ne
 User Question: "${userMessage}"
 Retrieved Data: ${JSON.stringify(dalResult.records.slice(0, 10))}
 KPI Metrics: ${JSON.stringify(dalResult.kpis)}
-Factual Summary: "${dalResult.summaryText}"
+Factual Summary: "${dalResult.summaryText}"${langInstruction}
 Provide a polite, professional, concise response summarizing the findings:`,
                   },
                 ],
@@ -306,6 +315,8 @@ Provide a polite, professional, concise response summarizing the findings:`,
     message: naturalResponse,
     summary: startingSummary || naturalResponse,
     modelUsed,
+    chartConfig,
+    detectedLanguage: plan.detectedLanguage || "en",
     description: dalResult.detailedDescription || "",
     suggestedFollowUps: dalResult.suggestedFollowUps || [],
     records: dalResult.records,
@@ -322,6 +333,120 @@ Provide a polite, professional, concise response summarizing the findings:`,
   };
 }
 
+/**
+ * Builds standard chart configuration for inline rendering in Staffify Copilot
+ */
+function buildChartConfig(plan, dalResult) {
+  if (!dalResult || !Array.isArray(dalResult.records) || dalResult.records.length === 0) {
+    return null;
+  }
+
+  const wantsChart = plan?.wantsChart;
+  const isDepartmentSummary = dalResult.records.some(
+    (r) => r.department && (r.count !== undefined || r.headcount !== undefined || r.employeeCount !== undefined || r.totalSalary !== undefined)
+  );
+  const isStatusDistribution = dalResult.records.some((r) => (r.status || r._id) && r.count !== undefined);
+  const isCandidatePipeline = plan?.module === "candidates" || dalResult.records.some((r) => r.stage !== undefined);
+
+  if (!wantsChart && !isDepartmentSummary && !isStatusDistribution && !isCandidatePipeline) {
+    return null;
+  }
+
+  const PALETTE = ["#0052CC", "#00C7E6", "#6554C0", "#36B37E", "#FFAB00", "#FF5630", "#4C9AFF", "#8777D9"];
+
+  // Funnel chart for recruitment pipeline
+  if (isCandidatePipeline && dalResult.records.some((r) => r.stage)) {
+    const stageCounts = {};
+    dalResult.records.forEach((r) => {
+      const s = r.stage || "Applied";
+      stageCounts[s] = (stageCounts[s] || 0) + 1;
+    });
+    const standardOrder = ["Applied", "Screening", "Interview", "Offer", "Hired", "Rejected"];
+    const stages = Object.keys(stageCounts).sort((a, b) => {
+      const ia = standardOrder.indexOf(a);
+      const ib = standardOrder.indexOf(b);
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+    });
+
+    return {
+      type: "funnel",
+      title: "Recruitment Pipeline Conversion",
+      unit: "Candidates",
+      data: stages.map((st, idx) => ({
+        label: st,
+        value: stageCounts[st],
+        color: PALETTE[idx % PALETTE.length],
+      })),
+    };
+  }
+
+  // Department distribution
+  const hasDepartment = dalResult.records.some((r) => r.department);
+  if (isDepartmentSummary || (wantsChart && hasDepartment)) {
+    const hasSalary = dalResult.records.some((r) => r.totalSalary !== undefined);
+    const deptMap = {};
+    dalResult.records.forEach((r, idx) => {
+      const d = r.department || r._id || `Dept ${idx + 1}`;
+      const val = Number(r.count || r.headcount || r.employeeCount || r.totalSalary || 1);
+      deptMap[d] = (deptMap[d] || 0) + val;
+    });
+
+    const data = Object.entries(deptMap)
+      .slice(0, 8)
+      .map(([dept, val], idx) => ({
+        label: dept,
+        value: val,
+        color: PALETTE[idx % PALETTE.length],
+      }));
+
+    const chartType = plan.chartType === "bar" || data.length > 5 ? "bar" : "donut";
+    return {
+      type: chartType,
+      title: hasSalary ? "Payroll Allocation by Department" : "Headcount Distribution by Department",
+      unit: hasSalary ? "INR" : "Employees",
+      data,
+    };
+  }
+
+  // Status breakdown
+  if (isStatusDistribution) {
+    const data = dalResult.records.slice(0, 6).map((r, idx) => ({
+      label: String(r.status || r._id || "Active"),
+      value: Number(r.count || 1),
+      color: PALETTE[idx % PALETTE.length],
+    }));
+    return {
+      type: "donut",
+      title: "Status Distribution",
+      unit: "Records",
+      data,
+    };
+  }
+
+  // Generic fallback if user asked for a chart
+  if (wantsChart) {
+    const firstRec = dalResult.records[0];
+    const numKey = Object.keys(firstRec).find((k) => typeof firstRec[k] === "number" && k !== "id" && k !== "_id");
+    const labelKey = Object.keys(firstRec).find((k) => typeof firstRec[k] === "string" && k !== "id" && k !== "_id");
+
+    if (numKey && labelKey) {
+      return {
+        type: plan.chartType || "bar",
+        title: `${labelKey.toUpperCase()} Analytics`,
+        unit: numKey,
+        data: dalResult.records.slice(0, 8).map((r, idx) => ({
+          label: String(r[labelKey] || `Item ${idx + 1}`),
+          value: Number(r[numKey] || 0),
+          color: PALETTE[idx % PALETTE.length],
+        })),
+      };
+    }
+  }
+
+  return null;
+}
+
 module.exports = {
   generateGroundedResponse,
+  buildChartConfig,
 };

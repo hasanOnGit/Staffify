@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { submitExpense } from "../services/expense";
+import aiService from "../services/ai.service";
 import toast from "react-hot-toast";
 import {
   Receipt,
@@ -13,6 +14,9 @@ import {
   CreditCard,
   AlertCircle,
   Tag,
+  Sparkles,
+  UploadCloud,
+  CheckCircle2,
 } from "lucide-react";
 
 const CATEGORIES = [
@@ -29,6 +33,8 @@ const CATEGORIES = [
 function ExpenseModal({ isOpen, onClose, onSuccess }) {
   const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const [scanningReceipt, setScanningReceipt] = useState(false);
+  const receiptFileRef = useRef(null);
   const [formData, setFormData] = useState({
     expenseCategory: "Internet & Mobile",
     claimDate: new Date().toISOString().split("T")[0],
@@ -40,6 +46,46 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
   });
 
   if (!isOpen) return null;
+
+  const handleReceiptUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setScanningReceipt(true);
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const base64Data = reader.result.split(",")[1];
+          const mimeType = file.type || "image/jpeg";
+          const parsed = await aiService.parseReceipt(base64Data, mimeType);
+          if (parsed) {
+            setFormData((prev) => ({
+              ...prev,
+              merchantName: parsed.merchantName || prev.merchantName,
+              amount: parsed.amount ? String(parsed.amount) : prev.amount,
+              claimDate: parsed.date || prev.claimDate,
+              receiptNumber: parsed.invoiceNumber || prev.receiptNumber,
+              expenseCategory: parsed.category || prev.expenseCategory,
+              description: parsed.description || prev.description,
+              attachmentName: file.name,
+            }));
+            toast.success(
+              `Receipt parsed! Extracted ${parsed.amount || ""} INR from ${parsed.merchantName || "receipt"}`
+            );
+          }
+        } catch (apiErr) {
+          toast.error("Receipt parsing error: " + (apiErr.response?.data?.error || apiErr.message));
+        } finally {
+          setScanningReceipt(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      setScanningReceipt(false);
+      toast.error("File read error: " + err.message);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -120,6 +166,40 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
             </span>
           </div>
 
+          {/* AI Smart Receipt OCR Banner */}
+          <div className="p-3 bg-gradient-to-r from-blue-50/80 to-indigo-50/60 border border-blue-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-md bg-blue-600 text-white">
+                  <Sparkles size={13} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-[#172B4D] text-xs">AI Smart Receipt Scanner</h4>
+                  <p className="text-[10px] text-[#6B778C]">
+                    Upload receipt or invoice image/PDF to auto-extract merchant, date, and amount
+                  </p>
+                </div>
+              </div>
+
+              <input
+                type="file"
+                ref={receiptFileRef}
+                accept=".jpg,.jpeg,.png,.pdf"
+                onChange={handleReceiptUpload}
+                className="hidden"
+              />
+              <button
+                type="button"
+                disabled={scanningReceipt}
+                onClick={() => receiptFileRef.current?.click()}
+                className="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xs disabled:opacity-50"
+              >
+                <UploadCloud size={13} />
+                <span>{scanningReceipt ? "Extracting..." : "Scan Receipt"}</span>
+              </button>
+            </div>
+          </div>
+
           {/* Category & Date */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -170,9 +250,9 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
             </div>
 
             <div>
-              <label className="block font-semibold text-[#172B4D] mb-1">Claim Amount (INR ₹) *</label>
+              <label className="block font-semibold text-[#172B4D] mb-1">Claim Amount (INR) *</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-[#6B778C]">₹</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-[#6B778C] text-[10px]">INR</span>
                 <input
                   type="number"
                   min="1"
@@ -180,7 +260,7 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
                   placeholder="0.00"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className="w-full pl-8 pr-3 py-2 border border-[#DFE1E6] rounded-lg focus:outline-none focus:border-[#0052CC] bg-[#FAFBFC] font-semibold text-[#172B4D]"
+                  className="w-full pl-10 pr-3 py-2 border border-[#DFE1E6] rounded-lg focus:outline-none focus:border-[#0052CC] bg-[#FAFBFC] font-semibold text-[#172B4D]"
                 />
               </div>
             </div>

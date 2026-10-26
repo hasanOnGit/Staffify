@@ -122,6 +122,77 @@ export const aiService = {
     link.remove();
     window.URL.revokeObjectURL(url);
   },
+
+  /**
+   * Retrieve Autonomous Workforce Watchdog Executive Morning Digest
+   */
+  async getWatchdogDigest() {
+    const res = await api.get("/api/ai/watchdog/digest");
+    return res.data?.digest;
+  },
+
+  /**
+   * Retrieve active or filtered workforce anomaly alerts
+   */
+  async getWatchdogAlerts(params = {}) {
+    const res = await api.get("/api/ai/watchdog/alerts", { params });
+    return res.data?.data || [];
+  },
+
+  /**
+   * Resolve an anomaly alert with audit notes
+   */
+  async resolveAnomalyAlert(id, resolutionNotes = "") {
+    const res = await api.post(`/api/ai/watchdog/alerts/${id}/resolve`, { resolutionNotes });
+    return res.data;
+  },
+
+  /**
+   * Multimodal Resume Scanner & Candidate Match Analysis
+   */
+  async parseResume(fileBase64, mimeType = "application/pdf", jobId = null) {
+    const res = await api.post("/api/ai/multimodal/parse-resume", {
+      fileBase64,
+      mimeType,
+      jobId,
+    });
+    return res.data?.data;
+  },
+
+  /**
+   * Multimodal Smart Expense Receipt OCR
+   */
+  async parseReceipt(fileBase64, mimeType = "image/jpeg") {
+    const res = await api.post("/api/ai/multimodal/parse-receipt", {
+      fileBase64,
+      mimeType,
+    });
+    return res.data?.data;
+  },
+
+  /**
+   * Get available corporate HR letter templates
+   */
+  async getDocumentTemplates() {
+    const res = await api.get("/api/ai/documents/templates");
+    return res.data?.templates || [];
+  },
+
+  /**
+   * Synthesize legally grounded HR document
+   */
+  async generateDocument(payload) {
+    const res = await api.post("/api/ai/documents/generate", payload);
+    return res.data?.document;
+  },
+
+  /**
+   * Get historical generated HR documents
+   */
+  async getGeneratedDocuments(params = {}) {
+    const res = await api.get("/api/ai/documents", { params });
+    return res.data?.data || [];
+  },
 };
 
 export default aiService;

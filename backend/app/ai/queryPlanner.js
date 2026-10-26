@@ -84,12 +84,73 @@ function extractStatus(text = "") {
 }
 
 /**
+ * Detect language and normalize cross-lingual queries to English operational terms
+ */
+function detectAndNormalizeLanguage(rawText = "") {
+  const lower = rawText.toLowerCase().trim();
+  let detectedLanguage = "en";
+  let normalized = rawText;
+
+  // 1. Hindi / Hinglish Detection
+  const hindiIndicators = [
+    "namaste", "pranam", "kaise", "kitne", "kitna", "kya", "hai", "hain",
+    "mujhe", "karni", "karna", "mera", "meri", "chahiye", "dikhao", "batao",
+    "karo", "kab", "kyu", "chutti", "tankhwah", "kamai", "aaj", "kal", "kaun"
+  ];
+  const hindiMatches = hindiIndicators.filter((w) => lower.includes(w));
+  if (hindiMatches.length >= 1) {
+    detectedLanguage = "hi";
+    if (lower.includes("namaste") || lower.includes("pranam")) normalized = "hello";
+    else if (lower.includes("kitne employees") || lower.includes("employees kitne") || lower.includes("staff kitna")) normalized = "department wise employee count";
+    else if (lower.includes("chutti apply") || lower.includes("leave apply") || lower.includes("chutti chahiye")) normalized = "apply for leave tomorrow";
+    else if (lower.includes("leave balance") || lower.includes("chutti bachi")) normalized = "what is my current leave balance?";
+    else if (lower.includes("payroll") || lower.includes("kharcha") || lower.includes("salary")) normalized = "what is the total monthly payroll cost?";
+    else if (lower.includes("attendance") || lower.includes("kaun present")) normalized = "who checked in today?";
+  }
+
+  // 2. Spanish Detection
+  const spanishIndicators = ["hola", "cuantos", "empleados", "nomina", "permiso", "vacaciones", "asistencia", "hoy"];
+  if (spanishIndicators.some((w) => lower.includes(w))) {
+    detectedLanguage = "es";
+    if (lower.includes("hola")) normalized = "hello";
+    else if (lower.includes("empleados")) normalized = "department wise employee count";
+    else if (lower.includes("nomina")) normalized = "total monthly payroll cost";
+    else if (lower.includes("permiso") || lower.includes("vacaciones")) normalized = "what is my current leave balance?";
+  }
+
+  // 3. French Detection
+  const frenchIndicators = ["bonjour", "salut", "combien", "salariés", "employés", "conges", "paie", "aujourd"];
+  if (frenchIndicators.some((w) => lower.includes(w))) {
+    detectedLanguage = "fr";
+    if (lower.includes("bonjour") || lower.includes("salut")) normalized = "hello";
+    else if (lower.includes("salariés") || lower.includes("employés")) normalized = "department wise employee count";
+    else if (lower.includes("paie")) normalized = "total monthly payroll cost";
+    else if (lower.includes("conges")) normalized = "what is my current leave balance?";
+  }
+
+  return { detectedLanguage, normalizedText: normalized };
+}
+
+/**
  * Main query planner function
  */
 function planQuery(messageText = "", previousContext = {}, userRole = "Employee") {
-  const text = messageText.trim();
+  const { detectedLanguage, normalizedText } = detectAndNormalizeLanguage(messageText);
+  const text = normalizedText.trim();
   const lower = text.toLowerCase();
   const cleanText = lower.replace(/[^\w\s]/g, "").trim();
+
+  const wantsChart =
+    lower.includes("chart") ||
+    lower.includes("graph") ||
+    lower.includes("plot") ||
+    lower.includes("visual") ||
+    lower.includes("donut") ||
+    lower.includes("bar") ||
+    lower.includes("trend") ||
+    lower.includes("distribution") ||
+    lower.includes("breakdown") ||
+    lower.includes("pipeline");
 
   // 1. Check for Conversational Intents (Greetings, Identity, Help, Gratitude, Farewells)
   const greetingWords = [
@@ -343,6 +404,9 @@ function planQuery(messageText = "", previousContext = {}, userRole = "Employee"
     module: targetModule,
     filters,
     comparison,
+    wantsChart,
+    detectedLanguage,
+    rawUserQuery: messageText,
     limit: 50,
   };
 }

@@ -31,7 +31,9 @@ import {
   Check,
   X,
   Layers,
+  ShieldAlert,
 } from "lucide-react";
+import aiService from "../services/ai.service";
 
 function Dashboard() {
   const { user, isAdmin, isManager } = useAuth();
@@ -51,6 +53,7 @@ function Dashboard() {
   const [, setRecentAttendance] = useState([]);
   const [leaveBalances, setLeaveBalances] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [watchdogDigest, setWatchdogDigest] = useState(null);
 
   // Time-of-day greeting
   const greeting = useMemo(() => {
@@ -121,6 +124,9 @@ function Dashboard() {
           if (bal?.data) setLeaveBalances(bal.data);
         }
       }
+
+      // 8. Fetch Executive Morning Digest
+      aiService.getWatchdogDigest().then((d) => setWatchdogDigest(d)).catch(() => {});
     } catch (err) {
       console.error("Dashboard data load error:", err);
     }
@@ -192,6 +198,55 @@ function Dashboard() {
             </span>
           </div>
         </div>
+
+        {/* ========================================================
+            EXECUTIVE MORNING DIGEST & WATCHDOG BANNER
+            ======================================================== */}
+        {(isAdmin || isManager) && watchdogDigest && (
+          <div className="bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-white dark:from-dark-surface dark:to-dark-bg border border-blue-200 dark:border-dark-border rounded-xl p-4 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-start space-x-3">
+                <div className="p-2 rounded-xl bg-blue-600 text-white shadow-xs shrink-0 mt-0.5">
+                  <ShieldAlert className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-xs font-bold text-neutral-900 dark:text-neutral-100 uppercase tracking-wider">
+                      Workforce Watchdog: Executive Morning Digest
+                    </h3>
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.2 rounded uppercase ${
+                        watchdogDigest.healthScore >= 90
+                          ? "bg-emerald-100 text-emerald-800"
+                          : watchdogDigest.healthScore >= 75
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      Score: {watchdogDigest.healthScore}/100 {watchdogDigest.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-neutral-600 dark:text-neutral-300 mt-1 leading-snug">
+                    {watchdogDigest.criticalCount > 0
+                      ? `${watchdogDigest.criticalCount} critical operational anomalies detected across attendance, leaves, or payroll requiring review.`
+                      : "All operational pillars nominal. Zero critical SLA or statutory variance breaches detected today."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => navigate("/ai-copilot")}
+                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition shadow-xs cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Open Watchdog Insights</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ========================================================
             2. INTERACTIVE QUICK ACTION CARDS (Catchy Clickable Tiles)

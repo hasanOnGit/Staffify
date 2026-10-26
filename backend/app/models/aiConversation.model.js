@@ -11,6 +11,8 @@ const messageSchema = new mongoose.Schema(
     kpis: { type: mongoose.Schema.Types.Mixed },
     actionDraft: { type: mongoose.Schema.Types.Mixed },
     actionResult: { type: mongoose.Schema.Types.Mixed },
+    chartConfig: { type: mongoose.Schema.Types.Mixed },
+    detectedLanguage: { type: String, default: "en" },
     summary: { type: String },
     description: { type: String },
     suggestedFollowUps: [{ type: String }],
