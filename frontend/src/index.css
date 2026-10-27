@@ -22,6 +22,15 @@
     color: #F1F5F9;
   }
 
+  /* Mobile Touch Ergonomics */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
   /* Tactile Button Feedback */
   button:not(:disabled):active {
     transform: scale(0.98);
@@ -204,4 +213,13 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 }
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #3B465C;
+}
+
+/* Mobile Scrollbar Hide Utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

@@ -112,29 +112,29 @@ function BiometricManagerModal({ isOpen, onClose, employees = [], onSynced }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-[#091E42]/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-2xl border border-[#DFE1E6] w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in duration-150">
+    <div className="fixed inset-0 bg-[#091E42]/60 backdrop-blur-xs flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-2xl border border-[#DFE1E6] w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in duration-150 my-auto">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#DFE1E6] flex items-center justify-between bg-[#FAFBFC] shrink-0">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-[#DFE1E6] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FAFBFC] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded bg-[#DEEBFF] text-[#0052CC] flex items-center justify-center">
+            <div className="w-8 h-8 rounded bg-[#DEEBFF] text-[#0052CC] flex items-center justify-center shrink-0">
               <Cpu size={18} />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[#172B4D] flex items-center gap-2">
+              <h2 className="text-sm sm:text-base font-bold text-[#172B4D] flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <span>Biometric Hardware Terminals & ADMS Push Sync</span>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1]">
                   <Activity size={10} />
                   Bridge Active
                 </span>
               </h2>
-              <p className="text-xs text-[#6B778C]">
+              <p className="text-[11px] sm:text-xs text-[#6B778C]">
                 eSSL, ZKTeco, & Matrix Biometric IP Terminals • Real-time Attendance Ingestion
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
             <button
               disabled={syncing}
               onClick={handleSyncLogs}
@@ -153,7 +153,7 @@ function BiometricManagerModal({ isOpen, onClose, employees = [], onSynced }) {
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-[#172B4D]">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 text-xs text-[#172B4D]">
           {/* Registered Terminals Cards */}
           <div>
             <div className="flex items-center justify-between mb-3">

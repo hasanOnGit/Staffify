@@ -5,6 +5,7 @@ import AttendanceHeatmap from "../components/AttendanceHeatmap";
 import GeofenceModal from "../components/GeofenceModal";
 import BiometricManagerModal from "../components/BiometricManagerModal";
 import StaffifyLoader from "../components/StaffifyLoader";
+import ClockWidget from "../components/ClockWidget";
 import { getAttendanceByDate, getAttendanceHistory, requestRegularization } from "../services/attendance";
 import { getGeofenceZones } from "../services/geofence";
 import { getEmployees } from "../services/employee";
@@ -319,44 +320,67 @@ function Attendance() {
           <button
             onClick={handleExportCsv}
             disabled={filteredAttendance.length === 0}
-            className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded transition shadow-2xs cursor-pointer disabled:opacity-50"
             title={isPersonal ? "Export my monthly attendance to CSV" : "Export workforce attendance register to CSV"}
           >
             <Download size={14} className="text-[#0052CC]" />
-            <span>Export CSV</span>
+            <span className="hidden sm:inline">Export CSV</span>
+            <span className="sm:hidden">Export</span>
           </button>
 
           {/* Office Geofences Settings / Info */}
           <button
             onClick={() => setShowGeofenceModal(true)}
-            className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer"
+            className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded transition shadow-2xs cursor-pointer"
             title={canManage ? "View & Configure Authorized Office Geofences" : "View Authorized Office Zones"}
           >
             <MapPin size={14} className="text-[#0052CC]" />
-            <span>{canManage ? "Office Geofences" : "View Office Zones"}</span>
+            <span className="hidden sm:inline">{canManage ? "Office Geofences" : "View Office Zones"}</span>
+            <span className="sm:hidden">Geofences</span>
           </button>
 
           {/* Biometric Hardware Terminals Modal - Restricted to Managers/Admins */}
           {canManage && !isPersonal && (
             <button
               onClick={() => setShowBiometricModal(true)}
-              className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer"
+              className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded transition shadow-2xs cursor-pointer"
               title="Manage eSSL / ZKTeco Biometric Devices and Sync Logs"
             >
               <Cpu size={14} className="text-[#00875A]" />
-              <span>Biometric Hardware</span>
+              <span className="hidden sm:inline">Biometric Hardware</span>
+              <span className="sm:hidden">Biometric</span>
             </button>
           )}
 
           {/* Regularize Button */}
           <button
             onClick={() => setShowRegModal(true)}
-            className="flex items-center gap-1.5 bg-[#0052CC] text-white hover:bg-[#0747A6] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer"
+            className="flex items-center gap-1.5 bg-[#0052CC] text-white hover:bg-[#0747A6] text-xs font-semibold px-3 py-1.5 sm:py-2 rounded transition shadow-2xs cursor-pointer"
             title="Submit Attendance Regularization Request"
           >
             <PlusCircle size={14} />
             <span>Regularize</span>
           </button>
+        </div>
+      </div>
+
+      {/* Mobile Web Punch Clock-In Card (Visible on mobile/tablet screens < lg) */}
+      <div className="lg:hidden bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg p-3 sm:p-4 mb-4 shadow-xs">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded bg-[#DEEBFF] dark:bg-[#1C2331] text-[#0052CC] dark:text-[#579DFF] flex items-center justify-center">
+              <Clock size={13} />
+            </div>
+            <span className="text-xs font-bold text-[#172B4D] dark:text-[#F1F5F9]">
+              Live Shift Clock-In & Location
+            </span>
+          </div>
+          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+            GPS Active
+          </span>
+        </div>
+        <div className="flex justify-center pt-1">
+          <ClockWidget />
         </div>
       </div>
 

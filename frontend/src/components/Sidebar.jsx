@@ -25,6 +25,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import StaffifyLogo from "./StaffifyLogo";
+import ClockWidget from "./ClockWidget";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
@@ -296,6 +297,21 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
           >
             <X size={16} />
           </button>
+        </div>
+
+        {/* Mobile Web Clock-In Widget */}
+        <div className="p-3 border-b border-[#DFE1E6] dark:border-[#263042] bg-[#F4F5F7]/80 dark:bg-[#151B26]">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
+              Shift Clock-In
+            </span>
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+              Live Swipes
+            </span>
+          </div>
+          <div className="flex justify-center">
+            <ClockWidget />
+          </div>
         </div>
 
         {/* Drawer Scrollable Links */}

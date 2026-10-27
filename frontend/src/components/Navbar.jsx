@@ -99,13 +99,14 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) 
                 onOpenCommandPalette?.();
               }
             }}
-            className="relative ml-1 sm:ml-2 flex-1 max-w-xs md:max-w-sm min-w-0 cursor-pointer"
+            className="relative ml-1 sm:ml-2 flex-1 max-w-[120px] xs:max-w-xs md:max-w-sm min-w-0 cursor-pointer"
             title="Open Command Palette (Ctrl + K)"
           >
             <div className="flex items-center bg-[#FAFBFC] dark:bg-[#090D14] hover:bg-white dark:hover:bg-[#1C2331] border border-[#DFE1E6] dark:border-[#263042] hover:border-[#0052CC] dark:hover:border-[#579DFF] rounded-md px-2 py-1 text-xs w-full transition-all duration-200 shadow-2xs">
               <Search size={13} className="text-[#6B778C] dark:text-neutral-400 shrink-0 mr-1.5" />
               <span className="w-full text-[#6B778C] dark:text-neutral-400 text-xs min-w-0 truncate select-none">
-                Search or jump to...
+                <span className="hidden xs:inline">Search or jump to...</span>
+                <span className="xs:hidden">Search...</span>
               </span>
               <kbd className="hidden md:inline-flex items-center gap-0.5 text-[10px] bg-[#EBECF0] dark:bg-[#1C2331] px-1.5 py-0.5 rounded text-[#6B778C] dark:text-neutral-400 font-mono border border-[#DFE1E6] dark:border-[#263042] shrink-0">
                 Ctrl K
@@ -115,25 +116,28 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) 
         </div>
 
         {/* Right: + Create, Web Clock-In, Sun/Moon, Notifications, Help, Settings & Avatar */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Global Quick "+ Create" Action Button */}
           <button
             onClick={() => setShowCreateModal(true)}
-            className="bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white px-2.5 sm:px-3 py-1 rounded text-xs font-semibold flex items-center gap-1 shadow-xs transition cursor-pointer shrink-0"
+            className="bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white px-2 sm:px-3 py-1 rounded text-xs font-semibold flex items-center gap-1 shadow-xs transition cursor-pointer shrink-0"
+            title="Quick Create (Leaves, Tickets, Expenses)"
+            aria-label="Quick Create"
           >
             <Plus size={14} />
-            <span>Create</span>
+            <span className="hidden sm:inline">Create</span>
           </button>
 
           {/* Ask AI Copilot Button */}
           <button
             type="button"
             onClick={toggleAssistant}
-            className="bg-[#DEEBFF] dark:bg-[#1C2331] hover:bg-[#B3D4FF] dark:hover:bg-[#263042] text-[#0052CC] dark:text-[#579DFF] border border-[#B3D4FF] dark:border-[#263042] px-2.5 sm:px-3 py-1 rounded text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition cursor-pointer shrink-0"
+            className="bg-[#DEEBFF] dark:bg-[#1C2331] hover:bg-[#B3D4FF] dark:hover:bg-[#263042] text-[#0052CC] dark:text-[#579DFF] border border-[#B3D4FF] dark:border-[#263042] px-2 sm:px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1 shadow-2xs transition cursor-pointer shrink-0"
             title="Ask Staffify AI Copilot (Ctrl + J)"
+            aria-label="Ask Staffify AI Copilot"
           >
             <Sparkles size={13} className="text-[#0052CC] dark:text-[#579DFF]" />
-            <span className="hidden xs:inline">Ask AI</span>
+            <span className="hidden sm:inline">Ask AI</span>
           </button>
 
           {/* Web Clock Widget */}
@@ -175,7 +179,7 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) 
           <button
             type="button"
             onClick={() => setSoundOn(toggleSound())}
-            className="p-1.5 text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded transition cursor-pointer shrink-0"
+            className="p-1.5 text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded transition cursor-pointer hidden sm:block shrink-0"
             title={soundOn ? "Mute UI Sound Effects" : "Enable UI Sound Effects"}
             aria-label={soundOn ? "Mute UI Sound Effects" : "Enable UI Sound Effects"}
           >
