@@ -324,18 +324,17 @@ module.exports = function (app) {
   apiRoutes.get("/getLeaveBalance", handleGetBalance);
   apiRoutes.post("/getLeaveBalance", handleGetBalance);
 
-  /* ==========================================================
-     TEAM ON LEAVE (TODAY / CURRENT WEEK)
-     ========================================================== */
   apiRoutes.get("/team-on-leave", async (req, res) => {
     try {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
 
       const leaves = await Leaves.find({
         status: "Approved",
-        fromDate: { $lte: today },
-        toDate: { $gte: today },
+        fromDate: { $lte: endOfDay },
+        toDate: { $gte: startOfDay },
       }).select("employeeId employeeName leaveType fromDate toDate isHalfDay");
 
       return res.status(200).json({
