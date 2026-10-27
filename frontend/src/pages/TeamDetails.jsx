@@ -11,6 +11,7 @@ import {
 } from "../services/team";
 import { getEmployees } from "../services/employee";
 import { ArrowLeft, Plus, X, CheckCircle2, Circle, Search } from "lucide-react";
+import toast from "react-hot-toast";
 
 function TeamDetails() {
   const { teamId } = useParams();
@@ -58,6 +59,7 @@ function TeamDetails() {
   }, [teamId]);
 
   const showToast = (msg) => {
+    toast.success(msg);
     setNotification(msg);
     setTimeout(() => setNotification(""), 3500);
   };
@@ -74,7 +76,7 @@ function TeamDetails() {
       showToast("Team lead/manager assigned successfully!");
       fetchTeamData();
     } catch (err) {
-      alert(err.response?.data?.error || "Failed to add manager");
+      toast.error(err.response?.data?.error || "Failed to add manager");
     }
   };
 
@@ -86,7 +88,7 @@ function TeamDetails() {
       showToast("Manager removed from team leadership.");
       fetchTeamData();
     } catch (err) {
-      alert(err.response?.data?.error || "Failed to remove manager");
+      toast.error(err.response?.data?.error || "Failed to remove manager");
     }
   };
 
@@ -106,7 +108,7 @@ function TeamDetails() {
       showToast("Member assigned to squad successfully!");
       fetchTeamData();
     } catch (err) {
-      alert(err.response?.data?.error || "Failed to add member to team");
+      toast.error(err.response?.data?.error || "Failed to add member to team");
     }
   };
 
@@ -118,7 +120,7 @@ function TeamDetails() {
       showToast("Member removed from team roster.");
       fetchTeamData();
     } catch (err) {
-      alert(err.response?.data?.error || "Failed to remove member");
+      toast.error(err.response?.data?.error || "Failed to remove member");
     }
   };
 

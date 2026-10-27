@@ -5,6 +5,7 @@ import TeamForm from "../components/TeamForm";
 import StaffifyLoader from "../components/StaffifyLoader";
 import { getTeams, createTeam, deleteTeam } from "../services/team";
 import { Plus, X, Search, CheckCircle2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 function Teams() {
   const [teams, setTeams] = useState([]);
@@ -33,11 +34,12 @@ function Teams() {
   const handleCreateTeam = async (formData) => {
     try {
       await createTeam(formData);
+      toast.success("Team created successfully.");
       setAlertMsg("Team created successfully.");
       setShowForm(false);
       fetchTeams();
     } catch (err) {
-      alert(err.response?.data?.message || err.response?.data?.error || "Failed to create team");
+      toast.error(err.response?.data?.message || err.response?.data?.error || "Failed to create team");
     }
   };
 
@@ -45,10 +47,11 @@ function Teams() {
     if (!window.confirm("Are you sure you want to delete this team?")) return;
     try {
       await deleteTeam(teamId);
+      toast.success("Team removed successfully.");
       setAlertMsg("Team removed successfully.");
       fetchTeams();
     } catch (err) {
-      alert(err.response?.data?.message || err.response?.data?.error || "Failed to delete team");
+      toast.error(err.response?.data?.message || err.response?.data?.error || "Failed to delete team");
     }
   };
 

@@ -17,6 +17,7 @@ import {
   FileText,
   Printer,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 function Profile() {
   const { user } = useAuth();
@@ -157,12 +158,13 @@ function Profile() {
     try {
       setSaving(true);
       await updateEmployee(employee.employeeId, formData);
+      toast.success("Profile updated successfully!");
       setNotification("Profile updated successfully!");
       setEditMode(false);
       await fetchProfileData();
       setTimeout(() => setNotification(""), 3500);
     } catch (err) {
-      alert(err.response?.data?.message || err.response?.data?.error || "Failed to update profile");
+      toast.error(err.response?.data?.message || err.response?.data?.error || "Failed to update profile");
     } finally {
       setSaving(false);
     }

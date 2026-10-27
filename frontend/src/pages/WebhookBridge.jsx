@@ -40,6 +40,7 @@ import {
   Eye,
   Trash2,
   TrendingUp,
+  X,
 } from "lucide-react";
 
 function WebhookBridge() {
@@ -1135,9 +1136,9 @@ function WebhookBridge() {
                 </div>
                 <button
                   onClick={() => setIsConnectModalOpen(false)}
-                  className="text-[#6B778C] hover:text-[#172B4D] text-sm"
+                  className="text-[#6B778C] hover:text-[#172B4D] dark:text-[#94A3B8] dark:hover:text-[#F1F5F9] p-1 rounded transition-colors"
                 >
-                  ✕
+                  <X size={16} />
                 </button>
               </div>
 
@@ -1253,9 +1254,9 @@ function WebhookBridge() {
                 </div>
                 <button
                   onClick={() => setSelectedLogPayload(null)}
-                  className="text-[#6B778C] hover:text-[#172B4D] text-sm"
+                  className="text-[#6B778C] hover:text-[#172B4D] dark:text-[#94A3B8] dark:hover:text-[#F1F5F9] p-1 rounded transition-colors"
                 >
-                  ✕
+                  <X size={16} />
                 </button>
               </div>
 

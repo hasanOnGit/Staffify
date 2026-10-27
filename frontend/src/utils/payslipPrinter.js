@@ -2,6 +2,7 @@
  * Staffify Enterprise Payslip Generator & PDF Printer
  * Renders high-fidelity, printable, and downloadable salary statements.
  */
+import toast from "react-hot-toast";
 
 export const formatCurrency = (val = 0) => {
   return new Intl.NumberFormat("en-IN", {
@@ -412,7 +413,7 @@ export const printPayslip = (payslip) => {
   const html = generatePayslipHtml(payslip);
   const printWindow = window.open("", "_blank");
   if (!printWindow) {
-    alert("Please allow popups to print/download your payslip.");
+    toast.error("Please allow popups in your browser to print/download payslips.");
     return;
   }
   printWindow.document.open();

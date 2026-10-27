@@ -154,6 +154,7 @@ function Leaves() {
   };
 
   const handleExportCsv = () => {
+    const recordsToExport = isManager || user?.role === "Admin" ? allLeaves : myLeaves;
     exportToCsv({
       filename: `Staffify_Leave_Register_${new Date().toISOString().split("T")[0]}.csv`,
       headers: [
@@ -168,9 +169,11 @@ function Leaves() {
         { key: "status", label: "Approval Status" },
         { key: "approvedBy", label: "Reviewer / Manager" },
       ],
-      data: leaves,
+      data: recordsToExport,
     });
   };
+
+  const recordsCount = (isManager || user?.role === "Admin" ? allLeaves : myLeaves).length;
 
   return (
     <DashboardLayout>
@@ -178,12 +181,12 @@ function Leaves() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-[#172B4D]">Leave Management</h1>
-            <span className="text-[11px] bg-[#DEEBFF] text-[#0747A6] font-semibold px-2 py-0.5 rounded border border-[#B3D4FF]">
+            <h1 className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9]">Leave Management</h1>
+            <span className="text-[11px] bg-[#DEEBFF] dark:bg-[#0747A6]/30 text-[#0747A6] dark:text-[#93C5FD] font-semibold px-2 py-0.5 rounded border border-[#B3D4FF] dark:border-[#1E3A8A]">
               Staffify ESS
             </span>
           </div>
-          <p className="text-xs text-[#6B778C] mt-0.5">
+          <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
             Leave quotas, multi-type applications, manager approvals & company holidays
           </p>
         </div>
@@ -191,7 +194,7 @@ function Leaves() {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={fetchData}
-            className="p-1.5 border border-[#DFE1E6] bg-white hover:bg-[#F4F5F7] rounded text-[#6B778C] transition cursor-pointer"
+            className="p-1.5 border border-[#DFE1E6] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F4F5F7] dark:hover:bg-[#334155] rounded text-[#6B778C] dark:text-[#94A3B8] transition cursor-pointer"
             title="Refresh"
           >
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
@@ -199,18 +202,18 @@ function Leaves() {
 
           <button
             onClick={handleExportCsv}
-            disabled={leaves.length === 0}
-            className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] hover:bg-[#F4F5F7] text-[#172B4D] text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer disabled:opacity-50"
+            disabled={recordsCount === 0}
+            className="flex items-center gap-1.5 bg-white dark:bg-[#1E293B] border border-[#DFE1E6] dark:border-[#334155] hover:bg-[#F4F5F7] dark:hover:bg-[#334155] text-[#172B4D] dark:text-[#F1F5F9] text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer disabled:opacity-50"
             title="Export leave records to CSV"
           >
-            <Download size={13} className="text-[#0052CC]" />
+            <Download size={13} className="text-[#0052CC] dark:text-[#38BDF8]" />
             <span>Export CSV</span>
           </button>
 
           {(isManager || user?.role === "Admin") && (
             <button
               onClick={() => setShowPolicyModal(true)}
-              className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] hover:bg-[#F4F5F7] text-[#172B4D] text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
+              className="flex items-center gap-1.5 bg-white dark:bg-[#1E293B] border border-[#DFE1E6] dark:border-[#334155] hover:bg-[#F4F5F7] dark:hover:bg-[#334155] text-[#172B4D] dark:text-[#F1F5F9] text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
               title="Configure Sandwich Leave Policy & Annual Carry-Forward Rollover"
             >
               <Sliders size={13} className="text-[#0052CC]" />

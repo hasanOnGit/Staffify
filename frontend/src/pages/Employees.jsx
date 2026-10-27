@@ -217,12 +217,12 @@ function Employees() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gray-800">Employee Directory</h1>
-            <span className="text-xs bg-purple-100 text-purple-700 font-semibold px-2 py-0.5 rounded-full">
+            <h1 className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9]">Employee Directory</h1>
+            <span className="text-[11px] bg-[#DEEBFF] dark:bg-[#0747A6]/30 text-[#0747A6] dark:text-[#93C5FD] font-semibold px-2 py-0.5 rounded border border-[#B3D4FF] dark:border-[#1E3A8A]">
               Staffify 360
             </span>
           </div>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
             Full lifecycle records, statutory compliance, banking, and organizational reporting
           </p>
         </div>
@@ -230,27 +230,27 @@ function Employees() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={fetchEmployees}
-            className="p-2 border border-gray-200 bg-white hover:bg-gray-50 rounded-lg text-gray-600 transition shadow-2xs"
+            className="p-1.5 border border-[#DFE1E6] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F4F5F7] dark:hover:bg-[#334155] rounded text-[#6B778C] dark:text-[#94A3B8] transition cursor-pointer"
             title="Refresh"
           >
-            <RefreshCw size={15} className={pageLoading ? "animate-spin" : ""} />
+            <RefreshCw size={14} className={pageLoading ? "animate-spin" : ""} />
           </button>
 
           <button
             onClick={handleExportCsv}
             disabled={filteredEmployees.length === 0}
-            className="flex items-center gap-1.5 bg-white hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] text-xs font-semibold px-3.5 py-1.5 rounded transition cursor-pointer shadow-xs disabled:opacity-50"
+            className="flex items-center gap-1.5 bg-white dark:bg-[#1E293B] hover:bg-[#EBECF0] dark:hover:bg-[#334155] text-[#172B4D] dark:text-[#F1F5F9] border border-[#DFE1E6] dark:border-[#334155] text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer disabled:opacity-50"
             title="Export directory records to CSV"
           >
-            <Download size={14} className="text-[#0052CC]" />
+            <Download size={13} className="text-[#0052CC] dark:text-[#38BDF8]" />
             <span>Export CSV</span>
           </button>
 
           <button
             onClick={() => setShowDocModal(true)}
-            className="flex items-center gap-1.5 bg-white hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] text-xs font-semibold px-3.5 py-1.5 rounded transition cursor-pointer shadow-xs"
+            className="flex items-center gap-1.5 bg-white dark:bg-[#1E293B] hover:bg-[#EBECF0] dark:hover:bg-[#334155] text-[#172B4D] dark:text-[#F1F5F9] border border-[#DFE1E6] dark:border-[#334155] text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
           >
-            <FileText size={14} className="text-[#0052CC]" />
+            <FileText size={13} className="text-[#0052CC] dark:text-[#38BDF8]" />
             <span>Generate HR Letter</span>
           </button>
 

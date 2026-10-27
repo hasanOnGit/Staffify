@@ -107,6 +107,44 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   background-color: #151B26;
 }
 
+/* Generic Gray Tokens Dark Mode Inversion (guarantees readability across components) */
+.dark .text-gray-900 {
+  color: #F8FAFC !important;
+}
+.dark .text-gray-800 {
+  color: #F1F5F9 !important;
+}
+.dark .text-gray-700 {
+  color: #E2E8F0 !important;
+}
+.dark .text-gray-600 {
+  color: #CBD5E1 !important;
+}
+.dark .text-gray-500 {
+  color: #94A3B8 !important;
+}
+.dark .text-gray-400 {
+  color: #64748B !important;
+}
+.dark .border-gray-200 {
+  border-color: #263042 !important;
+}
+.dark .border-gray-300 {
+  border-color: #334155 !important;
+}
+.dark .border-gray-100 {
+  border-color: #1E293B !important;
+}
+.dark .bg-gray-50 {
+  background-color: #0F172A !important;
+}
+.dark .bg-gray-100 {
+  background-color: #1E293B !important;
+}
+.dark .bg-gray-200 {
+  background-color: #334155 !important;
+}
+
 /* Accessible Form Controls in Dark Mode */
 .dark input:not([type="checkbox"]):not([type="radio"]),
 .dark select,
@@ -118,11 +156,22 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   color: #8C9BAB;
 }
 
-/* Subtle Dark Scrollbars */
-.dark ::-webkit-scrollbar {
+/* High Precision Atlassian Scrollbars (Light & Dark) */
+::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+::-webkit-scrollbar-track {
+  background: #F4F5F7;
+}
+::-webkit-scrollbar-thumb {
+  background: #DFE1E6;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B3BAC5;
+}
+
 .dark ::-webkit-scrollbar-track {
   background: #090D14;
 }
