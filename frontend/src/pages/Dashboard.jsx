@@ -1006,7 +1006,7 @@ function KpiMetricCard({
 }) {
   return (
     <div
-      className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-4 shadow-sm relative overflow-hidden transition-colors"
+      className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-4 shadow-sm relative overflow-hidden card-smooth"
       style={{ borderTop: `3px solid ${accentColor}` }}
     >
       <div className="flex items-start justify-between">

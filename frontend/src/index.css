@@ -5,6 +5,10 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -17,6 +21,43 @@
     background-color: #090D14;
     color: #F1F5F9;
   }
+
+  /* Tactile Button Feedback */
+  button:not(:disabled):active {
+    transform: scale(0.98);
+  }
+}
+
+/* =========================================================
+   Smooth Motion & Transition System
+   ========================================================= */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-enter {
+  animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Card Smooth Elevation */
+.card-smooth {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s ease;
+}
+.card-smooth:hover {
+  transform: translateY(-2px);
+}
+
+/* Smooth Focus Ring */
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
 }
 
 /* =========================================================

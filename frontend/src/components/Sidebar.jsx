@@ -29,7 +29,7 @@ import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
 const baseLinkClasses =
-  "flex items-center gap-2.5 px-3 py-2.5 md:py-2 rounded-md text-xs font-medium transition-colors duration-150";
+  "flex items-center gap-2.5 px-3 py-2.5 md:py-2 rounded-md text-xs font-medium transition-all duration-150 hover:translate-x-0.5";
 
 const getNavLinkClass = ({ isActive }) =>
   `${baseLinkClasses} ${

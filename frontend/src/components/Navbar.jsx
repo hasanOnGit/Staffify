@@ -67,7 +67,7 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
 
   return (
     <>
-      <header className="h-12 bg-white dark:bg-[#0F131C] border-b border-[#DFE1E6] dark:border-[#263042] flex items-center justify-between px-2.5 sm:px-3.5 sticky top-0 z-50 select-none transition-colors">
+      <header className="h-12 bg-white/95 dark:bg-[#0F131C]/95 backdrop-blur-md border-b border-[#DFE1E6] dark:border-[#263042] flex items-center justify-between px-2.5 sm:px-3.5 sticky top-0 z-50 select-none transition-colors">
         {/* Left: Mobile Menu, Staffify Brand & Search */}
         <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1 max-w-xl">
           {/* Mobile Hamburger Drawer Toggle */}
@@ -90,7 +90,7 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
 
           {/* Staffify Global Search Bar */}
           <form onSubmit={handleSearchSubmit} className="relative ml-1 sm:ml-2 flex-1 max-w-xs md:max-w-sm min-w-0">
-            <div className="flex items-center bg-[#FAFBFC] dark:bg-[#090D14] hover:bg-white dark:hover:bg-[#1C2331] focus-within:bg-white dark:focus-within:bg-[#1C2331] border border-[#DFE1E6] dark:border-[#263042] focus-within:border-[#0052CC] rounded-md px-2 py-1 text-xs w-full transition shadow-2xs">
+            <div className="flex items-center bg-[#FAFBFC] dark:bg-[#090D14] hover:bg-white dark:hover:bg-[#1C2331] focus-within:bg-white dark:focus-within:bg-[#1C2331] border border-[#DFE1E6] dark:border-[#263042] focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/20 rounded-md px-2 py-1 text-xs w-full transition-all duration-200 shadow-2xs">
               <Search size={13} className="text-[#6B778C] dark:text-neutral-400 shrink-0 mr-1.5" />
               <input
                 type="text"

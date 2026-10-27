@@ -28,8 +28,10 @@ function DashboardLayout({ children }) {
           mobileOpen={mobileMenuOpen}
           onCloseMobile={() => setMobileMenuOpen(false)}
         />
-        <main className="flex-1 overflow-y-auto p-3.5 sm:p-5 md:p-6 bg-[#F4F5F7] dark:bg-[#090D14] text-[#172B4D] dark:text-[#F1F5F9] transition-colors">
-          {children}
+        <main className="flex-1 overflow-y-auto p-3.5 sm:p-5 md:p-6 bg-[#F4F5F7] dark:bg-[#090D14] text-[#172B4D] dark:text-[#F1F5F9] transition-colors scroll-smooth">
+          <div key={location.pathname} className="animate-page-enter min-h-full">
+            {children}
+          </div>
         </main>
       </div>
 
