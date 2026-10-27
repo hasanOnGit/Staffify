@@ -4,9 +4,11 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import AiAssistantDrawer from "../components/ai/AiAssistantDrawer";
 import AiFloatingTrigger from "../components/ai/AiFloatingTrigger";
+import CommandPalette from "../components/CommandPalette";
 
 function DashboardLayout({ children }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const location = useLocation();
 
   // Auto-close mobile drawer whenever route changes
@@ -14,12 +16,25 @@ function DashboardLayout({ children }) {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
+  // Global Ctrl + K / Cmd + K keyboard shortcut
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCommandPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
+
   return (
     <div className="h-screen flex flex-col bg-[#F4F5F7] dark:bg-[#090D14] overflow-hidden transition-colors">
       {/* Top Navbar spans 100% full width */}
       <Navbar
         onToggleMobileMenu={() => setMobileMenuOpen((prev) => !prev)}
         isMobileMenuOpen={mobileMenuOpen}
+        onOpenCommandPalette={() => setCommandPaletteOpen(true)}
       />
 
       {/* Workspace Area: Left Sidebar + Main Content */}
@@ -38,6 +53,12 @@ function DashboardLayout({ children }) {
       {/* Global Staffify AI Copilot Drawer & Trigger */}
       <AiAssistantDrawer />
       <AiFloatingTrigger />
+
+      {/* Global Command Palette (Ctrl + K) */}
+      <CommandPalette
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+      />
     </div>
   );
 }

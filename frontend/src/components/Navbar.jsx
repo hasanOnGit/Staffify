@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 
-function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
+function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) {
   const { user, logout, isAdmin, isManager } = useAuth();
   const { toggleAssistant } = useAiAssistant();
   const { isDark, toggleTheme } = useTheme();
@@ -40,7 +40,6 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const getInitials = (name = "") => {
     if (!name) return "AU";
@@ -50,12 +49,6 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
       .slice(0, 2)
       .join("")
       .toUpperCase();
-  };
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-    navigate(`/employees?search=${encodeURIComponent(searchQuery)}`);
   };
 
   const handleLogout = () => {
@@ -88,22 +81,30 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen }) {
             className="shrink-0"
           />
 
-          {/* Staffify Global Search Bar */}
-          <form onSubmit={handleSearchSubmit} className="relative ml-1 sm:ml-2 flex-1 max-w-xs md:max-w-sm min-w-0">
-            <div className="flex items-center bg-[#FAFBFC] dark:bg-[#090D14] hover:bg-white dark:hover:bg-[#1C2331] focus-within:bg-white dark:focus-within:bg-[#1C2331] border border-[#DFE1E6] dark:border-[#263042] focus-within:border-[#0052CC] focus-within:ring-2 focus-within:ring-[#0052CC]/20 rounded-md px-2 py-1 text-xs w-full transition-all duration-200 shadow-2xs">
+          {/* Staffify Global Search Omnibar Trigger */}
+          <div
+            onClick={onOpenCommandPalette}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onOpenCommandPalette?.();
+              }
+            }}
+            className="relative ml-1 sm:ml-2 flex-1 max-w-xs md:max-w-sm min-w-0 cursor-pointer"
+            title="Open Command Palette (Ctrl + K)"
+          >
+            <div className="flex items-center bg-[#FAFBFC] dark:bg-[#090D14] hover:bg-white dark:hover:bg-[#1C2331] border border-[#DFE1E6] dark:border-[#263042] hover:border-[#0052CC] dark:hover:border-[#579DFF] rounded-md px-2 py-1 text-xs w-full transition-all duration-200 shadow-2xs">
               <Search size={13} className="text-[#6B778C] dark:text-neutral-400 shrink-0 mr-1.5" />
-              <input
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent outline-none text-[#172B4D] dark:text-white placeholder-[#6B778C] dark:placeholder-neutral-400 text-xs min-w-0"
-              />
-              <kbd className="hidden md:inline-block text-[10px] bg-[#EBECF0] dark:bg-[#1C2331] px-1.5 py-0.5 rounded text-[#6B778C] dark:text-neutral-400 font-mono border border-[#DFE1E6] dark:border-[#263042] shrink-0">
-                /
+              <span className="w-full text-[#6B778C] dark:text-neutral-400 text-xs min-w-0 truncate select-none">
+                Search or jump to...
+              </span>
+              <kbd className="hidden md:inline-flex items-center gap-0.5 text-[10px] bg-[#EBECF0] dark:bg-[#1C2331] px-1.5 py-0.5 rounded text-[#6B778C] dark:text-neutral-400 font-mono border border-[#DFE1E6] dark:border-[#263042] shrink-0">
+                Ctrl K
               </kbd>
             </div>
-          </form>
+          </div>
         </div>
 
         {/* Right: + Create, Web Clock-In, Sun/Moon, Notifications, Help, Settings & Avatar */}
