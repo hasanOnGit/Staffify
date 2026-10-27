@@ -23,6 +23,7 @@ import {
 import { getSettlements, initiateSettlement } from "../services/settlement";
 import { getAllTaxDeclarations, verifyTaxDeclaration } from "../services/tax";
 import { printPayslip } from "../utils/payslipPrinter";
+import { exportToCsv } from "../utils/csvExporter";
 import toast from "react-hot-toast";
 import {
   DollarSign,
@@ -240,6 +241,38 @@ function Payroll() {
       p.employeeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.department.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleExportPayrollCsv = () => {
+    const monthName = MONTHS.find((m) => m.val === selectedMonth)?.name || "Month";
+    exportToCsv({
+      filename: `Staffify_Payroll_Register_${monthName}_${selectedYear}.csv`,
+      headers: [
+        { key: "payslipId", label: "Payslip ID" },
+        { key: "employeeId", label: "Employee ID" },
+        { key: "employeeName", label: "Employee Name" },
+        { key: "designation", label: "Designation" },
+        { key: "department", label: "Department" },
+        {
+          key: "payableDays",
+          label: "Payable Days",
+          accessor: (item) => item.attendanceSummary?.payableDays || 0,
+        },
+        {
+          key: "grossEarnings",
+          label: "Gross Earnings (INR)",
+          accessor: (item) => item.earnings?.grossEarnings || 0,
+        },
+        {
+          key: "totalDeductions",
+          label: "Total Deductions (INR)",
+          accessor: (item) => item.deductions?.totalDeductions || 0,
+        },
+        { key: "netPay", label: "Net Take-Home (INR)" },
+        { key: "status", label: "Disbursement Status" },
+      ],
+      data: filteredPayslips,
+    });
+  };
 
   return (
     <DashboardLayout>
@@ -462,16 +495,28 @@ function Payroll() {
                 </p>
               </div>
 
-              {/* Search Bar */}
-              <div className="relative">
-                <Search size={14} className="text-[#6B778C] absolute left-2.5 top-2.5" />
-                <input
-                  type="text"
-                  placeholder="Filter employee or department..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 bg-[#FAFBFC] border border-[#DFE1E6] rounded text-xs outline-none focus:border-[#0052CC] w-64 text-[#172B4D]"
-                />
+              {/* Search Bar & Export CSV */}
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search size={14} className="text-[#6B778C] absolute left-2.5 top-2.5" />
+                  <input
+                    type="text"
+                    placeholder="Filter employee or department..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-8 pr-3 py-1.5 bg-[#FAFBFC] border border-[#DFE1E6] rounded text-xs outline-none focus:border-[#0052CC] w-56 text-[#172B4D]"
+                  />
+                </div>
+
+                <button
+                  onClick={handleExportPayrollCsv}
+                  disabled={filteredPayslips.length === 0}
+                  className="flex items-center gap-1.5 bg-white hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] rounded px-3 py-1.5 text-xs font-semibold cursor-pointer transition shadow-xs disabled:opacity-50"
+                  title="Export monthly payroll register to CSV"
+                >
+                  <Download size={13} className="text-[#0052CC]" />
+                  <span>Export CSV</span>
+                </button>
               </div>
             </div>
 

@@ -23,7 +23,9 @@ import {
   RefreshCw,
   Clock,
   Sliders,
+  Download,
 } from "lucide-react";
+import { exportToCsv } from "../utils/csvExporter";
 import toast from "react-hot-toast";
 
 function Leaves() {
@@ -151,6 +153,25 @@ function Leaves() {
     }
   };
 
+  const handleExportCsv = () => {
+    exportToCsv({
+      filename: `Staffify_Leave_Register_${new Date().toISOString().split("T")[0]}.csv`,
+      headers: [
+        { key: "leaveId", label: "Leave Ref ID" },
+        { key: "employeeId", label: "Employee ID" },
+        { key: "employeeName", label: "Employee Name" },
+        { key: "leaveType", label: "Leave Type" },
+        { key: "startDate", label: "Start Date" },
+        { key: "endDate", label: "End Date" },
+        { key: "daysCount", label: "Duration (Days)" },
+        { key: "reason", label: "Reason for Time-Off" },
+        { key: "status", label: "Approval Status" },
+        { key: "approvedBy", label: "Reviewer / Manager" },
+      ],
+      data: leaves,
+    });
+  };
+
   return (
     <DashboardLayout>
       {/* Header */}
@@ -174,6 +195,16 @@ function Leaves() {
             title="Refresh"
           >
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+          </button>
+
+          <button
+            onClick={handleExportCsv}
+            disabled={leaves.length === 0}
+            className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] hover:bg-[#F4F5F7] text-[#172B4D] text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer disabled:opacity-50"
+            title="Export leave records to CSV"
+          >
+            <Download size={13} className="text-[#0052CC]" />
+            <span>Export CSV</span>
           </button>
 
           {(isManager || user?.role === "Admin") && (

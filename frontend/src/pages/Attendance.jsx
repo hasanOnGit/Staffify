@@ -8,7 +8,8 @@ import { getAttendanceByDate, requestRegularization } from "../services/attendan
 import { getGeofenceZones } from "../services/geofence";
 import { getEmployees } from "../services/employee";
 import { useAuth } from "../context/AuthContext";
-import { Clock, RefreshCw, PlusCircle, AlertCircle, X, MapPin, SlidersHorizontal, Cpu } from "lucide-react";
+import { Clock, RefreshCw, PlusCircle, AlertCircle, X, MapPin, SlidersHorizontal, Cpu, Download } from "lucide-react";
+import { exportToCsv } from "../utils/csvExporter";
 import toast from "react-hot-toast";
 
 function Attendance() {
@@ -128,6 +129,27 @@ function Attendance() {
     }
   };
 
+  const handleExportCsv = () => {
+    exportToCsv({
+      filename: `Staffify_Attendance_Register_${selectedDate}.csv`,
+      headers: [
+        { key: "employeeId", label: "Employee ID" },
+        { key: "employeeName", label: "Employee Name" },
+        { key: "date", label: "Date" },
+        { key: "inTime", label: "Punch In" },
+        { key: "outTime", label: "Punch Out" },
+        { key: "workHours", label: "Work Hours" },
+        { key: "status", label: "Attendance Status" },
+        {
+          key: "verification",
+          label: "Punch Method",
+          accessor: (item) => item.punchSource || "Web Clock-In",
+        },
+      ],
+      data: filteredAttendance,
+    });
+  };
+
   return (
     <DashboardLayout>
       {/* Header */}
@@ -162,6 +184,17 @@ function Attendance() {
             title="Refresh Records"
           >
             <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
+          </button>
+
+          {/* Export CSV Button */}
+          <button
+            onClick={handleExportCsv}
+            disabled={filteredAttendance.length === 0}
+            className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer disabled:opacity-50"
+            title="Export attendance register to CSV"
+          >
+            <Download size={14} className="text-[#0052CC]" />
+            <span>Export CSV</span>
           </button>
 
           {/* Office Geofences Settings / Info */}

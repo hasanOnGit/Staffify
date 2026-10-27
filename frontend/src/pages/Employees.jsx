@@ -9,7 +9,8 @@ import {
 } from "../services/employee";
 import DocumentGeneratorModal from "../components/DocumentGeneratorModal";
 import StaffifyLoader from "../components/StaffifyLoader";
-import { Users, Search, PlusCircle, Filter, RefreshCw, X, Shield, Landmark, User, Briefcase, FileText } from "lucide-react";
+import { Users, Search, PlusCircle, Filter, RefreshCw, X, Shield, Landmark, User, Briefcase, FileText, Download } from "lucide-react";
+import { exportToCsv } from "../utils/csvExporter";
 import toast from "react-hot-toast";
 
 function Employees() {
@@ -188,6 +189,28 @@ function Employees() {
     }
   };
 
+  const handleExportCsv = () => {
+    exportToCsv({
+      filename: `Staffify_Workforce_Directory_${new Date().toISOString().split("T")[0]}.csv`,
+      headers: [
+        { key: "employeeId", label: "Employee ID" },
+        { key: "name", label: "Full Name" },
+        { key: "email", label: "Email Address" },
+        { key: "department", label: "Department" },
+        { key: "designation", label: "Designation / Role" },
+        { key: "employmentType", label: "Employment Type" },
+        { key: "phone", label: "Phone Number" },
+        { key: "dateOfJoining", label: "Date of Joining" },
+        {
+          key: "isActive",
+          label: "Status",
+          accessor: (item) => (item.isActive !== false ? "Active" : "Inactive"),
+        },
+      ],
+      data: filteredEmployees,
+    });
+  };
+
   return (
     <DashboardLayout>
       {/* Header */}
@@ -211,6 +234,16 @@ function Employees() {
             title="Refresh"
           >
             <RefreshCw size={15} className={pageLoading ? "animate-spin" : ""} />
+          </button>
+
+          <button
+            onClick={handleExportCsv}
+            disabled={filteredEmployees.length === 0}
+            className="flex items-center gap-1.5 bg-white hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] text-xs font-semibold px-3.5 py-1.5 rounded transition cursor-pointer shadow-xs disabled:opacity-50"
+            title="Export directory records to CSV"
+          >
+            <Download size={14} className="text-[#0052CC]" />
+            <span>Export CSV</span>
           </button>
 
           <button
