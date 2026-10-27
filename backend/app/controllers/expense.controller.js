@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const apiRoutes = express.Router();
 const ExpenseClaim = require("../models/expenseClaim.model");
 const Employees = require("../models/employees.model");
@@ -190,9 +191,10 @@ module.exports = function (app) {
   apiRoutes.put("/:id/approve", async (req, res) => {
     try {
       const { level, approvedBy = "Manager User", remarks } = req.body;
-      const claim = await ExpenseClaim.findOne({
-        $or: [{ claimId: req.params.id }, { _id: req.params.id }],
-      });
+      const isOid = mongoose.Types.ObjectId.isValid(req.params.id);
+      const claim = await ExpenseClaim.findOne(
+        isOid ? { $or: [{ claimId: req.params.id }, { _id: req.params.id }] } : { claimId: req.params.id }
+      );
 
       if (!claim) {
         return res.status(404).json({ error: "Expense claim not found" });
@@ -236,9 +238,10 @@ module.exports = function (app) {
   apiRoutes.put("/:id/reject", async (req, res) => {
     try {
       const { rejectionReason = "Documentation insufficient" } = req.body;
-      const claim = await ExpenseClaim.findOne({
-        $or: [{ claimId: req.params.id }, { _id: req.params.id }],
-      });
+      const isOid = mongoose.Types.ObjectId.isValid(req.params.id);
+      const claim = await ExpenseClaim.findOne(
+        isOid ? { $or: [{ claimId: req.params.id }, { _id: req.params.id }] } : { claimId: req.params.id }
+      );
 
       if (!claim) {
         return res.status(404).json({ error: "Expense claim not found" });

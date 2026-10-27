@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node index.js",
     "seed": "node app/seeds/masterDatabaseSeeder.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test:e2e": "node scripts/e2eRoleFlowTest.js",
+    "test": "node scripts/e2eRoleFlowTest.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
