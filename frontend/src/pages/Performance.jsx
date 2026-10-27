@@ -329,7 +329,7 @@ function Performance() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4">
+      <div className="space-y-5 pb-28 sm:pb-32 max-w-7xl mx-auto">
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2 border-b border-[#DFE1E6]">
           <div>
@@ -559,19 +559,19 @@ function Performance() {
             </div>
 
             {/* Filter Chips & Search Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-1.5 flex-wrap">
                 {[
                   { id: "All", label: "All Objectives", count: totalGoalsCount },
                   { id: "In Progress", label: "In Progress", count: goals.filter((g) => g.status === "In Progress").length },
                   { id: "On Track", label: "On Track", count: onTrackGoalsCount },
-                  { id: "At Risk", label: "Needs Help (At Risk)", count: atRiskGoalsCount },
+                  { id: "At Risk", label: "Needs Help", count: atRiskGoalsCount },
                   { id: "Completed", label: "Completed", count: completedGoalsCount },
                 ].map((chip) => (
                   <button
                     key={chip.id}
                     onClick={() => setGoalFilterStatus(chip.id)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer flex items-center gap-1.5 ${
+                    className={`h-8.5 px-3 rounded-full text-xs font-semibold border transition cursor-pointer flex items-center gap-1.5 ${
                       goalFilterStatus === chip.id
                         ? "bg-[#0052CC] text-white border-[#0052CC] shadow-xs"
                         : "bg-white text-[#42526E] border-[#DFE1E6] hover:bg-[#F4F5F7]"
@@ -592,11 +592,11 @@ function Performance() {
               </div>
 
               {/* Keyword Search & Category Dropdown */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                 <select
                   value={goalFilterCategory}
                   onChange={(e) => setGoalFilterCategory(e.target.value)}
-                  className="px-2.5 py-1.5 border border-[#DFE1E6] rounded-md text-xs font-semibold text-[#172B4D] bg-white cursor-pointer"
+                  className="h-8.5 px-3 border border-[#DFE1E6] rounded-md text-xs font-semibold text-[#172B4D] bg-white cursor-pointer hover:border-[#B3D4FF] focus:border-[#0052CC] focus:ring-1 focus:ring-[#0052CC] outline-none"
                 >
                   <option value="All">All Categories</option>
                   <option value="Core Deliverable">Core Deliverable</option>
@@ -605,14 +605,14 @@ function Performance() {
                   <option value="Leadership & Culture">Leadership & Culture</option>
                 </select>
 
-                <div className="relative w-full sm:w-56">
-                  <Search size={14} className="absolute left-2.5 top-2.5 text-[#6B778C]" />
+                <div className="relative w-full sm:w-64">
+                  <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6B778C]" />
                   <input
                     type="text"
                     placeholder="Search goals or milestones..."
                     value={goalSearch}
                     onChange={(e) => setGoalSearch(e.target.value)}
-                    className="w-full pl-8 pr-3 py-1.5 bg-white border border-[#DFE1E6] rounded-md text-[#172B4D] text-xs outline-none focus:border-[#0052CC]"
+                    className="h-8.5 w-full pl-8 pr-3 bg-white border border-[#DFE1E6] rounded-md text-[#172B4D] text-xs outline-none focus:border-[#0052CC] focus:ring-1 focus:ring-[#0052CC] transition"
                   />
                 </div>
               </div>
@@ -642,7 +642,7 @@ function Performance() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4.5 items-stretch">
                 {filteredGoals.map((g) => {
                   const isCompleted = g.status === "Completed" || g.progressPercentage >= 100;
                   const milestones = parseMilestones(g.description);
@@ -664,7 +664,7 @@ function Performance() {
                   return (
                     <div
                       key={g.goalId || g._id}
-                      className={`bg-white border rounded-lg p-4.5 transition-all shadow-2xs hover:shadow-xs flex flex-col justify-between ${
+                      className={`bg-white border rounded-xl p-5 transition-all shadow-2xs hover:shadow-xs flex flex-col justify-between h-full ${
                         isCompleted
                           ? "border-[#ABF5D1] bg-[#F6FDF9]/40"
                           : g.status === "At Risk"
@@ -672,7 +672,7 @@ function Performance() {
                           : "border-[#DFE1E6] hover:border-[#0052CC]"
                       }`}
                     >
-                      <div>
+                      <div className="flex-1 flex flex-col">
                         {/* Header Badges & Actions */}
                         <div className="flex items-center justify-between gap-2 mb-2.5">
                           <div className="flex items-center gap-1.5 flex-wrap">
@@ -728,37 +728,39 @@ function Performance() {
 
                         {/* Interactive Key Milestones Checklist */}
                         {milestones.length > 0 && (
-                          <div className="mt-3 pt-2.5 border-t border-[#EBECF0] space-y-1.5">
+                          <div className="mt-3.5 pt-3 border-t border-[#EBECF0] space-y-2">
                             <div className="flex items-center justify-between text-[11px] font-semibold text-[#6B778C]">
-                              <span className="flex items-center gap-1">
-                                <CheckSquare size={12} className="text-[#0052CC]" />
+                              <span className="flex items-center gap-1.5">
+                                <CheckSquare size={13} className="text-[#0052CC]" />
                                 Key Milestones ({milestones.filter((m) => m.isDone).length}/
                                 {milestones.length})
                               </span>
-                              <span className="text-[10px] text-[#A5ADBA]">Click step to update</span>
+                              <span className="text-[10px] text-[#8993A4] font-normal">Click step to toggle</span>
                             </div>
-                            <div className="space-y-1">
+                            <div className="space-y-1.5">
                               {milestones.map((m, idx) => (
                                 <button
                                   key={idx}
                                   type="button"
                                   onClick={() => handleToggleMilestone(g, idx)}
-                                  className={`w-full text-left px-2 py-1.5 rounded text-xs flex items-center gap-2 border transition cursor-pointer ${
+                                  className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs flex items-start gap-2.5 border transition cursor-pointer ${
                                     m.isDone
-                                      ? "bg-[#E3FCEF]/60 border-[#ABF5D1] text-[#006644] line-through font-medium"
+                                      ? "bg-[#E3FCEF]/70 border-[#ABF5D1] text-[#006644] font-medium"
                                       : "bg-[#FAFBFC] border-[#DFE1E6] text-[#172B4D] hover:bg-white hover:border-[#0052CC]"
                                   }`}
                                 >
                                   <div
-                                    className={`w-3.5 h-3.5 rounded flex items-center justify-center border shrink-0 ${
+                                    className={`w-3.5 h-3.5 rounded flex items-center justify-center border shrink-0 mt-0.5 ${
                                       m.isDone
                                         ? "bg-[#00875A] border-[#00875A] text-white"
                                         : "border-[#DFE1E6] bg-white"
                                     }`}
                                   >
-                                    {m.isDone && <Check size={10} />}
+                                    {m.isDone && <Check size={10} strokeWidth={3} />}
                                   </div>
-                                  <span className="truncate">{m.text}</span>
+                                  <span className={`leading-relaxed break-words flex-1 ${m.isDone ? "opacity-90" : ""}`}>
+                                    {m.text}
+                                  </span>
                                 </button>
                               ))}
                             </div>
@@ -777,7 +779,7 @@ function Performance() {
                       </div>
 
                       {/* Progress and Controls Footer */}
-                      <div className="mt-4 pt-3 border-t border-[#EBECF0] space-y-2.5">
+                      <div className="mt-5 pt-3.5 border-t border-[#EBECF0] space-y-2.5">
                         <div className="flex items-center justify-between text-xs font-semibold">
                           <span className="text-[#6B778C]">Completion Progress</span>
                           <span
@@ -813,7 +815,7 @@ function Performance() {
                             <button
                               onClick={() => handleQuickProgress(g.goalId, g.progressPercentage, -10)}
                               disabled={g.progressPercentage <= 0}
-                              className="px-2 py-0.5 rounded border border-[#DFE1E6] text-[10px] font-bold text-[#42526E] hover:bg-[#F4F5F7] disabled:opacity-40 cursor-pointer"
+                              className="px-2 py-0.5 rounded border border-[#DFE1E6] text-[10px] font-bold text-[#42526E] hover:bg-[#F4F5F7] disabled:opacity-40 cursor-pointer transition"
                               title="Decrease 10%"
                             >
                               -10%
@@ -821,7 +823,7 @@ function Performance() {
                             <button
                               onClick={() => handleQuickProgress(g.goalId, g.progressPercentage, 10)}
                               disabled={g.progressPercentage >= 100}
-                              className="px-2 py-0.5 rounded border border-[#DFE1E6] text-[10px] font-bold text-[#42526E] hover:bg-[#F4F5F7] disabled:opacity-40 cursor-pointer"
+                              className="px-2 py-0.5 rounded border border-[#DFE1E6] text-[10px] font-bold text-[#42526E] hover:bg-[#F4F5F7] disabled:opacity-40 cursor-pointer transition"
                               title="Increase 10%"
                             >
                               +10%
@@ -829,7 +831,7 @@ function Performance() {
                             <button
                               onClick={() => handleQuickProgress(g.goalId, g.progressPercentage, 25)}
                               disabled={g.progressPercentage >= 100}
-                              className="px-2 py-0.5 rounded border border-[#DFE1E6] text-[10px] font-bold text-[#42526E] hover:bg-[#F4F5F7] disabled:opacity-40 cursor-pointer"
+                              className="px-2 py-0.5 rounded border border-[#DFE1E6] text-[10px] font-bold text-[#42526E] hover:bg-[#F4F5F7] disabled:opacity-40 cursor-pointer transition"
                               title="Increase 25%"
                             >
                               +25%
@@ -837,7 +839,7 @@ function Performance() {
                             {!isCompleted && (
                               <button
                                 onClick={() => handleQuickProgress(g.goalId, 0, 100)}
-                                className="px-2 py-0.5 rounded bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1] text-[10px] font-bold hover:bg-[#D3F9E5] transition cursor-pointer"
+                                className="px-2.5 py-0.5 rounded bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1] text-[10px] font-bold hover:bg-[#D3F9E5] transition cursor-pointer"
                                 title="Mark goal 100% complete"
                               >
                                 Done
