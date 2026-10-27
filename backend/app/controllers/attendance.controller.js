@@ -18,6 +18,36 @@ const formatTimeStr = (d = new Date()) => {
   return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 };
 
+// Helper to extract client IP address
+const getClientIp = (req) => {
+  let ip = req.headers["x-forwarded-for"] || req.socket?.remoteAddress || req.ip || "127.0.0.1";
+  if (typeof ip === "string" && ip.includes(",")) {
+    ip = ip.split(",")[0].trim();
+  }
+  if (typeof ip === "string" && ip.startsWith("::ffff:")) {
+    ip = ip.replace("::ffff:", "");
+  }
+  if (ip === "::1") {
+    ip = "127.0.0.1";
+  }
+  return ip;
+};
+
+// Helper to check if IP is authorized
+const isIpAuthorized = (ip, allowedIps = []) => {
+  if (!allowedIps || allowedIps.length === 0) return true;
+  return allowedIps.some((pattern) => {
+    const trimmed = pattern.trim();
+    if (!trimmed || trimmed === "*") return true;
+    if (trimmed === ip) return true;
+    if (trimmed.endsWith(".*")) {
+      const prefix = trimmed.slice(0, -2);
+      return ip.startsWith(prefix);
+    }
+    return false;
+  });
+};
+
 module.exports = function (app) {
   /* ==========================================================
      PUNCH IN / PUNCH OUT
@@ -30,7 +60,9 @@ module.exports = function (app) {
         return res.status(400).json({ error: "employeeId and type (IN/OUT) are required" });
       }
 
-      // Geofence Verification
+      const clientIp = getClientIp(req);
+
+      // Geofence & IP Verification
       const emp = await newEmployee.findOne({ employeeId });
       const department = emp ? emp.department : "All";
       const zones = await Geofence.find({ isActive: true });
@@ -45,6 +77,27 @@ module.exports = function (app) {
       }
       if (!matchedZone) {
         matchedZone = zones.find((z) => z.targetScope === "All Employees");
+      }
+
+      // IP Verification
+      let ipVerified = true;
+      if (matchedZone && matchedZone.ipRestricted && matchedZone.allowedIps?.length > 0) {
+        const isAllowed = isIpAuthorized(clientIp, matchedZone.allowedIps);
+        if (matchedZone.isStrict && !isAllowed) {
+          return res.status(403).json({
+            error: `Swipe Rejected: Your network IP (${clientIp}) is not within the authorized corporate network whitelist for ${matchedZone.name}.`
+          });
+        }
+        ipVerified = isAllowed;
+      }
+
+      let networkType = "Public Gateway";
+      if (clientIp === "127.0.0.1") {
+        networkType = "Office Localhost / Loopback";
+      } else if (clientIp.startsWith("192.168.") || clientIp.startsWith("10.") || clientIp.startsWith("172.")) {
+        networkType = "Corporate Office Intranet";
+      } else {
+        networkType = "Secure Verified Gateway";
       }
 
       let locationData = null;
@@ -99,7 +152,12 @@ module.exports = function (app) {
           lastOut: type === "OUT" ? now : undefined,
           punches: [],
           status: "Present",
+          ipAddress: clientIp,
+          geofenceZone: matchedZone ? matchedZone.name : "Remote",
         });
+      } else {
+        record.ipAddress = clientIp;
+        if (matchedZone) record.geofenceZone = matchedZone.name;
       }
 
       // Check for late arrival on first IN (after 9:30 AM)
@@ -116,12 +174,15 @@ module.exports = function (app) {
         record.lastOut = now;
       }
 
-      // Add punch with location metadata
+      // Add punch with location and IP metadata
       record.punches.push({
         time: now,
         timeStr,
         type,
         location: locationData,
+        ipAddress: clientIp,
+        ipVerified,
+        networkType,
       });
 
       // Compute total hours

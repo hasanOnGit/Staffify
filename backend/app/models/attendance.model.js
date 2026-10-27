@@ -20,6 +20,18 @@ const punchSchema = new mongoose.Schema({
     distanceMeters: Number,
     isWithinGeofence: Boolean,
   },
+  ipAddress: {
+    type: String,
+    default: "",
+  },
+  ipVerified: {
+    type: Boolean,
+    default: true,
+  },
+  networkType: {
+    type: String,
+    default: "Office / Verified IP",
+  },
 });
 
 const attendanceSchema = new mongoose.Schema(
@@ -52,6 +64,14 @@ const attendanceSchema = new mongoose.Schema(
       type: String,
       enum: ["Present", "Absent", "Late", "Half Day", "On Leave", "WFH"],
       default: "Present",
+    },
+    ipAddress: {
+      type: String,
+      default: "",
+    },
+    geofenceZone: {
+      type: String,
+      default: "",
     },
     punches: [punchSchema],
     regularization: {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle2, Clock, XCircle, AlertCircle, Eye, X, MapPin } from "lucide-react";
+import { CheckCircle2, Clock, XCircle, AlertCircle, Eye, X, MapPin, Wifi, ShieldCheck } from "lucide-react";
 import { reviewRegularization } from "../services/attendance";
 import toast from "react-hot-toast";
 
@@ -86,13 +86,24 @@ function AttendanceTable({ records, isManager, onRefresh }) {
                   <td className="px-4 py-3">
                     {row.punches && row.punches.length > 0 ? (
                       <div className="flex flex-col gap-1 items-start">
-                        <button
-                          onClick={() => setSelectedPunches(row)}
-                          className="flex items-center gap-1 text-[11px] text-[#0052CC] hover:text-[#0747A6] font-medium bg-[#DEEBFF] hover:bg-[#B3D4FF]/40 px-2 py-0.5 rounded border border-[#B3D4FF] transition cursor-pointer"
-                        >
-                          <Eye size={12} />
-                          <span>{row.punches.length} swipes</span>
-                        </button>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <button
+                            onClick={() => setSelectedPunches(row)}
+                            className="flex items-center gap-1 text-[11px] text-[#0052CC] hover:text-[#0747A6] font-medium bg-[#DEEBFF] hover:bg-[#B3D4FF]/40 px-2 py-0.5 rounded border border-[#B3D4FF] transition cursor-pointer"
+                          >
+                            <Eye size={12} />
+                            <span>{row.punches.length} swipes</span>
+                          </button>
+                          {(row.ipAddress || row.punches[row.punches.length - 1]?.ipAddress) && (
+                            <span
+                              className="inline-flex items-center gap-1 text-[10px] font-mono font-medium px-1.5 py-0.5 rounded border bg-[#F4F5F7] text-[#42526E] border-[#DFE1E6]"
+                              title={`Verified Network IP: ${row.ipAddress || row.punches[row.punches.length - 1]?.ipAddress}`}
+                            >
+                              <Wifi size={9} className="text-[#0052CC]" />
+                              <span>{row.ipAddress || row.punches[row.punches.length - 1]?.ipAddress}</span>
+                            </span>
+                          )}
+                        </div>
                         {row.punches[row.punches.length - 1]?.location?.zoneName && (
                           <span
                             className={`inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded border ${
@@ -102,7 +113,7 @@ function AttendanceTable({ records, isManager, onRefresh }) {
                             }`}
                           >
                             <MapPin size={9} />
-                            <span className="truncate max-w-[95px]">
+                            <span className="truncate max-w-[120px]">
                               {row.punches[row.punches.length - 1].location.zoneName}
                             </span>
                           </span>
@@ -158,11 +169,11 @@ function AttendanceTable({ records, isManager, onRefresh }) {
       {/* Punch Swipes Modal */}
       {selectedPunches && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded max-w-md w-full p-5 shadow-lg border border-[#DFE1E6]">
+          <div className="bg-white rounded max-w-lg w-full p-5 shadow-lg border border-[#DFE1E6]">
             <div className="flex items-center justify-between pb-3 border-b border-[#DFE1E6]">
               <div>
                 <h3 className="text-sm font-semibold text-[#172B4D]">
-                  Swipe Logs — {selectedPunches.employeeName}
+                  Swipe Audit & Location Logs — {selectedPunches.employeeName}
                 </h3>
                 <p className="text-[11px] text-[#6B778C]">Date: {selectedPunches.date}</p>
               </div>
@@ -174,50 +185,69 @@ function AttendanceTable({ records, isManager, onRefresh }) {
               </button>
             </div>
 
-            <div className="py-3.5 space-y-2 max-h-64 overflow-y-auto">
+            <div className="py-3.5 space-y-2.5 max-h-80 overflow-y-auto">
               {selectedPunches.punches.map((p, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between text-xs px-3 py-2 rounded bg-[#F4F5F7] border border-[#DFE1E6]"
+                  className="p-3 rounded bg-[#F4F5F7] border border-[#DFE1E6] space-y-2 text-xs"
                 >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`px-1.5 py-0.5 rounded font-bold uppercase text-[9px] ${
-                        p.type === "IN"
-                          ? "bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1]"
-                          : "bg-[#FFEBE6] text-[#DE350B] border border-[#FFBDAD]"
-                      }`}
-                    >
-                      {p.type}
-                    </span>
-                    <span className="font-mono text-[#172B4D] font-medium text-xs">
-                      {formatTime(p.time)}
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`px-1.5 py-0.5 rounded font-bold uppercase text-[9px] ${
+                          p.type === "IN"
+                            ? "bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1]"
+                            : "bg-[#FFEBE6] text-[#DE350B] border border-[#FFBDAD]"
+                        }`}
+                      >
+                        {p.type}
+                      </span>
+                      <span className="font-mono text-[#172B4D] font-semibold text-xs">
+                        {formatTime(p.time)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded border bg-white text-[#172B4D] border-[#DFE1E6]"
+                        title={p.networkType || "Verified Network IP"}
+                      >
+                        <Wifi size={10} className="text-[#0052CC]" />
+                        <span>{p.ipAddress || selectedPunches.ipAddress || "127.0.0.1"}</span>
+                        {p.ipVerified !== false && (
+                          <ShieldCheck size={10} className="text-[#00875A]" />
+                        )}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    {p.location ? (
-                      <span
-                        className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded border ${
-                          p.location.isWithinGeofence
-                            ? "bg-[#E3FCEF] text-[#006644] border-[#ABF5D1]"
-                            : "bg-[#FFEBE6] text-[#DE350B] border-[#FFBDAD]"
-                        }`}
-                        title={`GPS Coordinates: ${p.location.latitude?.toFixed(4)}, ${p.location.longitude?.toFixed(4)}`}
-                      >
-                        <MapPin size={10} />
-                        <span>{p.location.zoneName || "Office"}</span>
-                        <span className="font-mono">
-                          ({p.location.distanceMeters < 1000
-                            ? `${p.location.distanceMeters}m`
-                            : `${(p.location.distanceMeters / 1000).toFixed(1)}km`})
+                  {/* Geofence & Network details */}
+                  <div className="flex items-center justify-between pt-1 border-t border-[#DFE1E6]/60 text-[11px] text-[#6B778C]">
+                    <div className="flex items-center gap-1">
+                      {p.location ? (
+                        <span
+                          className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded border ${
+                            p.location.isWithinGeofence
+                              ? "bg-[#E3FCEF] text-[#006644] border-[#ABF5D1]"
+                              : "bg-[#FFEBE6] text-[#DE350B] border-[#FFBDAD]"
+                          }`}
+                          title={`GPS: ${p.location.latitude?.toFixed(4)}, ${p.location.longitude?.toFixed(4)}`}
+                        >
+                          <MapPin size={10} />
+                          <span>{p.location.zoneName || "Office Perimeter"}</span>
+                          <span className="font-mono">
+                            ({p.location.distanceMeters < 1000
+                              ? `${p.location.distanceMeters}m`
+                              : `${(p.location.distanceMeters / 1000).toFixed(1)}km`})
+                          </span>
                         </span>
-                      </span>
-                    ) : (
-                      <span className="text-[10px] text-[#6B778C]">
-                        Swipe #{idx + 1}
-                      </span>
-                    )}
+                      ) : (
+                        <span className="text-[10px] text-[#6B778C]">Standard GPS Swipe</span>
+                      )}
+                    </div>
+                    <span className="text-[10px] font-medium text-[#42526E]">
+                      {p.networkType || "Office Localhost / Corporate Gateway"}
+                    </span>
                   </div>
                 </div>
               ))}

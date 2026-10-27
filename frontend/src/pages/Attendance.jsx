@@ -141,9 +141,25 @@ function Attendance() {
         { key: "workHours", label: "Work Hours" },
         { key: "status", label: "Attendance Status" },
         {
+          key: "geofenceZone",
+          label: "Geofence Zone",
+          accessor: (item) =>
+            item.geofenceZone ||
+            item.punches?.[item.punches.length - 1]?.location?.zoneName ||
+            "Authorized Office Campus",
+        },
+        {
+          key: "ipAddress",
+          label: "Client Network IP",
+          accessor: (item) =>
+            item.ipAddress ||
+            item.punches?.[item.punches.length - 1]?.ipAddress ||
+            "127.0.0.1",
+        },
+        {
           key: "verification",
           label: "Punch Method",
-          accessor: (item) => item.punchSource || "Web Clock-In",
+          accessor: (item) => item.punchSource || "Web Clock-In (GPS & IP Verified)",
         },
       ],
       data: filteredAttendance,

@@ -10,6 +10,7 @@ import {
   Navigation,
   Check,
   Layers,
+  Wifi,
 } from "lucide-react";
 import {
   getGeofenceZones,
@@ -31,6 +32,8 @@ function GeofenceModal({ isOpen, onClose }) {
   const [targetScope, setTargetScope] = useState("All Employees");
   const [targetDepartment, setTargetDepartment] = useState("All");
   const [isStrict, setIsStrict] = useState(true);
+  const [allowedIps, setAllowedIps] = useState("127.0.0.1, 192.168.1.*");
+  const [ipRestricted, setIpRestricted] = useState(false);
   const [capturingGps, setCapturingGps] = useState(false);
   const [msg, setMsg] = useState(null);
 
@@ -92,6 +95,10 @@ function GeofenceModal({ isOpen, onClose }) {
     if (!name.trim()) return;
 
     try {
+      const parsedIps = allowedIps
+        ? allowedIps.split(",").map((s) => s.trim()).filter(Boolean)
+        : [];
+
       await createGeofenceZone({
         name: name.trim(),
         address: address.trim(),
@@ -100,6 +107,8 @@ function GeofenceModal({ isOpen, onClose }) {
         radiusMeters: Number(radiusMeters),
         targetScope,
         targetDepartment: targetScope === "Department" ? targetDepartment : "All",
+        allowedIps: parsedIps,
+        ipRestricted: !!ipRestricted,
         isStrict,
       });
       setMsg({ type: "success", text: "Office geofence created successfully." });
@@ -303,6 +312,41 @@ function GeofenceModal({ isOpen, onClose }) {
                 )}
               </div>
 
+              <div className="space-y-2">
+                <div>
+                  <label className="font-semibold text-[#172B4D] block mb-1">
+                    Allowed Office IP Subnets / CIDR Whitelist
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 127.0.0.1, 192.168.1.*, 10.0.0.*"
+                    value={allowedIps}
+                    onChange={(e) => setAllowedIps(e.target.value)}
+                    className="w-full px-2.5 py-1.5 border border-[#DFE1E6] rounded text-[#172B4D] bg-white font-mono text-xs"
+                  />
+                  <span className="text-[10px] text-[#6B778C] mt-0.5 block">
+                    Comma-separated IP addresses or wildcard subnets (e.g. 192.168.1.*)
+                  </span>
+                </div>
+
+                <div className="p-2.5 bg-white border border-[#DFE1E6] rounded flex items-center justify-between">
+                  <div>
+                    <span className="font-semibold text-[#172B4D] block">
+                      Enforce Corporate IP Whitelist
+                    </span>
+                    <span className="text-[11px] text-[#6B778C]">
+                      Restrict swipe access to employees connected to verified office network IP
+                    </span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={ipRestricted}
+                    onChange={(e) => setIpRestricted(e.target.checked)}
+                    className="rounded border-[#DFE1E6] text-[#0052CC] focus:ring-[#0052CC] h-4 w-4 cursor-pointer"
+                  />
+                </div>
+              </div>
+
               <div className="p-2.5 bg-white border border-[#DFE1E6] rounded flex items-center justify-between">
                 <div>
                   <span className="font-semibold text-[#172B4D] block">
@@ -346,7 +390,7 @@ function GeofenceModal({ isOpen, onClose }) {
                 className="p-3.5 bg-white border border-[#DFE1E6] rounded-md shadow-2xs space-y-2 hover:border-[#0052CC] transition"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-bold text-[#172B4D] text-xs">{zone.name}</span>
                     <span className="px-2 py-0.2 rounded text-[10px] font-bold bg-[#DEEBFF] text-[#0747A6]">
                       {zone.zoneId}
@@ -358,6 +402,15 @@ function GeofenceModal({ isOpen, onClose }) {
                     ) : (
                       <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1]">
                         Log Only
+                      </span>
+                    )}
+                    {zone.ipRestricted ? (
+                      <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#EAE6FF] text-[#403294] border border-[#C0B6F2]">
+                        IP Enforced
+                      </span>
+                    ) : (
+                      <span className="px-1.5 py-0.2 rounded text-[9px] font-medium bg-[#F4F5F7] text-[#6B778C] border border-[#DFE1E6]">
+                        Any Network
                       </span>
                     )}
                   </div>
@@ -383,6 +436,12 @@ function GeofenceModal({ isOpen, onClose }) {
                     Scope: <strong>{zone.targetScope}</strong>{" "}
                     {zone.targetScope === "Department" ? `(${zone.targetDepartment})` : ""}
                   </span>
+                  {zone.allowedIps && zone.allowedIps.length > 0 && (
+                    <span className="inline-flex items-center gap-1 font-mono text-[10px] text-[#0052CC] bg-[#DEEBFF]/60 px-1.5 py-0.5 rounded border border-[#B3D4FF]">
+                      <Wifi size={9} />
+                      <span>{zone.allowedIps.join(", ")}</span>
+                    </span>
+                  )}
                 </div>
               </div>
             ))}

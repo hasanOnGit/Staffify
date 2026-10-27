@@ -47,6 +47,14 @@ const geofenceSchema = new mongoose.Schema(
       type: Boolean,
       default: true, // Strict enforcement locks the swipe button outside radius
     },
+    allowedIps: {
+      type: [String],
+      default: [], // e.g. ["127.0.0.1", "192.168.1.*"]
+    },
+    ipRestricted: {
+      type: Boolean,
+      default: false,
+    },
     isActive: {
       type: Boolean,
       default: true,

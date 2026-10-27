@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { LogIn, LogOut, MapPin, AlertCircle, ShieldAlert, Crosshair, RefreshCw } from "lucide-react";
+import { LogIn, LogOut, MapPin, AlertCircle, ShieldAlert, Crosshair, RefreshCw, Wifi, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { punchAttendance, getTodayAttendance } from "../services/attendance";
@@ -319,6 +319,38 @@ function ClockWidget() {
                 <span>Allowed Radius:</span>
                 <span className="font-mono text-[#172B4D] dark:text-neutral-100">
                   {geoStatus?.radiusMeters ? `${geoStatus.radiusMeters} m` : "300 m"}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center text-[#6B778C] dark:text-neutral-400">
+                <span className="flex items-center gap-1">
+                  <Wifi size={11} className="text-[#0052CC]" />
+                  <span>Network IP:</span>
+                </span>
+                <span className="font-mono text-[10px] font-semibold text-[#172B4D] dark:text-neutral-100 bg-[#F4F5F7] dark:bg-[#1C2331] px-1 py-0.5 rounded border border-[#DFE1E6] dark:border-[#263042]">
+                  {geoStatus?.clientIp || "127.0.0.1"}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center text-[#6B778C] dark:text-neutral-400">
+                <span className="flex items-center gap-1">
+                  <ShieldCheck size={11} className="text-[#00875A]" />
+                  <span>IP Security:</span>
+                </span>
+                <span
+                  className={`font-semibold px-1.5 py-0.5 rounded text-[10px] ${
+                    geoStatus?.ipRestricted
+                      ? geoStatus?.isIpAllowed
+                        ? "bg-[#E3FCEF] text-[#006644]"
+                        : "bg-[#FFEBE6] text-[#DE350B]"
+                      : "bg-[#DEEBFF] text-[#0052CC]"
+                  }`}
+                >
+                  {geoStatus?.ipRestricted
+                    ? geoStatus?.isIpAllowed
+                      ? "Whitelisted"
+                      : "Restricted"
+                    : "Verified Gateway"}
                 </span>
               </div>
 

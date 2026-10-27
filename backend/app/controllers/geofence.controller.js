@@ -36,6 +36,8 @@ async function ensureDefaultGeofence() {
         radiusMeters: 500, // 500m radius
         targetScope: "All Employees",
         targetDepartment: "All",
+        allowedIps: ["127.0.0.1", "192.168.1.*", "10.0.0.*"],
+        ipRestricted: false,
         isStrict: true,
         isActive: true,
       },
@@ -48,12 +50,44 @@ async function ensureDefaultGeofence() {
         radiusMeters: 400,
         targetScope: "Department",
         targetDepartment: "Operations",
+        allowedIps: ["127.0.0.1", "172.16.*"],
+        ipRestricted: false,
         isStrict: true,
         isActive: true,
       },
     ]);
   }
 }
+
+// Helper to extract client IP address
+const getClientIp = (req) => {
+  let ip = req.headers["x-forwarded-for"] || req.socket?.remoteAddress || req.ip || "127.0.0.1";
+  if (typeof ip === "string" && ip.includes(",")) {
+    ip = ip.split(",")[0].trim();
+  }
+  if (typeof ip === "string" && ip.startsWith("::ffff:")) {
+    ip = ip.replace("::ffff:", "");
+  }
+  if (ip === "::1") {
+    ip = "127.0.0.1";
+  }
+  return ip;
+};
+
+// Helper to check if IP is authorized
+const isIpAuthorized = (ip, allowedIps = []) => {
+  if (!allowedIps || allowedIps.length === 0) return true;
+  return allowedIps.some((pattern) => {
+    const trimmed = pattern.trim();
+    if (!trimmed || trimmed === "*") return true;
+    if (trimmed === ip) return true;
+    if (trimmed.endsWith(".*")) {
+      const prefix = trimmed.slice(0, -2);
+      return ip.startsWith(prefix);
+    }
+    return false;
+  });
+};
 
 module.exports = function (app) {
   const apiRoutes = express.Router();
@@ -85,6 +119,8 @@ module.exports = function (app) {
         targetScope,
         targetDepartment,
         targetEmployeeIds,
+        allowedIps,
+        ipRestricted,
         isStrict,
       } = req.body;
 
@@ -107,6 +143,8 @@ module.exports = function (app) {
         targetScope: targetScope || "All Employees",
         targetDepartment: targetDepartment || "All",
         targetEmployeeIds: targetEmployeeIds || [],
+        allowedIps: Array.isArray(allowedIps) ? allowedIps : [],
+        ipRestricted: !!ipRestricted,
         isStrict: isStrict !== undefined ? isStrict : true,
         isActive: true,
       });
@@ -227,8 +265,13 @@ module.exports = function (app) {
         matchedZone.longitude
       );
 
+      const clientIp = getClientIp(req);
+      const isIpValid = matchedZone.ipRestricted && matchedZone.allowedIps?.length > 0
+        ? isIpAuthorized(clientIp, matchedZone.allowedIps)
+        : true;
+
       const isWithinGeofence = distanceMeters <= matchedZone.radiusMeters;
-      const isAllowed = isWithinGeofence || !matchedZone.isStrict;
+      const isAllowed = (isWithinGeofence && (!matchedZone.ipRestricted || isIpValid)) || !matchedZone.isStrict;
 
       let messageText = "";
       if (isWithinGeofence) {
@@ -236,6 +279,10 @@ module.exports = function (app) {
       } else {
         const distKm = (distanceMeters / 1000).toFixed(2);
         messageText = `Outside authorized office radius (${distKm} km from ${matchedZone.name}).`;
+      }
+
+      if (matchedZone.ipRestricted && !isIpValid) {
+        messageText += ` Network IP ${clientIp} is outside corporate whitelist.`;
       }
 
       return res.status(200).json({
@@ -252,6 +299,10 @@ module.exports = function (app) {
           userLongitude: Number(longitude),
           distanceMeters,
           radiusMeters: matchedZone.radiusMeters,
+          clientIp,
+          ipRestricted: !!matchedZone.ipRestricted,
+          isIpAllowed: isIpValid,
+          allowedIps: matchedZone.allowedIps || [],
           message: messageText,
         },
       });
