@@ -238,13 +238,29 @@ function ClockWidget() {
               : "bg-[#7A869A]"
           }`}
         />
-        <div className="text-xs">
-          <p className="font-semibold text-[#172B4D] dark:text-neutral-100 font-mono leading-none">
-            {isClockedIn ? formatTimer(elapsedSeconds) : "00:00:00"}
-          </p>
-          <p className="text-[10px] text-[#6B778C] dark:text-neutral-400 leading-none mt-0.5">
-            {isClockedIn ? "Session Active" : "Work Timer"}
-          </p>
+        <div className="text-xs min-w-[72px]">
+          <div className="flex items-center justify-between gap-1">
+            <p className="font-semibold text-[#172B4D] dark:text-neutral-100 font-mono leading-none">
+              {isClockedIn ? formatTimer(elapsedSeconds) : "00:00:00"}
+            </p>
+            {isClockedIn && (
+              <span className="text-[9px] font-bold text-[#0052CC] dark:text-[#38BDF8] font-mono">
+                {Math.min(100, Math.round((elapsedSeconds / (8 * 3600)) * 100))}%
+              </span>
+            )}
+          </div>
+          {isClockedIn ? (
+            <div className="w-full bg-[#DFE1E6] dark:bg-[#263042] h-1 rounded-full mt-1 overflow-hidden">
+              <div
+                className="bg-[#00875A] h-full rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(100, Math.round((elapsedSeconds / (8 * 3600)) * 100))}%` }}
+              />
+            </div>
+          ) : (
+            <p className="text-[10px] text-[#6B778C] dark:text-neutral-400 leading-none mt-0.5">
+              Work Timer
+            </p>
+          )}
         </div>
       </div>
 

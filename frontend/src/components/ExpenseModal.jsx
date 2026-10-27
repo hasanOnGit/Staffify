@@ -30,11 +30,21 @@ const CATEGORIES = [
   "Client Entertainment",
 ];
 
+const CURRENCY_RATES = {
+  INR: 1,
+  USD: 86.50,
+  EUR: 93.20,
+  GBP: 111.40,
+  AED: 23.55,
+};
+
 function ExpenseModal({ isOpen, onClose, onSuccess }) {
   const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [scanningReceipt, setScanningReceipt] = useState(false);
   const receiptFileRef = useRef(null);
+  const [claimCurrency, setClaimCurrency] = useState("INR");
+  const [foreignAmount, setForeignAmount] = useState("");
   const [formData, setFormData] = useState({
     expenseCategory: "Internet & Mobile",
     claimDate: new Date().toISOString().split("T")[0],
@@ -44,6 +54,28 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
     attachmentName: "",
     description: "",
   });
+
+  const handleCurrencyChange = (newCurr) => {
+    setClaimCurrency(newCurr);
+    if (newCurr === "INR") {
+      setForeignAmount("");
+    } else if (foreignAmount) {
+      const converted = Math.round(Number(foreignAmount) * (CURRENCY_RATES[newCurr] || 1));
+      setFormData((prev) => ({ ...prev, amount: String(converted) }));
+    }
+  };
+
+  const handleForeignAmountChange = (val) => {
+    setForeignAmount(val);
+    const rate = CURRENCY_RATES[claimCurrency] || 1;
+    const num = Number(val);
+    if (num > 0) {
+      const converted = Math.round(num * rate);
+      setFormData((prev) => ({ ...prev, amount: String(converted) }));
+    } else {
+      setFormData((prev) => ({ ...prev, amount: "" }));
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -110,7 +142,10 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
         merchantName: formData.merchantName.trim(),
         receiptNumber: formData.receiptNumber.trim() || `REC-${Date.now().toString().slice(-6)}`,
         attachmentName: formData.attachmentName || "invoice_receipt.pdf",
-        description: formData.description.trim(),
+        description:
+          claimCurrency !== "INR" && foreignAmount
+            ? `${formData.description.trim()} [Original Invoice: ${foreignAmount} ${claimCurrency} @ ₹${CURRENCY_RATES[claimCurrency]}]`.trim()
+            : formData.description.trim(),
       };
 
       const res = await submitExpense(payload);
@@ -232,6 +267,62 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
                   className="w-full pl-9 pr-3 py-2 border border-[#DFE1E6] rounded-lg focus:outline-none focus:border-[#0052CC] bg-[#FAFBFC]"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Multi-Currency Claim Converter */}
+          <div className="bg-[#DEEBFF]/30 border border-[#B3D4FF] rounded-lg p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-[#0747A6] flex items-center gap-1.5">
+                <DollarSign size={13} className="text-[#0052CC]" />
+                <span>Multi-Currency Claim Converter</span>
+              </span>
+              <span className="text-[10px] text-[#0052CC] font-mono">Benchmark FX Rates</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+              <div>
+                <label className="text-[10px] text-[#42526E] font-semibold block mb-0.5">Billing Currency</label>
+                <select
+                  value={claimCurrency}
+                  onChange={(e) => handleCurrencyChange(e.target.value)}
+                  className="w-full px-2 py-1.5 bg-white border border-[#DFE1E6] rounded text-xs font-semibold text-[#172B4D] focus:outline-none focus:border-[#0052CC]"
+                >
+                  <option value="INR">INR (₹) — Indian Rupee</option>
+                  <option value="USD">USD ($) — US Dollar</option>
+                  <option value="EUR">EUR (€) — Euro</option>
+                  <option value="GBP">GBP (£) — British Pound</option>
+                  <option value="AED">AED (AED) — UAE Dirham</option>
+                </select>
+              </div>
+
+              {claimCurrency !== "INR" ? (
+                <>
+                  <div>
+                    <label className="text-[10px] text-[#42526E] font-semibold block mb-0.5">
+                      Foreign Invoice Amount ({claimCurrency})
+                    </label>
+                    <input
+                      type="number"
+                      min="0.01"
+                      step="any"
+                      placeholder="0.00"
+                      value={foreignAmount}
+                      onChange={(e) => handleForeignAmountChange(e.target.value)}
+                      className="w-full px-2.5 py-1.5 bg-white border border-[#DFE1E6] rounded text-xs font-bold text-[#0052CC] focus:outline-none focus:border-[#0052CC]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-[#42526E] font-semibold block mb-0.5">Corporate FX Benchmark</label>
+                    <div className="px-2.5 py-1.5 bg-[#F4F5F7] border border-[#DFE1E6] rounded text-xs font-mono font-semibold text-[#172B4D]">
+                      1 {claimCurrency} = ₹{CURRENCY_RATES[claimCurrency]}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="sm:col-span-2 flex items-center text-[11px] text-[#6B778C]">
+                  Direct domestic INR reimbursement. Switch currency for international flights, client visits or SaaS tools.
+                </div>
+              )}
             </div>
           </div>
 

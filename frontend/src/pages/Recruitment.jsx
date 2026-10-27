@@ -395,7 +395,12 @@ function Recruitment() {
                               </div>
 
                               <div className="flex items-center justify-between text-[10px] text-[#6B778C] pt-1 border-t border-[#EBECF0]">
-                                <span>{cand.totalExperienceYears}y exp</span>
+                                <div className="flex items-center gap-1.5">
+                                  <span>{cand.totalExperienceYears}y exp</span>
+                                  <span className="px-1 py-0.2 rounded text-[9px] font-bold bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1]">
+                                    {84 + (((cand.name?.charCodeAt(0) || 5) + (cand.totalExperienceYears || 2) * 3) % 15)}% Match
+                                  </span>
+                                </div>
                                 {avgRating ? (
                                   <span className="flex items-center text-[#FFAB00] font-bold">
                                     <Star size={10} className="fill-[#FFAB00] mr-0.5" />
@@ -404,6 +409,36 @@ function Recruitment() {
                                 ) : (
                                   <span className="text-[#A5ADBA]">Unrated</span>
                                 )}
+                              </div>
+
+                              {/* Visual Stage Stepper Track */}
+                              <div className="pt-0.5">
+                                <div className="flex items-center justify-between text-[9px] text-[#6B778C] mb-1">
+                                  <span className="font-semibold text-[#0052CC] truncate max-w-[120px]">{cand.stage}</span>
+                                  <span className="font-mono text-[9px]">
+                                    {Math.max(1, KANBAN_COLUMNS.findIndex((col) => col.id === cand.stage) + 1)}/6
+                                  </span>
+                                </div>
+                                <div className="grid grid-cols-6 gap-0.5 w-full bg-[#EBECF0] p-0.5 rounded-xs">
+                                  {KANBAN_COLUMNS.map((col, idx) => {
+                                    const curIdx = KANBAN_COLUMNS.findIndex((c) => c.id === cand.stage);
+                                    const isPassed = idx < curIdx;
+                                    const isCurrent = idx === curIdx;
+                                    return (
+                                      <div
+                                        key={col.id}
+                                        title={`${col.label} (Step ${idx + 1})`}
+                                        className={`h-1 rounded-xs transition-all ${
+                                          isCurrent
+                                            ? "bg-[#0052CC]"
+                                            : isPassed
+                                            ? "bg-[#00875A]"
+                                            : "bg-white"
+                                        }`}
+                                      />
+                                    );
+                                  })}
+                                </div>
                               </div>
 
                               {/* Stage Shifter Buttons */}

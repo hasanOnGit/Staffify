@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import AttendanceTable from "../components/AttendanceTable";
+import AttendanceHeatmap from "../components/AttendanceHeatmap";
 import GeofenceModal from "../components/GeofenceModal";
 import BiometricManagerModal from "../components/BiometricManagerModal";
 import StaffifyLoader from "../components/StaffifyLoader";
@@ -281,6 +282,12 @@ function Attendance() {
           </button>
         </div>
       </div>
+
+      {/* 30-Day Attendance Consistency Heatmap */}
+      <AttendanceHeatmap
+        attendanceRecords={attendance}
+        userName={user?.name || "Employee"}
+      />
 
       {/* Summary KPI Cards (Clickable for 1-Click Filtering) */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">

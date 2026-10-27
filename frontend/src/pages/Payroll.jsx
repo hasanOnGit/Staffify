@@ -13,6 +13,7 @@ import PayslipModal from "../components/PayslipModal";
 import SettlementModal from "../components/SettlementModal";
 import TaxDeclarationModal from "../components/TaxDeclarationModal";
 import LoanModal from "../components/LoanModal";
+import CtcCalculatorModal from "../components/CtcCalculatorModal";
 import { getLoans } from "../services/loan";
 import {
   getComplianceSummary,
@@ -48,6 +49,7 @@ import {
   ExternalLink,
   Plus,
   CreditCard,
+  Calculator,
 } from "lucide-react";
 
 const MONTHS = [
@@ -86,6 +88,7 @@ function Payroll() {
   // Modal states
   const [activePayslip, setActivePayslip] = useState(null);
   const [showLoanModal, setShowLoanModal] = useState(false);
+  const [showCtcCalculator, setShowCtcCalculator] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [activeSettlement, setActiveSettlement] = useState(null);
   const [activeTaxEmp, setActiveTaxEmp] = useState(null);
@@ -312,6 +315,15 @@ function Payroll() {
               <option value={2026}>2026</option>
               <option value={2027}>2027</option>
             </select>
+
+            <button
+              type="button"
+              onClick={() => setShowCtcCalculator(true)}
+              className="bg-white hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+            >
+              <Calculator size={13} className="text-[#0052CC]" />
+              <span>CTC & In-Hand Calculator</span>
+            </button>
 
             <button
               disabled={running}
@@ -1339,6 +1351,12 @@ function Payroll() {
             </div>
           </div>
         )}
+
+        {/* Interactive CTC & Take-Home Calculator Modal */}
+        <CtcCalculatorModal
+          isOpen={showCtcCalculator}
+          onClose={() => setShowCtcCalculator(false)}
+        />
       </div>
     </DashboardLayout>
   );

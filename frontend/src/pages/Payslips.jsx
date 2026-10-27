@@ -5,6 +5,7 @@ import { getPayslips, getSalaryStructure } from "../services/payroll";
 import PayslipModal from "../components/PayslipModal";
 import TaxDeclarationModal from "../components/TaxDeclarationModal";
 import LoanModal from "../components/LoanModal";
+import CtcCalculatorModal from "../components/CtcCalculatorModal";
 import {
   FileText,
   DollarSign,
@@ -17,6 +18,7 @@ import {
   FileCheck,
   CreditCard,
   Download,
+  Calculator,
 } from "lucide-react";
 import { printPayslip } from "../utils/payslipPrinter";
 
@@ -28,6 +30,7 @@ function Payslips() {
   const [activePayslip, setActivePayslip] = useState(null);
   const [showTaxModal, setShowTaxModal] = useState(false);
   const [showLoanModal, setShowLoanModal] = useState(false);
+  const [showCtcModal, setShowCtcModal] = useState(false);
 
   const formatCurrency = (val = 0) => {
     return new Intl.NumberFormat("en-IN", {
@@ -80,6 +83,13 @@ function Payslips() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => setShowCtcModal(true)}
+              className="px-3 py-1.5 bg-white hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] rounded text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
+            >
+              <Calculator size={13} className="text-[#0052CC]" />
+              <span>CTC & Take-Home Calculator</span>
+            </button>
             <button
               onClick={() => setShowLoanModal(true)}
               className="px-3 py-1.5 bg-white hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] rounded text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs"
@@ -283,6 +293,13 @@ function Payslips() {
             initialEmployeeId={user?.employeeId || user?.userId}
           />
         )}
+
+        {/* Interactive CTC & Take-Home Calculator Modal */}
+        <CtcCalculatorModal
+          isOpen={showCtcModal}
+          onClose={() => setShowCtcModal(false)}
+          initialCtc={salaryStructure?.annualCtc || 900000}
+        />
       </div>
     </DashboardLayout>
   );

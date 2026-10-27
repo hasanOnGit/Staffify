@@ -9,6 +9,7 @@ import {
   rejectExpense,
 } from "../services/expense";
 import ExpenseModal from "../components/ExpenseModal";
+import ReceiptLightboxModal from "../components/ReceiptLightboxModal";
 import toast from "react-hot-toast";
 import {
   Receipt,
@@ -89,6 +90,7 @@ function Expenses() {
   const [rejectingClaim, setRejectingClaim] = useState(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+  const [viewingReceiptClaim, setViewingReceiptClaim] = useState(null);
 
   const formatCurrency = (val = 0) => {
     return new Intl.NumberFormat("en-IN", {
@@ -418,10 +420,15 @@ function Expenses() {
 
                         <td className="px-4 py-3">
                           <p className="font-medium text-[#172B4D]">{claim.merchantName}</p>
-                          <p className="text-[10px] text-[#6B778C] flex items-center gap-1 mt-0.5">
-                            <FileText size={10} />
-                            <span>{claim.receiptNumber || claim.attachmentName || "Receipt Attached"}</span>
-                          </p>
+                          <button
+                            type="button"
+                            onClick={() => setViewingReceiptClaim(claim)}
+                            title="Click to view digital receipt in lightbox"
+                            className="text-[10px] text-[#0052CC] hover:underline flex items-center gap-1 mt-0.5 font-medium cursor-pointer"
+                          >
+                            <Eye size={11} className="text-[#0052CC]" />
+                            <span>{claim.receiptNumber || claim.attachmentName || "View Receipt"}</span>
+                          </button>
                         </td>
 
                         <td className="px-4 py-3 text-right font-bold text-[#172B4D]">
@@ -532,7 +539,17 @@ function Expenses() {
                         </td>
                         <td className="px-4 py-3 max-w-xs">
                           <p className="font-medium text-[#172B4D]">{claim.merchantName}</p>
-                          <p className="text-[11px] text-[#6B778C] truncate">{claim.description}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <button
+                              type="button"
+                              onClick={() => setViewingReceiptClaim(claim)}
+                              title="Click to view digital receipt in lightbox"
+                              className="text-[10px] text-[#0052CC] hover:underline flex items-center gap-1 font-medium cursor-pointer"
+                            >
+                              <Eye size={11} className="text-[#0052CC]" />
+                              <span>{claim.receiptNumber || claim.attachmentName || "View Receipt"}</span>
+                            </button>
+                          </div>
                         </td>
                         <td className="px-4 py-3 text-right font-bold text-sm text-[#172B4D]">
                           {formatCurrency(claim.amount)}
@@ -695,6 +712,13 @@ function Expenses() {
             </div>
           </div>
         )}
+
+        {/* Digital Receipt Lightbox Modal */}
+        <ReceiptLightboxModal
+          isOpen={!!viewingReceiptClaim}
+          claim={viewingReceiptClaim}
+          onClose={() => setViewingReceiptClaim(null)}
+        />
       </div>
     </DashboardLayout>
   );

@@ -30,6 +30,30 @@ function ApplyLeaveModal({
     return diffDays;
   }, [fromDate, toDate, isHalfDay]);
 
+  // Calculate sandwich policy deduction details
+  const sandwichInfo = useMemo(() => {
+    if (!fromDate || !toDate || isHalfDay) return null;
+    const start = new Date(fromDate + "T00:00:00");
+    const end = new Date(toDate + "T00:00:00");
+    if (start > end) return null;
+    let weekendDays = 0;
+    const cur = new Date(start);
+    while (cur <= end) {
+      const day = cur.getDay();
+      if (day === 0 || day === 6) {
+        weekendDays++;
+      }
+      cur.setDate(cur.getDate() + 1);
+    }
+    const workingDays = Math.max(0, duration - weekendDays);
+    return {
+      weekendDays,
+      workingDays,
+      totalDays: duration,
+      hasSandwich: weekendDays > 0 && duration > 2,
+    };
+  }, [fromDate, toDate, duration, isHalfDay]);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e) => {
@@ -213,14 +237,38 @@ function ApplyLeaveModal({
                   {duration} {duration === 1 ? "Day" : "Days"}
                 </span>
               </div>
-              {duration > 2 && !isHalfDay && (
+              {sandwichInfo?.hasSandwich ? (
+                <div className="text-[11px] bg-amber-50 border border-amber-200 rounded p-2.5 space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-amber-800 font-semibold">
+                    <AlertCircle size={13} className="text-amber-600 shrink-0" />
+                    <span>Sandwich Leave Deduction Simulator</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5 text-center text-[10px]">
+                    <div className="bg-white p-1.5 rounded border border-amber-200">
+                      <span className="text-gray-500 block">Working Days</span>
+                      <strong className="text-gray-800 font-bold text-xs">{sandwichInfo.workingDays}d</strong>
+                    </div>
+                    <div className="bg-white p-1.5 rounded border border-amber-200">
+                      <span className="text-amber-700 block">+ Weekend Days</span>
+                      <strong className="text-amber-700 font-bold text-xs">{sandwichInfo.weekendDays}d</strong>
+                    </div>
+                    <div className="bg-amber-100 p-1.5 rounded border border-amber-300">
+                      <span className="text-amber-900 block">Total Debited</span>
+                      <strong className="text-amber-900 font-bold text-xs">{sandwichInfo.totalDays}d</strong>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-amber-700">
+                    Intervening weekend days (Saturday & Sunday) are counted as active leave debits per company statutory sandwich policy.
+                  </p>
+                </div>
+              ) : duration > 2 && !isHalfDay ? (
                 <div className="text-[11px] text-[#42526E] bg-[#DEEBFF]/30 border border-[#B3D4FF] p-2 rounded flex items-center gap-1.5">
                   <AlertCircle size={13} className="text-[#0052CC] shrink-0" />
                   <span>
-                    Company <strong>Sandwich Policy</strong> applies to multi-day requests spanning non-working days.
+                    No weekend overlap detected. All {duration} days are standard working days.
                   </span>
                 </div>
-              )}
+              ) : null}
             </div>
           )}
 

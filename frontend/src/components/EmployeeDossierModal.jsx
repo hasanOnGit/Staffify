@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { X, User, Briefcase, Landmark, ShieldCheck, Phone, Mail, MapPin, Calendar, HeartPulse } from "lucide-react";
+import { X, User, Briefcase, Landmark, ShieldCheck, Phone, Mail, MapPin, Calendar, HeartPulse, Printer } from "lucide-react";
+import { printEmployeeDossier } from "../utils/dossierPrinter";
 
 function EmployeeDossierModal({ employee, isOpen, onClose, onEdit }) {
   const [activeTab, setActiveTab] = useState("personal");
@@ -11,12 +12,22 @@ function EmployeeDossierModal({ employee, isOpen, onClose, onEdit }) {
       <div className="bg-white rounded max-w-3xl w-full shadow-lg border border-[#DFE1E6] max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header Profile Hero */}
         <div className="bg-[#0747A6] text-white p-5 relative">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-1.5 rounded transition cursor-pointer"
-          >
-            <X size={16} />
-          </button>
+          <div className="absolute top-4 right-4 flex items-center gap-2">
+            <button
+              onClick={() => printEmployeeDossier(employee)}
+              title="Print Executive Personnel Dossier PDF"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold bg-white/15 hover:bg-white/25 text-white border border-white/20 rounded transition cursor-pointer"
+            >
+              <Printer size={13} />
+              <span className="hidden sm:inline">Print Dossier</span>
+            </button>
+            <button
+              onClick={onClose}
+              className="text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-1.5 rounded transition cursor-pointer"
+            >
+              <X size={16} />
+            </button>
+          </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="w-14 h-14 rounded bg-[#0052CC] border border-white/20 text-white font-bold text-xl flex items-center justify-center">
@@ -266,8 +277,15 @@ function EmployeeDossierModal({ employee, isOpen, onClose, onEdit }) {
 
           <div className="flex items-center gap-2">
             <button
+              onClick={() => printEmployeeDossier(employee)}
+              className="px-3 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+            >
+              <Printer size={13} />
+              <span>Print Executive Dossier</span>
+            </button>
+            <button
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-xs font-semibold text-gray-700 hover:bg-white transition"
+              className="px-3 py-1.5 border border-[#DFE1E6] rounded text-xs font-semibold text-[#172B4D] hover:bg-white transition cursor-pointer"
             >
               Close
             </button>

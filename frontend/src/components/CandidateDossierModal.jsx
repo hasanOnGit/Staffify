@@ -148,28 +148,73 @@ function CandidateDossierModal({
 
         {/* Modal Body */}
         <div className="p-5 space-y-4 overflow-y-auto flex-1 text-xs">
-          {/* Stage Progression Bar */}
-          <div className="bg-[#FAFBFC] p-3 rounded-md border border-[#EBECF0] space-y-2">
-            <span className="text-[10px] font-bold text-[#6B778C] uppercase tracking-wider block">
-              Recruitment Stage Pipeline
-            </span>
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
-              {PIPELINE_STAGES.map((st) => {
+          {/* Visual Pipeline Stage Stepper */}
+          <div className="bg-[#FAFBFC] p-3.5 rounded-md border border-[#EBECF0] space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-[#6B778C] uppercase tracking-wider block">
+                Visual Pipeline Progression
+              </span>
+              <span className="text-[11px] font-semibold text-[#0052CC]">
+                Current: {candidate.stage}
+              </span>
+            </div>
+
+            {/* Stepper with connected lines */}
+            <div className="relative flex items-center justify-between px-2 pt-1">
+              <div className="absolute top-4 left-6 right-6 h-0.5 bg-[#DFE1E6] -z-0" />
+              {PIPELINE_STAGES.filter((st) => st !== "Rejected").map((st, idx, arr) => {
+                const currentStageIdx = arr.indexOf(candidate.stage);
+                const isPassed = currentStageIdx > -1 && idx < currentStageIdx;
                 const isCurrent = candidate.stage === st;
+
                 return (
                   <button
                     key={st}
+                    type="button"
                     onClick={() => handleStageChange(st)}
-                    className={`px-2.5 py-1 rounded text-[11px] font-semibold border transition shrink-0 cursor-pointer ${
-                      isCurrent
-                        ? getStageBadge(st)
-                        : "bg-white text-[#42526E] border-[#DFE1E6] hover:bg-[#F4F5F7]"
-                    }`}
+                    className="relative z-10 flex flex-col items-center group cursor-pointer focus:outline-none"
                   >
-                    {st}
+                    <div
+                      className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-2xs ${
+                        isCurrent
+                          ? "bg-[#0052CC] text-white ring-4 ring-[#DEEBFF] scale-110"
+                          : isPassed
+                          ? "bg-[#00875A] text-white"
+                          : "bg-white text-[#6B778C] border-2 border-[#DFE1E6] group-hover:border-[#0052CC]"
+                      }`}
+                    >
+                      {isPassed ? <CheckCircle2 size={14} /> : idx + 1}
+                    </div>
+                    <span
+                      className={`mt-1.5 text-[10px] font-semibold tracking-tight transition max-w-[70px] text-center truncate ${
+                        isCurrent
+                          ? "text-[#0052CC] font-bold"
+                          : isPassed
+                          ? "text-[#00875A]"
+                          : "text-[#6B778C] group-hover:text-[#172B4D]"
+                      }`}
+                    >
+                      {st}
+                    </span>
                   </button>
                 );
               })}
+            </div>
+
+            {/* Alternative Stage / Reject Action */}
+            <div className="pt-2 border-t border-[#EBECF0] flex items-center justify-between">
+              <span className="text-[11px] text-[#6B778C]">Click any stage node to immediately shift candidate pipeline position.</span>
+              <button
+                type="button"
+                onClick={() => handleStageChange("Rejected")}
+                className={`px-2.5 py-1 rounded text-[11px] font-semibold border transition cursor-pointer ${
+                  candidate.stage === "Rejected"
+                    ? "bg-[#FFEBE6] text-[#DE350B] border-[#FFBDAD]"
+                    : "bg-white text-[#DE350B] border-[#FFBDAD] hover:bg-[#FFEBE6]"
+                }`}
+              >
+                Mark as Rejected
+              </button>
             </div>
           </div>
 
