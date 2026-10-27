@@ -29,39 +29,26 @@
 }
 
 /* =========================================================
-   Silky Smooth Left-to-Right Layer Wipe Transition
-   Zero DOM lag - GPU accelerated clip-path layer reveal
+   Enterprise-Grade Theme Transition Engine
+   Linear / Raycast fluid circular reveal via View Transitions
    ========================================================= */
 
-/* 1. View Transitions API: Left-to-Right Wipe Layer */
 ::view-transition-group(root) {
   animation: none;
 }
 
-::view-transition-old(root) {
+::view-transition-old(root),
+::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
   z-index: 1;
 }
 
 ::view-transition-new(root) {
-  animation: themeWipeLeftToRight 0.75s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-  mix-blend-mode: normal;
-  z-index: 2;
-}
-
-@keyframes themeWipeLeftToRight {
-  0% {
-    clip-path: inset(0 100% 0 0);
-  }
-  100% {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
-/* 2. Base Persistent Smooth Transitions for Surfaces & Typography */
-body {
-  transition: background-color 0.3s ease, color 0.3s ease;
+  z-index: 9999;
 }
 
 /* =========================================================
