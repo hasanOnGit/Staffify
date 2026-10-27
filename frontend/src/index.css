@@ -29,79 +29,39 @@
 }
 
 /* =========================================================
-   Ultra-Smooth Theme Transition Engine
+   Silky Smooth Left-to-Right Layer Wipe Transition
+   Zero DOM lag - GPU accelerated clip-path layer reveal
    ========================================================= */
 
-/* 1. View Transitions API Animation (Native Chromium Cross-Fade) */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 380ms;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+/* 1. View Transitions API: Left-to-Right Wipe Layer */
+::view-transition-group(root) {
+  animation: none;
 }
 
 ::view-transition-old(root) {
-  animation-name: themeFadeOut;
+  animation: none;
+  mix-blend-mode: normal;
+  z-index: 1;
 }
 
 ::view-transition-new(root) {
-  animation-name: themeFadeIn;
+  animation: themeWipeLeftToRight 0.75s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  mix-blend-mode: normal;
+  z-index: 2;
 }
 
-@keyframes themeFadeOut {
-  from {
-    opacity: 1;
-    transform: scale(1);
+@keyframes themeWipeLeftToRight {
+  0% {
+    clip-path: inset(0 100% 0 0);
   }
-  to {
-    opacity: 0;
-    transform: scale(0.995);
-  }
-}
-
-@keyframes themeFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(1.005);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
+  100% {
+    clip-path: inset(0 0 0 0);
   }
 }
 
-/* 2. Universal CSS Transition for All Elements During Theme Switch */
-html.theme-transition,
-html.theme-transition *,
-html.theme-transition *::before,
-html.theme-transition *::after {
-  transition: background-color 380ms cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 380ms cubic-bezier(0.4, 0, 0.2, 1),
-              color 300ms cubic-bezier(0.4, 0, 0.2, 1),
-              fill 380ms cubic-bezier(0.4, 0, 0.2, 1),
-              stroke 380ms cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 380ms cubic-bezier(0.4, 0, 0.2, 1) !important;
-  transition-delay: 0ms !important;
-}
-
-/* 3. Base Persistent Smooth Transitions for Surfaces & Containers */
+/* 2. Base Persistent Smooth Transitions for Surfaces & Typography */
 body {
-  transition: background-color 350ms cubic-bezier(0.4, 0, 0.2, 1),
-              color 300ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-header,
-nav,
-aside,
-main,
-.bg-white,
-.bg-\[\#F4F5F7\],
-.bg-\[\#FAFBFC\],
-.bg-\[\#EBECF0\],
-.border-\[\#DFE1E6\],
-.border-\[\#EBECF0\] {
-  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
-              color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* =========================================================

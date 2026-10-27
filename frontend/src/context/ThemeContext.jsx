@@ -26,15 +26,7 @@ export function ThemeProvider({ children }) {
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
 
-    // Enable smooth CSS transition class across all elements
-    const root = document.documentElement;
-    root.classList.add("theme-transition");
-    if (window.__themeTimeout) clearTimeout(window.__themeTimeout);
-    window.__themeTimeout = setTimeout(() => {
-      root.classList.remove("theme-transition");
-    }, 450);
-
-    // If browser supports View Transitions API, use native cross-fade transition
+    // Use native View Transitions API for buttery smooth left-to-right wipe
     if (typeof document !== "undefined" && document.startViewTransition) {
       document.startViewTransition(() => {
         setTheme(nextTheme);
