@@ -261,7 +261,11 @@ module.exports = function (app) {
   apiRoutes.get("/", async (req, res) => {
     try {
       const date = req.query.date || getTodayStr();
-      const records = await Attendance.find({ date }).sort({ createdAt: -1 });
+      const query = { date };
+      if (req.query.employeeId) {
+        query.employeeId = req.query.employeeId;
+      }
+      const records = await Attendance.find(query).sort({ createdAt: -1 });
 
       return res.status(200).json(records);
     } catch (err) {

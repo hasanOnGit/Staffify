@@ -3,7 +3,7 @@ import { CheckCircle2, Clock, XCircle, AlertCircle, Eye, X, MapPin, Wifi, Shield
 import { reviewRegularization } from "../services/attendance";
 import toast from "react-hot-toast";
 
-function AttendanceTable({ records, isManager, onRefresh }) {
+function AttendanceTable({ records, isManager, isPersonalView = false, onRefresh }) {
   const [selectedPunches, setSelectedPunches] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -40,7 +40,7 @@ function AttendanceTable({ records, isManager, onRefresh }) {
         <table className="min-w-full text-xs">
           <thead className="bg-[#F4F5F7] text-[#6B778C] border-b border-[#DFE1E6] font-semibold uppercase tracking-wider">
             <tr>
-              <th className="px-4 py-3 text-left">Employee</th>
+              <th className="px-4 py-3 text-left">{isPersonalView ? "Date" : "Employee"}</th>
               <th className="px-4 py-3 text-left">Status</th>
               <th className="px-4 py-3 text-left">First In</th>
               <th className="px-4 py-3 text-left">Last Out</th>
@@ -55,16 +55,35 @@ function AttendanceTable({ records, isManager, onRefresh }) {
               <tr>
                 <td colSpan="7" className="px-4 py-12 text-center text-[#6B778C]">
                   <Clock size={32} className="mx-auto mb-2 text-[#DFE1E6]" />
-                  <p className="font-semibold text-xs text-[#172B4D]">No attendance records for this date</p>
-                  <p className="text-[11px] text-[#6B778C] mt-0.5">Clock in using the Web Clock-In button above to create a record</p>
+                  <p className="font-semibold text-xs text-[#172B4D]">
+                    {isPersonalView ? "No personal attendance records found" : "No attendance records for this date"}
+                  </p>
+                  <p className="text-[11px] text-[#6B778C] mt-0.5">
+                    {isPersonalView ? "Punch in using the Web Clock-In button above to create a record" : "No employee activity registered on this date"}
+                  </p>
                 </td>
               </tr>
             ) : (
               records.map((row) => (
                 <tr key={row._id || row.id} className="hover:bg-[#F4F5F7] transition-colors">
                   <td className="px-4 py-3">
-                    <p className="font-semibold text-[#172B4D]">{row.employeeName}</p>
-                    <p className="text-[11px] text-[#6B778C]">{row.employeeId}</p>
+                    {isPersonalView ? (
+                      <div>
+                        <p className="font-semibold text-[#172B4D] font-mono">{row.date}</p>
+                        <p className="text-[11px] text-[#6B778C]">
+                          {new Date(row.date + "T00:00:00").toLocaleDateString("en-US", {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="font-semibold text-[#172B4D]">{row.employeeName}</p>
+                        <p className="text-[11px] text-[#6B778C]">{row.employeeId}</p>
+                      </div>
+                    )}
                   </td>
 
                   <td className="px-4 py-3">

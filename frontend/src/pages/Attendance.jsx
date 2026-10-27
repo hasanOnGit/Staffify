@@ -5,21 +5,47 @@ import AttendanceHeatmap from "../components/AttendanceHeatmap";
 import GeofenceModal from "../components/GeofenceModal";
 import BiometricManagerModal from "../components/BiometricManagerModal";
 import StaffifyLoader from "../components/StaffifyLoader";
-import { getAttendanceByDate, requestRegularization } from "../services/attendance";
+import { getAttendanceByDate, getAttendanceHistory, requestRegularization } from "../services/attendance";
 import { getGeofenceZones } from "../services/geofence";
 import { getEmployees } from "../services/employee";
 import { useAuth } from "../context/AuthContext";
-import { Clock, RefreshCw, PlusCircle, AlertCircle, X, MapPin, SlidersHorizontal, Cpu, Download } from "lucide-react";
+import {
+  Clock,
+  RefreshCw,
+  PlusCircle,
+  AlertCircle,
+  X,
+  MapPin,
+  SlidersHorizontal,
+  Cpu,
+  Download,
+  Users,
+  User,
+} from "lucide-react";
 import { exportToCsv } from "../utils/csvExporter";
 import toast from "react-hot-toast";
 
 function Attendance() {
-  const { user, isManager } = useAuth();
-  const [attendance, setAttendance] = useState([]);
+  const { user, isManager, isAdmin } = useAuth();
+  const canManage = isManager || isAdmin;
+
+  // View Mode: Managers can toggle between "team" and "my". Regular employees are locked to "my".
+  const [viewMode, setViewMode] = useState(canManage ? "team" : "my");
+
+  // Sync viewMode if role changes
+  useEffect(() => {
+    if (!canManage && viewMode !== "my") {
+      setViewMode("my");
+    }
+  }, [canManage, viewMode]);
+
+  const [teamAttendance, setTeamAttendance] = useState([]);
+  const [myHistory, setMyHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().slice(0, 10)
   );
+  const [personalSpan, setPersonalSpan] = useState("month"); // "month" or "date"
   const [statusFilter, setStatusFilter] = useState("All");
 
   // Geofence Modal & Zones
@@ -38,20 +64,35 @@ function Attendance() {
   const [regOut, setRegOut] = useState("18:00");
   const [regSubmitting, setRegSubmitting] = useState(false);
 
-  /* ---------- Fetch Live Records ---------- */
+  /* ---------- Fetch Live Records with Role-Based Scoping ---------- */
   const fetchRecords = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await getAttendanceByDate(selectedDate);
-      setAttendance(Array.isArray(data) ? data : []);
+      const empId = user?.employeeId || user?.userId;
+
+      if (canManage) {
+        // Manager can load full workforce register for selected date
+        const teamData = await getAttendanceByDate(selectedDate);
+        setTeamAttendance(Array.isArray(teamData) ? teamData : []);
+      } else {
+        // Regular employee never loads company-wide records
+        setTeamAttendance([]);
+      }
+
+      // Always load personal history for active user
+      if (empId) {
+        const myData = await getAttendanceHistory(empId);
+        setMyHistory(Array.isArray(myData) ? myData : []);
+      }
     } catch (err) {
       console.error("Fetch attendance error:", err);
       toast.error("Unable to load attendance records.");
-      setAttendance([]);
+      setTeamAttendance([]);
+      setMyHistory([]);
     } finally {
       setLoading(false);
     }
-  }, [selectedDate]);
+  }, [selectedDate, canManage, user?.employeeId, user?.userId]);
 
   const loadActiveZones = useCallback(async () => {
     try {
@@ -67,8 +108,12 @@ function Attendance() {
   useEffect(() => {
     fetchRecords();
     loadActiveZones();
-    getEmployees().then((data) => setEmployeesList(Array.isArray(data) ? data : [])).catch(() => {});
-  }, [fetchRecords, loadActiveZones]);
+    if (canManage) {
+      getEmployees()
+        .then((data) => setEmployeesList(Array.isArray(data) ? data : []))
+        .catch(() => {});
+    }
+  }, [fetchRecords, loadActiveZones, canManage]);
 
   // Re-fetch when topbar punch updates
   useEffect(() => {
@@ -81,26 +126,43 @@ function Attendance() {
     };
   }, [fetchRecords]);
 
-  /* ---------- Calculations ---------- */
+  /* ---------- Calculations & Scoped Lists ---------- */
+  const isPersonal = viewMode === "my";
+
+  // Base list depending on active view mode
+  const baseList = useMemo(() => {
+    if (!isPersonal) {
+      return teamAttendance;
+    }
+    if (personalSpan === "date") {
+      return myHistory.filter((r) => r.date === selectedDate);
+    }
+    // "month": return full monthly history sorted newest first
+    return [...myHistory].sort((a, b) => b.date.localeCompare(a.date));
+  }, [isPersonal, teamAttendance, myHistory, personalSpan, selectedDate]);
+
   const summary = useMemo(() => {
+    const list = isPersonal ? myHistory : teamAttendance;
     return {
-      Present: attendance.filter((a) => a.status === "Present").length,
-      Late: attendance.filter((a) => a.status === "Late").length,
-      HalfDay: attendance.filter((a) => a.status === "Half Day").length,
-      Absent: attendance.filter((a) => a.status === "Absent").length,
-      WFH: attendance.filter((a) => a.status === "WFH").length,
+      Present: list.filter((a) => a.status === "Present").length,
+      Late: list.filter((a) => a.status === "Late").length,
+      HalfDay: list.filter((a) => a.status === "Half Day").length,
+      Absent: list.filter((a) => a.status === "Absent").length,
+      WFH: list.filter((a) => a.status === "WFH").length,
+      Total: list.length,
     };
-  }, [attendance]);
+  }, [isPersonal, myHistory, teamAttendance]);
 
   const filteredAttendance = useMemo(() => {
-    if (statusFilter === "All") return attendance;
-    return attendance.filter((a) => a.status === statusFilter);
-  }, [attendance, statusFilter]);
+    if (statusFilter === "All") return baseList;
+    return baseList.filter((a) => a.status === statusFilter);
+  }, [baseList, statusFilter]);
 
   /* ---------- Regularization Submission ---------- */
   const handleRegularizeSubmit = async (e) => {
     e.preventDefault();
-    if (!user?.userId) {
+    const empId = user?.employeeId || user?.userId;
+    if (!empId) {
       toast.error("Please sign in first.");
       return;
     }
@@ -112,7 +174,7 @@ function Attendance() {
     setRegSubmitting(true);
     try {
       await requestRegularization({
-        employeeId: user.userId,
+        employeeId: empId,
         employeeName: user.name || "Employee",
         date: regDate,
         reason: regReason,
@@ -130,60 +192,110 @@ function Attendance() {
     }
   };
 
+  /* ---------- Export CSV (Scoped per Role/View) ---------- */
   const handleExportCsv = () => {
-    exportToCsv({
-      filename: `Staffify_Attendance_Register_${selectedDate}.csv`,
-      headers: [
-        { key: "employeeId", label: "Employee ID" },
-        { key: "employeeName", label: "Employee Name" },
-        { key: "date", label: "Date" },
-        { key: "inTime", label: "Punch In" },
-        { key: "outTime", label: "Punch Out" },
-        { key: "workHours", label: "Work Hours" },
-        { key: "status", label: "Attendance Status" },
-        {
-          key: "geofenceZone",
-          label: "Geofence Zone",
-          accessor: (item) =>
-            item.geofenceZone ||
-            item.punches?.[item.punches.length - 1]?.location?.zoneName ||
-            "Authorized Office Campus",
-        },
-        {
-          key: "ipAddress",
-          label: "Client Network IP",
-          accessor: (item) =>
-            item.ipAddress ||
-            item.punches?.[item.punches.length - 1]?.ipAddress ||
-            "127.0.0.1",
-        },
-        {
-          key: "verification",
-          label: "Punch Method",
-          accessor: (item) => item.punchSource || "Web Clock-In (GPS & IP Verified)",
-        },
-      ],
-      data: filteredAttendance,
-    });
+    if (isPersonal) {
+      exportToCsv({
+        filename: `Staffify_My_Attendance_${user?.employeeId || "emp"}_${selectedDate.slice(0, 7)}.csv`,
+        headers: [
+          { key: "date", label: "Date" },
+          { key: "inTime", label: "Punch In", accessor: (item) => item.inTime || item.firstIn || "-" },
+          { key: "outTime", label: "Punch Out", accessor: (item) => item.outTime || item.lastOut || "-" },
+          {
+            key: "workHours",
+            label: "Work Hours",
+            accessor: (item) => item.workHours || (item.totalHours ? `${item.totalHours} hrs` : "-"),
+          },
+          { key: "status", label: "Attendance Status" },
+          {
+            key: "geofenceZone",
+            label: "Geofence Zone",
+            accessor: (item) =>
+              item.geofenceZone ||
+              item.punches?.[item.punches.length - 1]?.location?.zoneName ||
+              "Authorized Office Campus",
+          },
+          {
+            key: "ipAddress",
+            label: "Client Network IP",
+            accessor: (item) =>
+              item.ipAddress ||
+              item.punches?.[item.punches.length - 1]?.ipAddress ||
+              "127.0.0.1",
+          },
+          {
+            key: "regularization",
+            label: "Regularization Status",
+            accessor: (item) => item.regularization?.status || "None",
+          },
+        ],
+        data: filteredAttendance,
+      });
+    } else {
+      exportToCsv({
+        filename: `Staffify_Workforce_Attendance_${selectedDate}.csv`,
+        headers: [
+          { key: "employeeId", label: "Employee ID" },
+          { key: "employeeName", label: "Employee Name" },
+          { key: "date", label: "Date" },
+          { key: "inTime", label: "Punch In" },
+          { key: "outTime", label: "Punch Out" },
+          { key: "workHours", label: "Work Hours" },
+          { key: "status", label: "Attendance Status" },
+          {
+            key: "geofenceZone",
+            label: "Geofence Zone",
+            accessor: (item) =>
+              item.geofenceZone ||
+              item.punches?.[item.punches.length - 1]?.location?.zoneName ||
+              "Authorized Office Campus",
+          },
+          {
+            key: "ipAddress",
+            label: "Client Network IP",
+            accessor: (item) =>
+              item.ipAddress ||
+              item.punches?.[item.punches.length - 1]?.ipAddress ||
+              "127.0.0.1",
+          },
+          {
+            key: "verification",
+            label: "Punch Method",
+            accessor: (item) => item.punchSource || "Web Clock-In (GPS & IP Verified)",
+          },
+        ],
+        data: filteredAttendance,
+      });
+    }
   };
 
   return (
     <DashboardLayout>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-[#172B4D]">Attendance & Swipes</h1>
-            <span className="text-xs bg-[#EAE6FF] text-[#403294] font-semibold px-2 py-0.5 rounded-full">
-              Live Register
+            <h1 className="text-2xl font-bold text-[#172B4D]">
+              {isPersonal ? "My Attendance & Swipes" : "Workforce Attendance & Swipes"}
+            </h1>
+            <span
+              className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                isPersonal
+                  ? "bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1]"
+                  : "bg-[#EAE6FF] text-[#403294] border border-[#C0B6F2]"
+              }`}
+            >
+              {isPersonal ? "Personal Register" : "Workforce Live Register"}
             </span>
           </div>
           <p className="text-sm text-[#6B778C] mt-0.5">
-            Real-time daily punch logs, GPS geofencing radius validation, and regularization
+            {isPersonal
+              ? "Personal punch logs, 30-day streak consistency, office boundary checks, and regularization"
+              : "Real-time workforce punch logs, GPS geofencing radius validation, and regularization approvals"}
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 flex-wrap">
           {/* Date Picker */}
           <div className="relative">
             <input
@@ -208,7 +320,7 @@ function Attendance() {
             onClick={handleExportCsv}
             disabled={filteredAttendance.length === 0}
             className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer disabled:opacity-50"
-            title="Export attendance register to CSV"
+            title={isPersonal ? "Export my monthly attendance to CSV" : "Export workforce attendance register to CSV"}
           >
             <Download size={14} className="text-[#0052CC]" />
             <span>Export CSV</span>
@@ -218,32 +330,66 @@ function Attendance() {
           <button
             onClick={() => setShowGeofenceModal(true)}
             className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer"
-            title="View & Configure Authorized Office Geofences"
+            title={canManage ? "View & Configure Authorized Office Geofences" : "View Authorized Office Zones"}
           >
             <MapPin size={14} className="text-[#0052CC]" />
-            <span>{isManager ? "Office Geofences" : "View Office Zones"}</span>
+            <span>{canManage ? "Office Geofences" : "View Office Zones"}</span>
           </button>
 
-          {/* Biometric Hardware Terminals & ADMS Push Sync */}
-          <button
-            onClick={() => setShowBiometricModal(true)}
-            className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer"
-            title="Manage eSSL / ZKTeco Biometric Devices and Sync Logs"
-          >
-            <Cpu size={14} className="text-[#00875A]" />
-            <span>Biometric Hardware</span>
-          </button>
+          {/* Biometric Hardware Terminals Modal - Restricted to Managers/Admins */}
+          {canManage && !isPersonal && (
+            <button
+              onClick={() => setShowBiometricModal(true)}
+              className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer"
+              title="Manage eSSL / ZKTeco Biometric Devices and Sync Logs"
+            >
+              <Cpu size={14} className="text-[#00875A]" />
+              <span>Biometric Hardware</span>
+            </button>
+          )}
 
           {/* Regularize Button */}
           <button
             onClick={() => setShowRegModal(true)}
             className="flex items-center gap-1.5 bg-[#0052CC] text-white hover:bg-[#0747A6] text-xs font-semibold px-3 py-2 rounded transition shadow-2xs cursor-pointer"
+            title="Submit Attendance Regularization Request"
           >
             <PlusCircle size={14} />
             <span>Regularize</span>
           </button>
         </div>
       </div>
+
+      {/* Role Navigation Switcher (Only visible to Managers / Admins) */}
+      {canManage && (
+        <div className="flex items-center gap-1 p-1 bg-[#EBECF0] rounded-lg mb-5 w-fit">
+          <button
+            onClick={() => setViewMode("team")}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
+              viewMode === "team"
+                ? "bg-white text-[#0052CC] shadow-xs"
+                : "text-[#6B778C] hover:text-[#172B4D]"
+            }`}
+          >
+            <Users size={14} />
+            <span>Workforce Register</span>
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#DEEBFF] text-[#0052CC] font-bold">
+              {teamAttendance.length}
+            </span>
+          </button>
+          <button
+            onClick={() => setViewMode("my")}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
+              viewMode === "my"
+                ? "bg-white text-[#0052CC] shadow-xs"
+                : "text-[#6B778C] hover:text-[#172B4D]"
+            }`}
+          >
+            <User size={14} />
+            <span>My Attendance</span>
+          </button>
+        </div>
+      )}
 
       {/* Geofence Perimeter Status Card */}
       <div className="bg-[#FAFBFC] border border-[#DFE1E6] rounded p-3 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
@@ -269,7 +415,9 @@ function Attendance() {
         <div className="flex items-center gap-2 shrink-0">
           <div className="text-right hidden sm:block">
             <p className="text-[11px] font-semibold text-[#172B4D]">
-              {activeZones.length > 0 ? `${activeZones.length} Office Zone${activeZones.length > 1 ? "s" : ""} Active` : "Bangalore HQ Active"}
+              {activeZones.length > 0
+                ? `${activeZones.length} Office Zone${activeZones.length > 1 ? "s" : ""} Active`
+                : "Bangalore HQ Active"}
             </p>
             <p className="text-[10px] text-[#6B778C]">Standard Radius: 300m</p>
           </div>
@@ -278,24 +426,54 @@ function Attendance() {
             className="text-xs font-medium bg-white text-[#0052CC] hover:bg-[#DEEBFF] border border-[#B3D4FF] px-2.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1"
           >
             <SlidersHorizontal size={13} />
-            <span>{isManager ? "Configure Radii" : "View Office Zones"}</span>
+            <span>{canManage ? "Configure Radii" : "View Office Zones"}</span>
           </button>
         </div>
       </div>
 
-      {/* 30-Day Attendance Consistency Heatmap */}
+      {/* 30-Day Attendance Consistency Heatmap (Personalized to current user) */}
       <AttendanceHeatmap
-        attendanceRecords={attendance}
+        attendanceRecords={myHistory}
         userName={user?.name || "Employee"}
       />
 
       {/* Summary KPI Cards (Clickable for 1-Click Filtering) */}
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-xs font-bold text-[#172B4D] uppercase tracking-wider">
+          {isPersonal ? "My Monthly Overview" : `Workforce Daily Status (${selectedDate})`}
+        </p>
+        {isPersonal && (
+          <div className="flex items-center gap-1 bg-[#F4F5F7] p-0.5 rounded border border-[#DFE1E6] text-[11px]">
+            <button
+              onClick={() => setPersonalSpan("month")}
+              className={`px-2 py-0.5 rounded font-medium transition cursor-pointer ${
+                personalSpan === "month"
+                  ? "bg-white text-[#0052CC] shadow-2xs font-bold"
+                  : "text-[#6B778C] hover:text-[#172B4D]"
+              }`}
+            >
+              Full Month
+            </button>
+            <button
+              onClick={() => setPersonalSpan("date")}
+              className={`px-2 py-0.5 rounded font-medium transition cursor-pointer ${
+                personalSpan === "date"
+                  ? "bg-white text-[#0052CC] shadow-2xs font-bold"
+                  : "text-[#6B778C] hover:text-[#172B4D]"
+              }`}
+            >
+              Selected Date
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
         <div onClick={() => setStatusFilter("Present")} className="cursor-pointer transition hover:scale-[1.01]">
-          <SummaryCard title="Present" value={summary.Present} color="green" />
+          <SummaryCard title={isPersonal ? "Days Present" : "Present Today"} value={summary.Present} color="green" />
         </div>
         <div onClick={() => setStatusFilter("Late")} className="cursor-pointer transition hover:scale-[1.01]">
-          <SummaryCard title="Late Arrivals" value={summary.Late} color="yellow" />
+          <SummaryCard title={isPersonal ? "Late Punches" : "Late Arrivals"} value={summary.Late} color="yellow" />
         </div>
         <div onClick={() => setStatusFilter("Half Day")} className="cursor-pointer transition hover:scale-[1.01]">
           <SummaryCard title="Half Day" value={summary.HalfDay} color="purple" />
@@ -304,14 +482,14 @@ function Attendance() {
           <SummaryCard title="Absent" value={summary.Absent} color="red" />
         </div>
         <div onClick={() => setStatusFilter("WFH")} className="cursor-pointer transition hover:scale-[1.01]">
-          <SummaryCard title="WFH" value={summary.WFH} color="blue" />
+          <SummaryCard title={isPersonal ? "WFH Days" : "Remote / WFH"} value={summary.WFH} color="blue" />
         </div>
       </div>
 
       {/* Smart Filter Presets ("1-Click Quick Views") */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 mb-4 text-xs font-medium">
         {[
-          { id: "All", label: "All Records", count: attendance.length },
+          { id: "All", label: "All Records", count: summary.Total },
           { id: "Present", label: "Present On-Time", count: summary.Present },
           { id: "Late", label: "Late Arrivals", count: summary.Late },
           { id: "WFH", label: "Remote / WFH", count: summary.WFH },
@@ -349,7 +527,9 @@ function Attendance() {
         <div className="flex items-center gap-2">
           <Clock size={16} className="text-[#6B778C]" />
           <h2 className="text-sm font-bold text-[#172B4D] uppercase tracking-wide">
-            Attendance Log ({filteredAttendance.length})
+            {isPersonal
+              ? `My Attendance Log (${filteredAttendance.length})`
+              : `Workforce Attendance Log (${filteredAttendance.length})`}
           </h2>
         </div>
 
@@ -378,7 +558,8 @@ function Attendance() {
       ) : (
         <AttendanceTable
           records={filteredAttendance}
-          isManager={isManager}
+          isManager={canManage && !isPersonal}
+          isPersonalView={isPersonal}
           onRefresh={fetchRecords}
         />
       )}
@@ -390,6 +571,7 @@ function Attendance() {
           setShowGeofenceModal(false);
           loadActiveZones();
         }}
+        isManager={canManage}
       />
 
       {/* Regularization Modal */}
@@ -492,7 +674,7 @@ function Attendance() {
       )}
 
       {/* Biometric Hardware Terminals Modal */}
-      {showBiometricModal && (
+      {showBiometricModal && canManage && (
         <BiometricManagerModal
           isOpen={showBiometricModal}
           onClose={() => setShowBiometricModal(false)}

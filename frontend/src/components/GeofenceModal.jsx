@@ -18,7 +18,7 @@ import {
   deleteGeofenceZone,
 } from "../services/geofence";
 
-function GeofenceModal({ isOpen, onClose }) {
+function GeofenceModal({ isOpen, onClose, isManager = true }) {
   const [zones, setZones] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -187,13 +187,15 @@ function GeofenceModal({ isOpen, onClose }) {
             <span className="font-bold text-[#172B4D] uppercase tracking-wider text-[10px]">
               Active Office Geofences ({zones.length})
             </span>
-            <button
-              onClick={() => setShowAddForm(!showAddForm)}
-              className="px-3 py-1 bg-[#0052CC] hover:bg-[#0747A6] text-white font-medium rounded text-xs transition flex items-center gap-1 cursor-pointer"
-            >
-              <Plus size={13} />
-              {showAddForm ? "Cancel" : "Add Geofence Zone"}
-            </button>
+            {isManager && (
+              <button
+                onClick={() => setShowAddForm(!showAddForm)}
+                className="px-3 py-1 bg-[#0052CC] hover:bg-[#0747A6] text-white font-medium rounded text-xs transition flex items-center gap-1 cursor-pointer"
+              >
+                <Plus size={13} />
+                {showAddForm ? "Cancel" : "Add Geofence Zone"}
+              </button>
+            )}
           </div>
 
           {/* Add Form */}
@@ -413,14 +415,16 @@ function GeofenceModal({ isOpen, onClose }) {
                         Any Network
                       </span>
                     )}
+                    {isManager && (
+                      <button
+                        onClick={() => handleDelete(zone.zoneId)}
+                        className="p-1 rounded text-[#6B778C] hover:text-[#DE350B] hover:bg-[#FFEBE6] transition cursor-pointer"
+                        title="Remove Geofence"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
                   </div>
-                  <button
-                    onClick={() => handleDelete(zone.zoneId)}
-                    className="p-1 rounded text-[#6B778C] hover:text-[#DE350B] hover:bg-[#FFEBE6] transition cursor-pointer"
-                    title="Remove Geofence"
-                  >
-                    <Trash2 size={13} />
-                  </button>
                 </div>
 
                 {zone.address && <p className="text-[11px] text-[#5E6C84]">{zone.address}</p>}

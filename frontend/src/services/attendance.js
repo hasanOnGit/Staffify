@@ -3,10 +3,10 @@ import api from "./api";
 /**
  * Get attendance records for a specific date (Manager/HR table view)
  */
-export async function getAttendanceByDate(date) {
-  const res = await api.get("/api/attendance", {
-    params: { date },
-  });
+export async function getAttendanceByDate(date, employeeId) {
+  const params = { date };
+  if (employeeId) params.employeeId = employeeId;
+  const res = await api.get("/api/attendance", { params });
   return res.data;
 }
 
