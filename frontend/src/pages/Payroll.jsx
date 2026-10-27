@@ -22,6 +22,7 @@ import {
 } from "../services/compliance";
 import { getSettlements, initiateSettlement } from "../services/settlement";
 import { getAllTaxDeclarations, verifyTaxDeclaration } from "../services/tax";
+import { printPayslip } from "../utils/payslipPrinter";
 import toast from "react-hot-toast";
 import {
   DollarSign,
@@ -563,9 +564,19 @@ function Payroll() {
                             <button
                               onClick={() => setActivePayslip(p)}
                               className="px-2.5 py-1 bg-[#F4F5F7] hover:bg-[#DEEBFF] text-[#0052CC] border border-[#DFE1E6] hover:border-[#B3D4FF] rounded text-xs font-semibold cursor-pointer transition flex items-center gap-1"
+                              title="View payslip statement"
                             >
                               <FileText size={12} />
-                              <span>View Payslip</span>
+                              <span>View</span>
+                            </button>
+
+                            <button
+                              onClick={() => printPayslip(p)}
+                              className="px-2 py-1 bg-[#F4F5F7] hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] rounded text-xs font-semibold cursor-pointer transition flex items-center gap-1"
+                              title="Print or Save as PDF"
+                            >
+                              <Download size={12} className="text-[#0052CC]" />
+                              <span>PDF</span>
                             </button>
 
                             {p.status !== "Paid" && (

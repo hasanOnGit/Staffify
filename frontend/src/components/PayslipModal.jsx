@@ -1,5 +1,6 @@
 import { useRef, useEffect } from "react";
-import { Printer, X, Building2, CheckCircle2 } from "lucide-react";
+import { Printer, X, Building2, CheckCircle2, Download } from "lucide-react";
+import { printPayslip, downloadPayslipFile } from "../utils/payslipPrinter";
 
 function PayslipModal({ payslip, onClose }) {
   const printRef = useRef(null);
@@ -18,7 +19,11 @@ function PayslipModal({ payslip, onClose }) {
   if (!payslip) return null;
 
   const handlePrint = () => {
-    window.print();
+    printPayslip(payslip);
+  };
+
+  const handleDownload = () => {
+    downloadPayslipFile(payslip);
   };
 
   const formatCurrency = (val = 0) => {
@@ -62,8 +67,17 @@ function PayslipModal({ payslip, onClose }) {
               title="Print or Save as PDF"
             >
               <Printer size={13} />
-              <span className="hidden sm:inline">Print / Download PDF</span>
-              <span className="sm:hidden">Print</span>
+              <span className="hidden sm:inline">Print / Save PDF</span>
+              <span className="sm:hidden">PDF</span>
+            </button>
+
+            <button
+              onClick={handleDownload}
+              className="px-2.5 py-1.5 text-[#172B4D] bg-white hover:bg-[#EBECF0] border border-[#DFE1E6] rounded text-xs font-semibold flex items-center gap-1 transition cursor-pointer shadow-2xs"
+              title="Download standalone HTML payslip file"
+            >
+              <Download size={13} className="text-[#0052CC]" />
+              <span className="hidden sm:inline">Download</span>
             </button>
 
             <button

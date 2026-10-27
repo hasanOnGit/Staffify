@@ -16,7 +16,9 @@ import {
   CheckCircle2,
   FileCheck,
   CreditCard,
+  Download,
 } from "lucide-react";
+import { printPayslip } from "../utils/payslipPrinter";
 
 function Payslips() {
   const { user } = useAuth();
@@ -230,13 +232,24 @@ function Payslips() {
                       </td>
 
                       <td className="px-3.5 py-2.5 text-right">
-                        <button
-                          onClick={() => setActivePayslip(p)}
-                          className="px-3 py-1 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold cursor-pointer transition inline-flex items-center gap-1.5 shadow-2xs"
-                        >
-                          <Printer size={12} />
-                          <span>View & Print</span>
-                        </button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => setActivePayslip(p)}
+                            className="px-2.5 py-1 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-semibold cursor-pointer transition inline-flex items-center gap-1 shadow-2xs"
+                            title="View official payslip preview"
+                          >
+                            <Printer size={12} />
+                            <span>View</span>
+                          </button>
+                          <button
+                            onClick={() => printPayslip(p)}
+                            className="px-2.5 py-1 bg-[#F4F5F7] hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] rounded text-xs font-semibold cursor-pointer transition inline-flex items-center gap-1 shadow-2xs"
+                            title="Print or Save as PDF"
+                          >
+                            <Download size={12} className="text-[#0052CC]" />
+                            <span>PDF</span>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
