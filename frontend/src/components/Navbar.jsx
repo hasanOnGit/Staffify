@@ -154,7 +154,7 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) 
             <div className="relative w-4 h-4 flex items-center justify-center">
               <Sun
                 size={16}
-                className={`absolute text-amber-400 transition-all duration-500 ease-out ${
+                className={`absolute text-amber-400 transition-all duration-700 ease-out ${
                   isDark
                     ? "rotate-0 scale-100 opacity-100"
                     : "-rotate-90 scale-0 opacity-0"
@@ -162,7 +162,7 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) 
               />
               <Moon
                 size={16}
-                className={`absolute text-[#42526E] transition-all duration-500 ease-out ${
+                className={`absolute text-[#42526E] transition-all duration-700 ease-out ${
                   isDark
                     ? "rotate-90 scale-0 opacity-0"
                     : "rotate-0 scale-100 opacity-100"
