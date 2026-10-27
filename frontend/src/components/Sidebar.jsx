@@ -210,6 +210,11 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
             <UserMinus size={15} />
             <span>Exit Operations</span>
           </NavLink>
+
+          <NavLink to="/audit-logs" className={getNavLinkClass} onClick={onCloseMobile}>
+            <ShieldCheck size={15} />
+            <span>Audit & Governance</span>
+          </NavLink>
         </div>
       )}
     </nav>

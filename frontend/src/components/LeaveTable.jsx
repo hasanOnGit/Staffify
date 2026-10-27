@@ -8,6 +8,10 @@ function LeaveTable({
   onReject,
   onCancel,
   actionLoading = false,
+  selectable = false,
+  selectedIds = [],
+  onToggleSelect = () => {},
+  onToggleSelectAll = () => {},
 }) {
   if (!Array.isArray(leaves) || leaves.length === 0) {
     return (
@@ -74,12 +78,24 @@ function LeaveTable({
     }
   };
 
+  const allSelected = leaves.length > 0 && leaves.every((l) => selectedIds.includes(l.leaveId || l._id));
+
   return (
     <div className="bg-white border border-[#DFE1E6] rounded overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full text-xs">
           <thead className="bg-[#F4F5F7] text-[#6B778C] border-b border-[#DFE1E6] font-semibold uppercase tracking-wider">
             <tr>
+              {selectable && (
+                <th className="px-4 py-3 text-left w-10">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    onChange={onToggleSelectAll}
+                    className="rounded border-[#DFE1E6] text-[#0052CC] focus:ring-0 cursor-pointer"
+                  />
+                </th>
+              )}
               <th className="px-4 py-3 text-left">Employee</th>
               <th className="px-4 py-3 text-left">Leave Type</th>
               <th className="px-4 py-3 text-left">Duration</th>
@@ -94,9 +110,26 @@ function LeaveTable({
             {leaves.map((leave) => {
               const isOwner = currentUserId && leave.employeeId === currentUserId;
               const canCancel = (isOwner || isManager) && leave.status === "Pending";
+              const id = leave.leaveId || leave._id;
+              const isSelected = selectedIds.includes(id);
 
               return (
-                <tr key={leave.leaveId || leave._id} className="hover:bg-[#F4F5F7] transition-colors">
+                <tr
+                  key={id}
+                  className={`transition-colors ${
+                    isSelected ? "bg-[#DEEBFF]/30 dark:bg-[#0747A6]/20" : "hover:bg-[#F4F5F7]"
+                  }`}
+                >
+                  {selectable && (
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => onToggleSelect(id)}
+                        className="rounded border-[#DFE1E6] text-[#0052CC] focus:ring-0 cursor-pointer"
+                      />
+                    </td>
+                  )}
                   <td className="px-4 py-3">
                     <p className="font-semibold text-[#172B4D] leading-tight">
                       {leave.employeeName}

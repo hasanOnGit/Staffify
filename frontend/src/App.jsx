@@ -21,6 +21,7 @@ import Timesheets from "./pages/Timesheets";
 import Offboarding from "./pages/Offboarding";
 import WebhookBridge from "./pages/WebhookBridge";
 import AiCopilot from "./pages/AiCopilot";
+import AuditLogs from "./pages/AuditLogs";
 import StaffifyLoader from "./components/StaffifyLoader";
 
 import { useAuth } from "./context/AuthContext";
@@ -270,6 +271,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Admin"]}>
               <Payroll />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/audit-logs"
+          element={
+            <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
+              <AuditLogs />
             </ProtectedRoute>
           }
         />

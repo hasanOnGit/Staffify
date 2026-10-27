@@ -24,7 +24,9 @@ import {
   Clock,
   Sliders,
   Download,
+  XCircle,
 } from "lucide-react";
+import BulkActionBar from "../components/BulkActionBar";
 import { exportToCsv } from "../utils/csvExporter";
 import toast from "react-hot-toast";
 
@@ -170,6 +172,94 @@ function Leaves() {
         { key: "approvedBy", label: "Reviewer / Manager" },
       ],
       data: recordsToExport,
+    });
+  };
+
+  const [selectedLeaveIds, setSelectedLeaveIds] = useState([]);
+
+  const handleToggleSelectLeave = (id) => {
+    setSelectedLeaveIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleToggleSelectAllLeaves = () => {
+    const currentList = activeTab === "approvals" ? pendingApprovals : filteredMyLeaves;
+    const currentIds = currentList.map((l) => l.leaveId || l._id);
+    const allSelected = currentIds.length > 0 && currentIds.every((id) => selectedLeaveIds.includes(id));
+    if (allSelected) {
+      setSelectedLeaveIds((prev) => prev.filter((id) => !currentIds.includes(id)));
+    } else {
+      setSelectedLeaveIds((prev) => Array.from(new Set([...prev, ...currentIds])));
+    }
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedLeaveIds.length === 0) return;
+    setActionLoading(true);
+    let successCount = 0;
+    try {
+      for (const id of selectedLeaveIds) {
+        try {
+          await updateLeave(id, "Approved", currentUserName);
+          successCount++;
+        } catch (e) {
+          console.error(`Failed to approve leave ${id}`, e);
+        }
+      }
+      toast.success(`Successfully approved ${successCount} leave requests`);
+      setSelectedLeaveIds([]);
+      fetchData();
+    } catch {
+      toast.error("Failed to complete bulk approval");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedLeaveIds.length === 0) return;
+    const remark = window.prompt("Reason for bulk rejection:", "Operational exigencies");
+    if (remark === null) return;
+    setActionLoading(true);
+    let successCount = 0;
+    try {
+      for (const id of selectedLeaveIds) {
+        try {
+          await updateLeave(id, "Rejected", currentUserName, remark);
+          successCount++;
+        } catch (e) {
+          console.error(`Failed to reject leave ${id}`, e);
+        }
+      }
+      toast.success(`Rejected ${successCount} leave requests`);
+      setSelectedLeaveIds([]);
+      fetchData();
+    } catch {
+      toast.error("Failed to complete bulk rejection");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleBulkExport = () => {
+    const selectedData = allLeaves.filter((l) =>
+      selectedLeaveIds.includes(l.leaveId || l._id)
+    );
+    exportToCsv({
+      filename: `Staffify_Selected_Leaves_${new Date().toISOString().split("T")[0]}.csv`,
+      headers: [
+        { key: "leaveId", label: "Leave Ref ID" },
+        { key: "employeeId", label: "Employee ID" },
+        { key: "employeeName", label: "Employee Name" },
+        { key: "leaveType", label: "Leave Type" },
+        { key: "startDate", label: "Start Date" },
+        { key: "endDate", label: "End Date" },
+        { key: "daysCount", label: "Duration (Days)" },
+        { key: "reason", label: "Reason for Time-Off" },
+        { key: "status", label: "Approval Status" },
+      ],
+      data: selectedData,
     });
   };
 
@@ -328,6 +418,10 @@ function Leaves() {
             currentUserId={currentUserId}
             onCancel={handleCancel}
             actionLoading={actionLoading}
+            selectable={true}
+            selectedIds={selectedLeaveIds}
+            onToggleSelect={handleToggleSelectLeave}
+            onToggleSelectAll={handleToggleSelectAllLeaves}
           />
         </div>
       )}
@@ -356,6 +450,10 @@ function Leaves() {
             onApprove={handleApprove}
             onReject={handleReject}
             actionLoading={actionLoading}
+            selectable={true}
+            selectedIds={selectedLeaveIds}
+            onToggleSelect={handleToggleSelectLeave}
+            onToggleSelectAll={handleToggleSelectAllLeaves}
           />
         </div>
       )}
@@ -389,6 +487,38 @@ function Leaves() {
           onPolicyUpdated={fetchData}
         />
       )}
+
+      {/* Floating Bulk Action Bar */}
+      <BulkActionBar
+        selectedCount={selectedLeaveIds.length}
+        onClear={() => setSelectedLeaveIds([])}
+        itemLabel="leaves"
+        actions={[
+          ...(isManager && activeTab === "approvals"
+            ? [
+                {
+                  label: `Approve (${selectedLeaveIds.length})`,
+                  icon: CheckCircle2,
+                  variant: "success",
+                  onClick: handleBulkApprove,
+                  loading: actionLoading,
+                },
+                {
+                  label: "Reject Selected",
+                  icon: XCircle,
+                  variant: "danger",
+                  onClick: handleBulkReject,
+                  loading: actionLoading,
+                },
+              ]
+            : []),
+          {
+            label: "Export Selected CSV",
+            icon: Download,
+            onClick: handleBulkExport,
+          },
+        ]}
+      />
     </DashboardLayout>
   );
 }

@@ -10,6 +10,7 @@ import {
 import DocumentGeneratorModal from "../components/DocumentGeneratorModal";
 import StaffifyLoader from "../components/StaffifyLoader";
 import { Users, Search, PlusCircle, Filter, RefreshCw, X, Shield, Landmark, User, Briefcase, FileText, Download } from "lucide-react";
+import BulkActionBar from "../components/BulkActionBar";
 import { exportToCsv } from "../utils/csvExporter";
 import toast from "react-hot-toast";
 
@@ -93,6 +94,9 @@ function Employees() {
   /* =============================
      FILTER & SEARCH LOGIC
   ============================= */
+  const [quickPreset, setQuickPreset] = useState("all");
+  const [selectedEmpIds, setSelectedEmpIds] = useState([]);
+
   const filteredEmployees = useMemo(() => {
     return employees.filter((emp) => {
       const q = searchQuery.toLowerCase();
@@ -107,9 +111,70 @@ function Employees() {
       const matchesStatus =
         !filters.status || String(emp.isActive) === filters.status;
 
-      return matchesSearch && matchesDept && matchesStatus;
+      let matchesPreset = true;
+      if (quickPreset === "active") {
+        matchesPreset = emp.isActive !== false;
+      } else if (quickPreset === "inactive") {
+        matchesPreset = emp.isActive === false;
+      } else if (quickPreset === "probation") {
+        if (!emp.dateOfJoining) matchesPreset = false;
+        else {
+          const joinedTime = new Date(emp.dateOfJoining).getTime();
+          matchesPreset = !isNaN(joinedTime) && Date.now() - joinedTime <= 90 * 86400000;
+        }
+      } else if (quickPreset === "missing_bank") {
+        matchesPreset = !emp.bankDetails?.accountNumber || !emp.bankDetails?.ifscCode;
+      } else if (quickPreset === "engineering") {
+        matchesPreset =
+          (emp.department || "").toLowerCase().includes("engineer") ||
+          (emp.department || "").toLowerCase().includes("tech");
+      } else if (quickPreset === "sales") {
+        matchesPreset =
+          (emp.department || "").toLowerCase().includes("sale") ||
+          (emp.department || "").toLowerCase().includes("market");
+      }
+
+      return matchesSearch && matchesDept && matchesStatus && matchesPreset;
     });
-  }, [employees, searchQuery, filters]);
+  }, [employees, searchQuery, filters, quickPreset]);
+
+  const handleToggleSelectEmp = (id) => {
+    setSelectedEmpIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleToggleSelectAllEmp = () => {
+    const currentIds = filteredEmployees.map((e) => e.employeeId);
+    const allSelected = currentIds.length > 0 && currentIds.every((id) => selectedEmpIds.includes(id));
+    if (allSelected) {
+      setSelectedEmpIds((prev) => prev.filter((id) => !currentIds.includes(id)));
+    } else {
+      setSelectedEmpIds((prev) => Array.from(new Set([...prev, ...currentIds])));
+    }
+  };
+
+  const handleBulkExportSelected = () => {
+    const selectedData = employees.filter((e) => selectedEmpIds.includes(e.employeeId));
+    exportToCsv({
+      filename: `Staffify_Selected_Personnel_${new Date().toISOString().split("T")[0]}.csv`,
+      headers: [
+        { key: "employeeId", label: "Employee ID" },
+        { key: "name", label: "Full Name" },
+        { key: "email", label: "Email Address" },
+        { key: "department", label: "Department" },
+        { key: "designation", label: "Designation" },
+        { key: "phoneNo", label: "Phone" },
+        { key: "dateOfJoining", label: "Date of Joining" },
+        {
+          key: "isActive",
+          label: "Status",
+          accessor: (item) => (item.isActive !== false ? "Active" : "Inactive"),
+        },
+      ],
+      data: selectedData,
+    });
+  };
 
   /* =============================
      FORM HANDLERS
@@ -269,6 +334,34 @@ function Employees() {
         </div>
       </div>
 
+      {/* Smart Filter Presets ("1-Click Quick Views") */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 mb-3.5 text-xs font-medium">
+        {[
+          { id: "all", label: "All Personnel" },
+          { id: "active", label: "Active Staff" },
+          { id: "probation", label: "On Probation (<90d)" },
+          { id: "missing_bank", label: "Missing Bank Data" },
+          { id: "engineering", label: "Engineering" },
+          { id: "sales", label: "Sales & Growth" },
+          { id: "inactive", label: "Inactive" },
+        ].map((pill) => {
+          const isActive = quickPreset === pill.id;
+          return (
+            <button
+              key={pill.id}
+              onClick={() => setQuickPreset(pill.id)}
+              className={`px-3 py-1 rounded-full border transition cursor-pointer whitespace-nowrap text-xs ${
+                isActive
+                  ? "bg-[#0052CC] text-white border-[#0052CC] font-semibold shadow-2xs"
+                  : "bg-white dark:bg-[#151B26] text-[#6B778C] dark:text-[#94A3B8] border-[#DFE1E6] dark:border-[#263042] hover:bg-[#F4F5F7] dark:hover:bg-[#1E293B]"
+              }`}
+            >
+              {pill.label}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Search & Filter Toolbar */}
       <div className="bg-white border border-[#DFE1E6] rounded p-3.5 mb-5 space-y-3">
         <div className="flex flex-col sm:flex-row gap-2.5">
@@ -353,6 +446,10 @@ function Employees() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           deleteLoadingId={deleteLoadingId}
+          selectable={true}
+          selectedIds={selectedEmpIds}
+          onToggleSelect={handleToggleSelectEmp}
+          onToggleSelectAll={handleToggleSelectAllEmp}
         />
       )}
 
@@ -841,6 +938,25 @@ function Employees() {
       <DocumentGeneratorModal
         isOpen={showDocModal}
         onClose={() => setShowDocModal(false)}
+      />
+
+      {/* Floating Bulk Action Bar */}
+      <BulkActionBar
+        selectedCount={selectedEmpIds.length}
+        onClear={() => setSelectedEmpIds([])}
+        itemLabel="personnel"
+        actions={[
+          {
+            label: "Export Selected CSV",
+            icon: Download,
+            onClick: handleBulkExportSelected,
+          },
+          {
+            label: "Generate HR Letter",
+            icon: FileText,
+            onClick: () => setShowDocModal(true),
+          },
+        ]}
       />
     </DashboardLayout>
   );

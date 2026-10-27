@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { punchAttendance, getTodayAttendance } from "../services/attendance";
 import { verifyEmployeeGeofence } from "../services/geofence";
+import { playPunchInSound, playPunchOutSound } from "../utils/soundFx";
 
 // Preset test coordinates for development & testing
 const SIMULATED_COORDS = {
@@ -196,6 +197,7 @@ function ClockWidget() {
         setClockInTime(now.toISOString());
         localStorage.setItem("staffify_is_clocked_in", "true");
         localStorage.setItem("staffify_clock_in_time", now.toISOString());
+        playPunchInSound();
         toast.success(`Web Clock-In verified at ${timeStr} (${geoStatus?.zoneName || "Office"})`, {
           duration: 3500,
         });
@@ -204,6 +206,7 @@ function ClockWidget() {
         setClockInTime(null);
         localStorage.setItem("staffify_is_clocked_in", "false");
         localStorage.removeItem("staffify_clock_in_time");
+        playPunchOutSound();
         toast.success(`Clocked Out at ${timeStr}. Session: ${formatTimer(elapsedSeconds)}`, {
           duration: 4000,
         });

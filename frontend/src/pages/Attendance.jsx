@@ -282,13 +282,59 @@ function Attendance() {
         </div>
       </div>
 
-      {/* Summary KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        <SummaryCard title="Present" value={summary.Present} color="green" />
-        <SummaryCard title="Late Arrivals" value={summary.Late} color="yellow" />
-        <SummaryCard title="Half Day" value={summary.HalfDay} color="purple" />
-        <SummaryCard title="Absent" value={summary.Absent} color="red" />
-        <SummaryCard title="WFH" value={summary.WFH} color="blue" />
+      {/* Summary KPI Cards (Clickable for 1-Click Filtering) */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+        <div onClick={() => setStatusFilter("Present")} className="cursor-pointer transition hover:scale-[1.01]">
+          <SummaryCard title="Present" value={summary.Present} color="green" />
+        </div>
+        <div onClick={() => setStatusFilter("Late")} className="cursor-pointer transition hover:scale-[1.01]">
+          <SummaryCard title="Late Arrivals" value={summary.Late} color="yellow" />
+        </div>
+        <div onClick={() => setStatusFilter("Half Day")} className="cursor-pointer transition hover:scale-[1.01]">
+          <SummaryCard title="Half Day" value={summary.HalfDay} color="purple" />
+        </div>
+        <div onClick={() => setStatusFilter("Absent")} className="cursor-pointer transition hover:scale-[1.01]">
+          <SummaryCard title="Absent" value={summary.Absent} color="red" />
+        </div>
+        <div onClick={() => setStatusFilter("WFH")} className="cursor-pointer transition hover:scale-[1.01]">
+          <SummaryCard title="WFH" value={summary.WFH} color="blue" />
+        </div>
+      </div>
+
+      {/* Smart Filter Presets ("1-Click Quick Views") */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 mb-4 text-xs font-medium">
+        {[
+          { id: "All", label: "All Records", count: attendance.length },
+          { id: "Present", label: "Present On-Time", count: summary.Present },
+          { id: "Late", label: "Late Arrivals", count: summary.Late },
+          { id: "WFH", label: "Remote / WFH", count: summary.WFH },
+          { id: "Half Day", label: "Half Day", count: summary.HalfDay },
+          { id: "Absent", label: "Absentees", count: summary.Absent },
+        ].map((pill) => {
+          const isActive = statusFilter === pill.id;
+          return (
+            <button
+              key={pill.id}
+              onClick={() => setStatusFilter(pill.id)}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition cursor-pointer whitespace-nowrap text-xs ${
+                isActive
+                  ? "bg-[#0052CC] text-white border-[#0052CC] font-semibold shadow-2xs"
+                  : "bg-white dark:bg-[#151B26] text-[#6B778C] dark:text-[#94A3B8] border-[#DFE1E6] dark:border-[#263042] hover:bg-[#F4F5F7] dark:hover:bg-[#1E293B]"
+              }`}
+            >
+              <span>{pill.label}</span>
+              <span
+                className={`text-[10px] px-1.5 py-0.2 rounded font-bold ${
+                  isActive
+                    ? "bg-white/20 text-white"
+                    : "bg-[#F4F5F7] dark:bg-[#1E293B] text-[#172B4D] dark:text-[#E2E8F0]"
+                }`}
+              >
+                {pill.count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Filter Toolbar */}

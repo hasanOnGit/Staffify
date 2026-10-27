@@ -30,14 +30,18 @@ import {
   Sparkles,
   Sun,
   Moon,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
+import { isSoundEnabled, toggleSound } from "../utils/soundFx";
 
 function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) {
   const { user, logout, isAdmin, isManager } = useAuth();
   const { toggleAssistant } = useAiAssistant();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const [soundOn, setSoundOn] = useState(isSoundEnabled());
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -151,6 +155,21 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) 
               <Sun size={16} className="text-amber-400" />
             ) : (
               <Moon size={16} className="text-[#42526E]" />
+            )}
+          </button>
+
+          {/* Sound FX Feedback Toggle */}
+          <button
+            type="button"
+            onClick={() => setSoundOn(toggleSound())}
+            className="p-1.5 text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded transition cursor-pointer shrink-0"
+            title={soundOn ? "Mute UI Sound Effects" : "Enable UI Sound Effects"}
+            aria-label={soundOn ? "Mute UI Sound Effects" : "Enable UI Sound Effects"}
+          >
+            {soundOn ? (
+              <Volume2 size={16} className="text-[#0052CC] dark:text-[#579DFF]" />
+            ) : (
+              <VolumeX size={16} className="text-[#6B778C] dark:text-[#94A3B8]" />
             )}
           </button>
 

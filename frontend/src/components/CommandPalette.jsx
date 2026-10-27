@@ -26,6 +26,7 @@ import {
   CalendarPlus,
   ArrowRight,
   UserCheck,
+  ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
@@ -139,6 +140,7 @@ function CommandPalette({ isOpen, onClose }) {
       { path: "/analytics", label: "HR Analytics", desc: "Turnover, headcount, and trend metrics", icon: BarChart3 },
       { path: "/timesheets", label: "Timesheets", desc: "Project billable hours and logs", icon: Clock },
       { path: "/offboarding", label: "Employee Offboarding", desc: "Resignations, clearances, and exits", icon: UserMinus },
+      { path: "/audit-logs", label: "Audit & Governance", desc: "Immutable compliance ledger & mutation snapshots", icon: ShieldCheck },
       { path: "/copilot", label: "AI Copilot Console", desc: "Dedicated conversational analytics environment", icon: Sparkles },
     ];
 

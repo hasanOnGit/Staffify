@@ -2,7 +2,16 @@ import { useState } from "react";
 import { Eye, Edit, Trash2, User } from "lucide-react";
 import EmployeeDossierModal from "./EmployeeDossierModal";
 
-function EmployeeTable({ employees = [], onEdit, onDelete, deleteLoadingId }) {
+function EmployeeTable({
+  employees = [],
+  onEdit,
+  onDelete,
+  deleteLoadingId,
+  selectable = false,
+  selectedIds = [],
+  onToggleSelect = () => {},
+  onToggleSelectAll = () => {},
+}) {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   if (!employees.length) {
@@ -15,6 +24,8 @@ function EmployeeTable({ employees = [], onEdit, onDelete, deleteLoadingId }) {
     );
   }
 
+  const allSelected = employees.length > 0 && employees.every((e) => selectedIds.includes(e.employeeId));
+
   return (
     <>
       <div className="bg-white rounded border border-[#DFE1E6] overflow-hidden">
@@ -22,6 +33,16 @@ function EmployeeTable({ employees = [], onEdit, onDelete, deleteLoadingId }) {
           <table className="min-w-full text-xs">
             <thead className="bg-[#F4F5F7] text-[#6B778C] border-b border-[#DFE1E6] font-semibold uppercase tracking-wider">
               <tr>
+                {selectable && (
+                  <th className="px-4 py-3 text-left w-10">
+                    <input
+                      type="checkbox"
+                      checked={allSelected}
+                      onChange={onToggleSelectAll}
+                      className="rounded border-[#DFE1E6] text-[#0052CC] focus:ring-0 cursor-pointer"
+                    />
+                  </th>
+                )}
                 <th className="px-4 py-3 text-left">Employee</th>
                 <th className="px-4 py-3 text-left">Department</th>
                 <th className="px-4 py-3 text-left">Designation</th>
@@ -32,8 +53,25 @@ function EmployeeTable({ employees = [], onEdit, onDelete, deleteLoadingId }) {
             </thead>
 
             <tbody className="divide-y divide-[#DFE1E6]">
-              {employees.map((emp) => (
-                <tr key={emp.employeeId} className="hover:bg-[#F4F5F7] transition-colors">
+              {employees.map((emp) => {
+                const isSelected = selectedIds.includes(emp.employeeId);
+                return (
+                <tr
+                  key={emp.employeeId}
+                  className={`transition-colors ${
+                    isSelected ? "bg-[#DEEBFF]/30 dark:bg-[#0747A6]/20" : "hover:bg-[#F4F5F7]"
+                  }`}
+                >
+                  {selectable && (
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => onToggleSelect(emp.employeeId)}
+                        className="rounded border-[#DFE1E6] text-[#0052CC] focus:ring-0 cursor-pointer"
+                      />
+                    </td>
+                  )}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded bg-[#DEEBFF] text-[#0052CC] font-bold flex items-center justify-center text-xs shrink-0">
@@ -113,8 +151,9 @@ function EmployeeTable({ employees = [], onEdit, onDelete, deleteLoadingId }) {
                     </div>
                   </td>
                 </tr>
-              ))}
-            </tbody>
+              );
+            })}
+          </tbody>
           </table>
         </div>
       </div>
