@@ -29,6 +29,82 @@
 }
 
 /* =========================================================
+   Ultra-Smooth Theme Transition Engine
+   ========================================================= */
+
+/* 1. View Transitions API Animation (Native Chromium Cross-Fade) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::view-transition-old(root) {
+  animation-name: themeFadeOut;
+}
+
+::view-transition-new(root) {
+  animation-name: themeFadeIn;
+}
+
+@keyframes themeFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.995);
+  }
+}
+
+@keyframes themeFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(1.005);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 2. Universal CSS Transition for All Elements During Theme Switch */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: background-color 380ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 380ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              fill 380ms cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 380ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 380ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-delay: 0ms !important;
+}
+
+/* 3. Base Persistent Smooth Transitions for Surfaces & Containers */
+body {
+  transition: background-color 350ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+header,
+nav,
+aside,
+main,
+.bg-white,
+.bg-\[\#F4F5F7\],
+.bg-\[\#FAFBFC\],
+.bg-\[\#EBECF0\],
+.border-\[\#DFE1E6\],
+.border-\[\#EBECF0\] {
+  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =========================================================
    Smooth Motion & Transition System
    ========================================================= */
 @keyframes pageFadeIn {

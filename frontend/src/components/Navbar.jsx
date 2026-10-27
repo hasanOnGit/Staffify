@@ -143,19 +143,32 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) 
 
           <div className="h-4 w-px bg-[#DFE1E6] dark:bg-[#263042] hidden sm:block shrink-0" />
 
-          {/* Theme Switcher (Dark / Light Mode Sun / Moon Button) */}
+          {/* Theme Switcher (Dark / Light Mode Sun / Moon Button with Morph Animation) */}
           <button
             type="button"
             onClick={toggleTheme}
-            className="p-1.5 text-[#42526E] dark:text-amber-400 hover:text-[#172B4D] dark:hover:text-amber-300 hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded transition cursor-pointer shrink-0"
+            className="relative p-1.5 text-[#42526E] dark:text-amber-400 hover:text-[#172B4D] dark:hover:text-amber-300 hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded-md transition-all duration-300 cursor-pointer shrink-0 group overflow-hidden active:scale-95"
             title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
             aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
-            {isDark ? (
-              <Sun size={16} className="text-amber-400" />
-            ) : (
-              <Moon size={16} className="text-[#42526E]" />
-            )}
+            <div className="relative w-4 h-4 flex items-center justify-center">
+              <Sun
+                size={16}
+                className={`absolute text-amber-400 transition-all duration-500 ease-out ${
+                  isDark
+                    ? "rotate-0 scale-100 opacity-100"
+                    : "-rotate-90 scale-0 opacity-0"
+                }`}
+              />
+              <Moon
+                size={16}
+                className={`absolute text-[#42526E] transition-all duration-500 ease-out ${
+                  isDark
+                    ? "rotate-90 scale-0 opacity-0"
+                    : "rotate-0 scale-100 opacity-100"
+                }`}
+              />
+            </div>
           </button>
 
           {/* Sound FX Feedback Toggle */}

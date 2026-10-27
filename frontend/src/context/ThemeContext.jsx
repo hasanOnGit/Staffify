@@ -24,7 +24,24 @@ export function ThemeProvider({ children }) {
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    const nextTheme = theme === "dark" ? "light" : "dark";
+
+    // Enable smooth CSS transition class across all elements
+    const root = document.documentElement;
+    root.classList.add("theme-transition");
+    if (window.__themeTimeout) clearTimeout(window.__themeTimeout);
+    window.__themeTimeout = setTimeout(() => {
+      root.classList.remove("theme-transition");
+    }, 450);
+
+    // If browser supports View Transitions API, use native cross-fade transition
+    if (typeof document !== "undefined" && document.startViewTransition) {
+      document.startViewTransition(() => {
+        setTheme(nextTheme);
+      });
+    } else {
+      setTheme(nextTheme);
+    }
   };
 
   return (
