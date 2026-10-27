@@ -46,7 +46,9 @@ export default function AiCopilot() {
 
   const [activeTab, setActiveTab] = useState("chat"); // "chat" | "logs" | "knowledge" | "watchdog"
   const [input, setInput] = useState("");
-  const [showDocModal, setShowDocModal] = useState(false);
+  const [showDocModal, setShowDocModal] = useState(
+    () => new URLSearchParams(window.location.search).get("studio") === "true"
+  );
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 

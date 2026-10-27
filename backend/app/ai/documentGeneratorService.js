@@ -111,6 +111,32 @@ async function generateHrDocument({
       break;
     }
 
+    case "EXPERIENCE": {
+      title = `Certificate of Professional Experience & Service`;
+      bodyHtml = `
+        <p>To Whom It May Concern,</p>
+        <p>This is to certify that <strong>${emp.name}</strong> (Employee ID: <strong>${emp.employeeId}</strong>) served as a permanent, full-time <strong>${designation}</strong> in our <strong>${department}</strong> division from <strong>${emp.joiningDate || "2023-01-15"}</strong> to <strong>${effectiveDate}</strong>.</p>
+        
+        <p>Throughout their tenure, ${emp.name} displayed exemplary technical competence, analytical rigor, and collaborative leadership. They successfully contributed to architectural milestones, product features, and cross-functional deliverables.</p>
+
+        <p>Their character and professional conduct during employment were exemplary. We issue this certificate of experience with our sincere appreciation for their contributions and our highest recommendations for their future endeavors.</p>
+      `;
+      break;
+    }
+
+    case "INTERNSHIP": {
+      title = `Internship Completion & Performance Certificate`;
+      bodyHtml = `
+        <p>To Whom It May Concern,</p>
+        <p>This is to certify that <strong>${emp.name}</strong> has successfully completed an intensive corporate internship program as <strong>${designation}</strong> with Staffify Enterprise from <strong>${emp.joiningDate || "2024-06-01"}</strong> through <strong>${effectiveDate}</strong>.</p>
+        
+        <p>During this tenure, ${emp.name} worked under senior engineering mentorship on real-world product workflows, demonstrating high problem-solving proficiency, curiosity, and exemplary team collaboration.</p>
+
+        <p>We commend their accomplishments during this program and formally certify the successful fulfillment of their internship curriculum.</p>
+      `;
+      break;
+    }
+
     case "BONAFIDE":
     default: {
       title = `Bonafide Employment Verification Certificate`;
@@ -301,8 +327,18 @@ function getDocumentTemplates() {
     },
     {
       type: "INCREMENT",
-      name: "Annual Salary Revision Letter",
+      name: "Annual Salary Revision & Promotion",
       description: "Compensation and annual appraisal revision notice with effective CTC enhancement details.",
+    },
+    {
+      type: "EXPERIENCE",
+      name: "Experience & Service Certificate",
+      description: "Formal certification of employee service tenure, key accomplishments, technical domain, and exemplary conduct.",
+    },
+    {
+      type: "RELIEVING",
+      name: "Relieving Letter & Service Release",
+      description: "Formal relieving notice confirming clearance, duration of service, and professional conduct.",
     },
     {
       type: "BONAFIDE",
@@ -310,9 +346,9 @@ function getDocumentTemplates() {
       description: "Official corporate certification for banking, visa, residential lease, or statutory verifications.",
     },
     {
-      type: "RELIEVING",
-      name: "Relieving & Experience Certificate",
-      description: "Formal relieving notice confirming clearance, duration of service, and professional conduct.",
+      type: "INTERNSHIP",
+      name: "Internship Completion Certificate",
+      description: "Certification for interns recognizing project completion, mentorship feedback, and duration.",
     },
   ];
 }

@@ -11,18 +11,30 @@ import {
   Calendar,
   User,
   AlertCircle,
+  Award,
 } from "lucide-react";
 import aiService from "../../services/ai.service";
+import { getEmployees } from "../../services/employee";
 import toast from "react-hot-toast";
+
+const DEFAULT_TEMPLATES = [
+  { type: "APPOINTMENT", name: "Offer & Appointment Letter" },
+  { type: "INCREMENT", name: "Salary Revision & Promotion Letter" },
+  { type: "EXPERIENCE", name: "Experience & Service Certificate" },
+  { type: "RELIEVING", name: "Relieving & Clearance Letter" },
+  { type: "BONAFIDE", name: "Bonafide Employment Certificate" },
+  { type: "INTERNSHIP", name: "Internship Completion Certificate" },
+];
 
 /**
  * Staffify Corporate HR Document Synthesis Modal
  * Generates and previews legally compliant corporate letters with 1-click print and export
  */
 export default function AiDocumentModal({ isOpen, onClose, initialEmployeeId = "" }) {
-  const [templates, setTemplates] = useState([]);
-  const [selectedTemplate, setSelectedTemplate] = useState("APPOINTMENT");
-  const [employeeId, setEmployeeId] = useState(initialEmployeeId || "EMP001");
+  const [templates, setTemplates] = useState(DEFAULT_TEMPLATES);
+  const [employees, setEmployees] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState("EXPERIENCE");
+  const [employeeId, setEmployeeId] = useState(initialEmployeeId || "");
   const [effectiveDate, setEffectiveDate] = useState(new Date().toISOString().split("T")[0]);
   const [loading, setLoading] = useState(false);
   const [generatedDoc, setGeneratedDoc] = useState(null);
@@ -35,19 +47,28 @@ export default function AiDocumentModal({ isOpen, onClose, initialEmployeeId = "
         .then((tmpl) => {
           if (tmpl && tmpl.length > 0) {
             setTemplates(tmpl);
-            if (!selectedTemplate) setSelectedTemplate(tmpl[0].type);
+          }
+        })
+        .catch(() => {});
+
+      getEmployees()
+        .then((data) => {
+          const list = Array.isArray(data) ? data : [];
+          setEmployees(list);
+          if (!employeeId && list.length > 0) {
+            setEmployeeId(initialEmployeeId || list[0].employeeId || list[0]._id);
           }
         })
         .catch(() => {});
     }
-  }, [isOpen]);
+  }, [isOpen, initialEmployeeId]);
 
   if (!isOpen) return null;
 
   const handleGenerate = async (e) => {
     e.preventDefault();
     if (!employeeId.trim()) {
-      toast.error("Please provide an Employee ID");
+      toast.error("Please select or enter an Employee ID");
       return;
     }
     setLoading(true);
@@ -131,7 +152,7 @@ export default function AiDocumentModal({ isOpen, onClose, initialEmployeeId = "
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Controls Bar */}
-          <form onSubmit={handleGenerate} className="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-neutral-50 dark:bg-dark-bg p-4 rounded-xl border border-neutral-200 dark:border-dark-border">
+          <form onSubmit={handleGenerate} className="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-neutral-50 dark:bg-[#151B26] p-4 rounded-xl border border-neutral-200 dark:border-[#263042]">
             <div>
               <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                 Document Template
@@ -139,28 +160,44 @@ export default function AiDocumentModal({ isOpen, onClose, initialEmployeeId = "
               <select
                 value={selectedTemplate}
                 onChange={(e) => setSelectedTemplate(e.target.value)}
-                className="w-full text-xs rounded-lg border border-neutral-300 dark:border-dark-border bg-white dark:bg-dark-surface px-3 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                className="w-full text-xs rounded-lg border border-neutral-300 dark:border-[#263042] bg-white dark:bg-[#090D14] px-3 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500 font-medium"
               >
-                <option value="APPOINTMENT">Appointment Letter</option>
-                <option value="INCREMENT">Salary Increment Letter</option>
-                <option value="BONAFIDE">Bonafide Work Certificate</option>
-                <option value="RELIEVING">Relieving & Experience Letter</option>
+                {templates.map((tmpl) => (
+                  <option key={tmpl.type} value={tmpl.type}>
+                    {tmpl.name}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
-                Employee Identifier
+                Employee Dossier
               </label>
               <div className="relative">
                 <User className="w-3.5 h-3.5 absolute left-3 top-2.5 text-neutral-400" />
-                <input
-                  type="text"
-                  value={employeeId}
-                  onChange={(e) => setEmployeeId(e.target.value)}
-                  placeholder="e.g. EMP001"
-                  className="w-full text-xs rounded-lg border border-neutral-300 dark:border-dark-border bg-white dark:bg-dark-surface pl-9 pr-3 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-                />
+                {employees.length > 0 ? (
+                  <select
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
+                    className="w-full text-xs rounded-lg border border-neutral-300 dark:border-[#263042] bg-white dark:bg-[#090D14] pl-9 pr-3 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500 font-medium"
+                  >
+                    <option value="">Select Employee...</option>
+                    {employees.map((emp) => (
+                      <option key={emp.employeeId || emp._id} value={emp.employeeId || emp._id}>
+                        {emp.name} ({emp.employeeId || "Staff"}) — {emp.designation || emp.department}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
+                    placeholder="e.g. EMP-1001"
+                    className="w-full text-xs rounded-lg border border-neutral-300 dark:border-[#263042] bg-white dark:bg-[#090D14] pl-9 pr-3 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500 font-mono"
+                  />
+                )}
               </div>
             </div>
 
