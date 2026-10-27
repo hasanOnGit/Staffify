@@ -5,6 +5,7 @@ import { useAiAssistant } from "../context/AiAssistantContext";
 import toast from "react-hot-toast";
 import ClockWidget from "./ClockWidget";
 import StaffifyLogo from "./StaffifyLogo";
+import NotificationDrawer from "./NotificationDrawer";
 import {
   Search,
   Plus,
@@ -40,6 +41,8 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) 
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showNotificationDrawer, setShowNotificationDrawer] = useState(false);
+  const [unreadNotifsCount, setUnreadNotifsCount] = useState(0);
 
   const getInitials = (name = "") => {
     if (!name) return "AU";
@@ -153,12 +156,20 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) 
 
           {/* Notifications Bell */}
           <button
+            type="button"
             className="relative p-1.5 text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded transition cursor-pointer shrink-0"
-            title="Notifications"
-            onClick={() => navigate("/leaves")}
+            title="Workforce Notifications"
+            onClick={() => setShowNotificationDrawer(true)}
+            aria-label="View notifications"
           >
             <Bell size={16} />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-[#FF5630] rounded-full border border-white dark:border-[#0F131C]" />
+            {unreadNotifsCount > 0 ? (
+              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-[#FF5630] text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-[#0F131C] shadow-2xs">
+                {unreadNotifsCount > 9 ? "9+" : unreadNotifsCount}
+              </span>
+            ) : (
+              <span className="sr-only">No unread notifications</span>
+            )}
           </button>
 
           {/* Helpdesk & Support */}
@@ -496,6 +507,13 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) 
           </div>
         </div>
       )}
+
+      {/* Workforce Notification Flyout Drawer */}
+      <NotificationDrawer
+        isOpen={showNotificationDrawer}
+        onClose={() => setShowNotificationDrawer(false)}
+        onUnreadCountChange={setUnreadNotifsCount}
+      />
     </>
   );
 }
