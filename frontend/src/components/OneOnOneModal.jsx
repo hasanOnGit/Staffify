@@ -155,16 +155,21 @@ function OneOnOneModal({ isOpen, onClose, onSave, currentUser, initialData }) {
             </select>
           </div>
 
-          {/* Talking Points */}
+          {/* Talking Points with Guided Prompts */}
           <div>
-            <label className="font-semibold text-[#172B4D] block mb-1">
-              Discussion Notes & Key Takeaways
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="font-semibold text-[#172B4D]">
+                Discussion Notes & Key Takeaways
+              </label>
+              <span className="text-[10px] text-[#6554C0] font-medium bg-[#FAF5FF] px-2 py-0.5 rounded border border-[#E9D8FD]">
+                Tip: Wins • Blockers • Next Steps
+              </span>
+            </div>
             <textarea
               rows={4}
               value={talkingPoints}
               onChange={(e) => setTalkingPoints(e.target.value)}
-              placeholder="Record notes on sprint performance, challenges, or architectural goals discussed..."
+              placeholder="Record notes on sprint achievements, blockers to clear, and coaching goals discussed..."
               className="w-full px-3 py-2 border border-[#DFE1E6] rounded text-[#172B4D] focus:outline-none focus:ring-2 focus:ring-[#0052CC] placeholder:text-[#A5ADBA] leading-relaxed resize-none"
             />
           </div>
