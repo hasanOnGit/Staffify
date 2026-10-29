@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, Edit, Trash2, User } from "lucide-react";
+import { Eye, Edit, Trash2, User, RotateCcw } from "lucide-react";
 import EmployeeDossierModal from "./EmployeeDossierModal";
 
 function EmployeeTable({
@@ -11,15 +11,27 @@ function EmployeeTable({
   selectedIds = [],
   onToggleSelect = () => {},
   onToggleSelectAll = () => {},
+  onResetFilters,
 }) {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   if (!employees.length) {
     return (
-      <div className="bg-white rounded border border-[#DFE1E6] p-12 text-center text-[#6B778C]">
-        <User size={32} className="mx-auto mb-2 text-[#DFE1E6]" />
-        <p className="font-semibold text-xs text-[#172B4D]">No employees found</p>
-        <p className="text-[11px] text-[#6B778C] mt-0.5">Try clearing filters or add a new employee profile</p>
+      <div className="bg-white dark:bg-[#151B26] rounded border border-[#DFE1E6] dark:border-[#263042] p-12 text-center text-[#6B778C] dark:text-[#94A3B8]">
+        <User size={36} className="mx-auto mb-2 text-[#DFE1E6] dark:text-[#263042]" />
+        <p className="font-semibold text-xs text-[#172B4D] dark:text-[#F1F5F9]">No employees found</p>
+        <p className="text-[11px] text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
+          Try clearing search filters or add a new employee profile
+        </p>
+        {onResetFilters && (
+          <button
+            onClick={onResetFilters}
+            className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#DEEBFF] dark:bg-[#1C2536] text-[#0052CC] dark:text-[#579DFF] hover:bg-[#B3D4FF] dark:hover:bg-[#253248] rounded text-xs font-semibold transition cursor-pointer shadow-2xs"
+          >
+            <RotateCcw size={12} />
+            <span>Reset Active Filters</span>
+          </button>
+        )}
       </div>
     );
   }

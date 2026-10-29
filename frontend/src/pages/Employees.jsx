@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import EmployeeTable from "../components/EmployeeTable";
 import {
@@ -9,6 +9,7 @@ import {
 } from "../services/employee";
 import DocumentGeneratorModal from "../components/DocumentGeneratorModal";
 import StaffifyLoader from "../components/StaffifyLoader";
+import { TableSkeleton } from "../components/Skeleton";
 import { Users, Search, PlusCircle, Filter, RefreshCw, X, Shield, Landmark, User, Briefcase, FileText, Download } from "lucide-react";
 import BulkActionBar from "../components/BulkActionBar";
 import { exportToCsv } from "../utils/csvExporter";
@@ -26,6 +27,26 @@ function Employees() {
   const [showDocModal, setShowDocModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formTab, setFormTab] = useState("personal");
+
+  const searchInputRef = useRef(null);
+
+  // Keyboard shortcut: Press '/' or 'Shift + S' to quickly jump to search input
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const tag = e.target.tagName?.toLowerCase();
+      const isInput =
+        tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable;
+      if (!isInput && (e.key === "/" || (e.shiftKey && (e.key === "s" || e.key === "S")))) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      if (e.key === "Escape" && document.activeElement === searchInputRef.current) {
+        searchInputRef.current?.blur();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const [filters, setFilters] = useState({
     department: "",
@@ -363,17 +384,33 @@ function Employees() {
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="bg-white border border-[#DFE1E6] rounded p-3.5 mb-5 space-y-3">
+      <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded p-3.5 mb-5 space-y-3">
         <div className="flex flex-col sm:flex-row gap-2.5">
           <div className="relative flex-1">
-            <Search size={14} className="absolute left-3 top-2.5 text-[#6B778C]" />
+            <Search size={14} className="absolute left-3 top-2.5 text-[#6B778C] dark:text-[#94A3B8]" />
             <input
+              ref={searchInputRef}
               type="text"
-              placeholder="Search by name, ID, email, or designation..."
+              placeholder="Search by name, ID, email, or designation... (Press / to focus)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 border border-[#DFE1E6] rounded text-xs text-[#172B4D] focus:outline-none focus:border-[#0052CC]"
+              className="w-full pl-8 pr-16 py-1.5 border border-[#DFE1E6] dark:border-[#263042] rounded text-xs text-[#172B4D] dark:text-[#F1F5F9] bg-white dark:bg-[#151B26] focus:outline-none focus:border-[#0052CC]"
             />
+            <div className="absolute right-2.5 top-2 flex items-center gap-1.5">
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="p-0.5 text-[#6B778C] hover:text-[#172B4D] dark:hover:text-white rounded cursor-pointer"
+                  title="Clear search"
+                >
+                  <X size={12} />
+                </button>
+              )}
+              <span className="hidden sm:inline-block text-[10px] font-mono text-[#6B778C] dark:text-[#94A3B8] bg-[#EBECF0] dark:bg-[#1C2331] px-1.5 py-0.2 rounded border border-[#DFE1E6] dark:border-[#263042]">
+                /
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -435,11 +472,9 @@ function Employees() {
         )}
       </div>
 
-      {/* Directory Table */}
+      {/* Directory Table with Smooth Shimmer Skeleton */}
       {pageLoading ? (
-        <div className="bg-white border border-[#DFE1E6] rounded-xl p-8 text-center shadow-xs">
-          <StaffifyLoader mode="card" size="md" text="Loading workforce records and department directories..." />
-        </div>
+        <TableSkeleton rows={7} columns={7} selectable={true} />
       ) : (
         <EmployeeTable
           employees={filteredEmployees}
@@ -450,6 +485,11 @@ function Employees() {
           selectedIds={selectedEmpIds}
           onToggleSelect={handleToggleSelectEmp}
           onToggleSelectAll={handleToggleSelectAllEmp}
+          onResetFilters={() => {
+            setSearchQuery("");
+            setQuickPreset("all");
+            setFilters({ department: "", status: "" });
+          }}
         />
       )}
 
