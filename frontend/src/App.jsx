@@ -13,6 +13,7 @@ import Deployments from "./pages/Deployments";
 import MusterRoll from "./pages/MusterRoll";
 import Payroll from "./pages/Payroll";
 import VendorInvoices from "./pages/VendorInvoices";
+import Requisitions from "./pages/Requisitions";
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/requisitions" element={<Requisitions />} />
               <Route path="/workers" element={<Workers />} />
               <Route path="/vendors" element={<Vendors />} />
               <Route path="/clients" element={<Clients />} />

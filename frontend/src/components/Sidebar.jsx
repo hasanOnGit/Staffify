@@ -14,6 +14,7 @@ import {
   ChevronRight,
   CalendarCheck,
   UserCheck,
+  UserPlus,
   Banknote,
 } from "lucide-react";
 import { seedApi } from "../services/api";
@@ -33,6 +34,11 @@ const navSections = [
   {
     title: "People & Work",
     links: [
+      {
+        path: "/requisitions",
+        label: "Hiring Demands",
+        icon: UserPlus,
+      },
       {
         path: "/workers",
         label: "Workers",

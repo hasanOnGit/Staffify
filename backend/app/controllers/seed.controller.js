@@ -9,6 +9,7 @@ const VendorInvoice = require("../models/vendorInvoice.model");
 const Worker = require("../models/worker.model");
 const MusterRoll = require("../models/musterRoll.model");
 const Payroll = require("../models/payroll.model");
+const Requisition = require("../models/requisition.model");
 
 const seedData = async (req, res) => {
   try {
@@ -22,6 +23,7 @@ const seedData = async (req, res) => {
     await Worker.deleteMany({});
     await MusterRoll.deleteMany({});
     await Payroll.deleteMany({});
+    await Requisition.deleteMany({});
 
     // 1. Create Vendors
     const vendors = await Vendor.insertMany([
@@ -970,6 +972,136 @@ const seedData = async (req, res) => {
       },
     ]);
 
+    // 10. Create Demo Requisitions
+    const requisitions = await Requisition.insertMany([
+      {
+        requisitionId: "REQ-2026-101",
+        vendorId: "VND-1002",
+        vendorName: "Infiniti TechStaffing Services LLP",
+        clientId: "CLI-1001",
+        clientName: "Apex Retail Pvt Ltd",
+        siteId: "SITE-BLR-01",
+        siteName: "Bangalore Logistics Hub",
+        poNumber: "PO-5002",
+        contractNumber: "CTR-2026-02",
+        jobTitle: "Forklift Operator & Logistics Handler",
+        tradeCategory: "Logistics",
+        requiredHeadcount: 4,
+        fulfilledHeadcount: 2,
+        urgency: "High",
+        billingRate: 32000,
+        billingUnit: "Monthly",
+        targetWorkerPay: 22000,
+        startDate: new Date("2026-03-01"),
+        status: "In Progress",
+        skillsRequired: ["Forklift License", "Inventory Scanning", "Pallet Loading"],
+        experienceYears: 2,
+        assignedWorkers: [
+          {
+            workerId: "WRK-1005",
+            workerName: "Mukesh Yadav",
+            deploymentId: "DEP-1005",
+            assignedAt: new Date("2026-03-02"),
+          },
+          {
+            workerId: "WRK-1006",
+            workerName: "Arun Swaminathan",
+            deploymentId: "DEP-1006",
+            assignedAt: new Date("2026-03-03"),
+          },
+        ],
+        notes: "Requires night shift rotation. Warehouse safety shoes provided by client.",
+      },
+      {
+        requisitionId: "REQ-2026-102",
+        vendorId: "VND-1002",
+        vendorName: "Infiniti TechStaffing Services LLP",
+        clientId: "CLI-1002",
+        clientName: "Nexus Tech Park Ltd",
+        siteId: "SITE-EC-01",
+        siteName: "E-City Campus Alpha",
+        poNumber: "PO-5001",
+        contractNumber: "CTR-2026-01",
+        jobTitle: "CCTV Surveillance & Security Guard",
+        tradeCategory: "Security",
+        requiredHeadcount: 5,
+        fulfilledHeadcount: 0,
+        urgency: "Critical",
+        billingRate: 28000,
+        billingUnit: "Monthly",
+        targetWorkerPay: 19500,
+        startDate: new Date("2026-04-15"),
+        status: "Open",
+        skillsRequired: ["Premises Security", "Visitor Registration", "CCTV Monitoring"],
+        experienceYears: 1,
+        assignedWorkers: [],
+        notes: "Critical priority: Immediate gate post staffing required for Phase 2 expansion.",
+      },
+      {
+        requisitionId: "REQ-2026-103",
+        vendorId: "VND-1002",
+        vendorName: "Infiniti TechStaffing Services LLP",
+        clientId: "CLI-1002",
+        clientName: "Nexus Tech Park Ltd",
+        siteId: "SITE-EC-01",
+        siteName: "E-City Campus Alpha",
+        poNumber: "PO-5001",
+        contractNumber: "CTR-2026-01",
+        jobTitle: "Senior Frontend Engineer (React/TypeScript)",
+        tradeCategory: "IT",
+        requiredHeadcount: 2,
+        fulfilledHeadcount: 2,
+        urgency: "Normal",
+        billingRate: 150000,
+        billingUnit: "Monthly",
+        targetWorkerPay: 120000,
+        startDate: new Date("2026-03-01"),
+        status: "Fulfilled",
+        skillsRequired: ["React", "TypeScript", "Tailwind CSS"],
+        experienceYears: 4,
+        assignedWorkers: [
+          {
+            workerId: "WRK-1001",
+            workerName: "Abhishek Rao",
+            deploymentId: "DEP-1001",
+            assignedAt: new Date("2026-03-01"),
+          },
+          {
+            workerId: "WRK-1002",
+            workerName: "Deepak Choudhury",
+            deploymentId: "DEP-1002",
+            assignedAt: new Date("2026-03-01"),
+          },
+        ],
+        notes: "Fully deployed and billing under PO-5001.",
+      },
+      {
+        requisitionId: "REQ-2026-104",
+        vendorId: "VND-1002",
+        vendorName: "Infiniti TechStaffing Services LLP",
+        clientId: "CLI-1003",
+        clientName: "Bharat Heavy Fabricators Ltd",
+        siteId: "SITE-PUN-01",
+        siteName: "Pune Heavy Engineering Plant 1",
+        poNumber: "PO-5003",
+        contractNumber: "CTR-2026-03",
+        jobTitle: "Industrial HVAC & Facility Technician",
+        tradeCategory: "Facilities",
+        requiredHeadcount: 3,
+        fulfilledHeadcount: 0,
+        urgency: "Normal",
+        billingRate: 36000,
+        billingUnit: "Monthly",
+        targetWorkerPay: 25000,
+        startDate: new Date("2026-05-01"),
+        status: "Open",
+        skillsRequired: ["Chiller Plant", "Electrical Panels", "Safety Clearance"],
+        experienceYears: 3,
+        assignedWorkers: [],
+        notes: "Plant annual maintenance shutdown support.",
+      },
+    ]);
+
     if (res) {
       return res.json({
         success: true,
@@ -984,7 +1116,7 @@ const seedData = async (req, res) => {
           workers: workers.length,
           musterRolls: musterRolls.length,
           payrolls: payrolls.length,
-        },
+          requisitions: requisitions.length,
       });
     }
   } catch (err) {

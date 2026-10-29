@@ -102,6 +102,14 @@ export const dashboardApi = {
   getStats: () => API.get("/dashboard/stats"),
 };
 
+export const requisitionsApi = {
+  getAll: (params) => API.get("/requisitions", { params }),
+  getById: (id) => API.get(`/requisitions/${id}`),
+  create: (data) => API.post("/requisitions", data),
+  allocateWorkers: (id, workerIds) => API.post(`/requisitions/${id}/allocate`, { workerIds }),
+  updateStatus: (id, status) => API.patch(`/requisitions/${id}/status`, { status }),
+};
+
 export const seedApi = {
   seedDatabase: () => API.post("/seed"),
   getStatus: () => API.get("/seed/status"),
