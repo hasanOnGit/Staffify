@@ -135,6 +135,14 @@ export const loansApi = {
   updateStatus: (id, status) => API.patch(`/loans/${id}/status`, { status }),
 };
 
+export const settlementsApi = {
+  getAll: (params) => API.get("/settlements", { params }),
+  getById: (id) => API.get(`/settlements/${id}`),
+  create: (data) => API.post("/settlements", data),
+  updateClearance: (id, data) => API.patch(`/settlements/${id}/clearance`, data),
+  disbursePayment: (id, data) => API.post(`/settlements/${id}/pay`, data),
+};
+
 export const seedApi = {
   seedDatabase: () => API.post("/seed"),
   getStatus: () => API.get("/seed/status"),

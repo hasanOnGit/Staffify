@@ -6,11 +6,11 @@ function StatusLozenge({ status = "Active", size = "sm", className = "" }) {
   let colorClasses =
     "bg-[#EBECF0] text-[#42526E] border border-[#DFE1E6] dark:bg-[#1C2331] dark:text-neutral-300 dark:border-[#263042]";
 
-  if (["active", "approved", "paid", "present", "completed"].includes(normalized)) {
+  if (["active", "approved", "paid", "present", "completed", "settled & paid", "fully repaid"].includes(normalized)) {
     colorClasses =
       "bg-[#E3FCEF] text-[#00875A] border border-[#ABF5D1] dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800";
   } else if (
-    ["pending", "in-review", "submitted", "draft", "warning", "late", "expiring", "deployment"].includes(
+    ["pending", "in-review", "submitted", "draft", "warning", "late", "expiring", "deployment", "clearance in progress"].includes(
       normalized
     )
   ) {
@@ -23,7 +23,7 @@ function StatusLozenge({ status = "Active", size = "sm", className = "" }) {
   ) {
     colorClasses =
       "bg-[#FFEBE6] text-[#DE350B] border border-[#FFBDAD] dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800";
-  } else if (["info", "sourced", "general", "it", "security", "facilities"].includes(normalized)) {
+  } else if (["info", "sourced", "general", "it", "security", "facilities", "ready for payment"].includes(normalized)) {
     colorClasses =
       "bg-[#DEEBFF] text-[#0052CC] border border-[#B3D4FF] dark:bg-[#1C2331] dark:text-[#579DFF] dark:border-[#263042]";
   }

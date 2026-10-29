@@ -61,6 +61,11 @@ const navSections = [
         label: "Shift Schedules & Rosters",
         icon: Clock,
       },
+      {
+        path: "/settlements",
+        label: "Exits & Final Payouts",
+        icon: LogOut,
+      },
     ],
   },
   {
