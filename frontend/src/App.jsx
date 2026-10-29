@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "./context/ThemeContext";
-import AppLayout from "./layouts/AppLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
 import Vendors from "./pages/Vendors";
 import Clients from "./pages/Clients";
 import Commercials from "./pages/Commercials";
@@ -40,7 +40,7 @@ function App() {
           }}
         />
 
-        <AppLayout>
+        <DashboardLayout>
           <Routes>
             <Route path="/" element={<Navigate to="/vendors" replace />} />
             <Route path="/vendors" element={<Vendors />} />
@@ -50,7 +50,7 @@ function App() {
             <Route path="/vendor-invoices" element={<VendorInvoices />} />
             <Route path="*" element={<Navigate to="/vendors" replace />} />
           </Routes>
-        </AppLayout>
+        </DashboardLayout>
       </ThemeProvider>
     </BrowserRouter>
   );

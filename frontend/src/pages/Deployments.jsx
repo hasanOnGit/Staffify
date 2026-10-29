@@ -12,6 +12,7 @@ import {
   FileCheck2,
 } from "lucide-react";
 import StatusLozenge from "../components/StatusLozenge";
+import KpiMetricCard from "../components/KpiMetricCard";
 import DeployWorkerModal from "../components/deployments/DeployWorkerModal";
 import { deploymentsApi } from "../services/api";
 import toast from "react-hot-toast";
@@ -62,14 +63,14 @@ function Deployments() {
 
   return (
     <div className="space-y-5">
-      {/* Top Banner */}
+      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold text-[#172B4D] dark:text-[#F1F5F9] tracking-tight">
+          <h2 className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9] tracking-tight">
             Workforce Deployment Matrix
           </h2>
-          <p className="text-xs text-[#6B778C] dark:text-neutral-400">
-            Real-time assignment roster mapping contingent workers to client sites under authorized POs
+          <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
+            Real-time assignment roster mapping contingent workers to client delivery sites under authorized POs
           </p>
         </div>
 
@@ -77,16 +78,17 @@ function Deployments() {
           <button
             type="button"
             onClick={loadDeployments}
-            className="p-2 text-[#42526E] dark:text-neutral-300 hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded border border-[#DFE1E6] dark:border-[#263042] transition cursor-pointer"
+            className="bg-white dark:bg-[#151B26] hover:bg-[#EBECF0] dark:hover:bg-[#1E293B] text-[#172B4D] dark:text-[#F1F5F9] border border-[#DFE1E6] dark:border-[#263042] text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer flex items-center gap-1.5"
             title="Refresh list"
           >
-            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+            <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
+            <span>Refresh</span>
           </button>
 
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="px-3.5 py-2 text-xs font-semibold text-white bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] rounded transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+            className="bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-semibold px-3.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1.5 shadow-xs"
           >
             <UserPlus size={14} />
             <span>Deploy Worker</span>
@@ -94,75 +96,59 @@ function Deployments() {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-4 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#6B778C] dark:text-neutral-400">
-              Active Deployments
-            </span>
-            <Users size={16} className="text-emerald-600 dark:text-emerald-400" />
-          </div>
-          <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 mt-2">
-            {stats.active}
-          </p>
-          <span className="text-[11px] text-emerald-600 dark:text-emerald-400">
-            Currently on duty
-          </span>
-        </div>
+      {/* Staffify KpiMetricCards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KpiMetricCard
+          title="Active Deployments"
+          value={stats.active}
+          context="Currently on active site duty"
+          badgeText="Active Shift"
+          accentColor="#00875A"
+          icon={Users}
+          iconBg="bg-[#E3FCEF] dark:bg-emerald-950/40"
+          iconColor="text-[#00875A] dark:text-emerald-400"
+        />
 
-        <div className="p-4 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#6B778C] dark:text-neutral-400">
-              Total Roster Historic
-            </span>
-            <Users size={16} className="text-[#0052CC] dark:text-[#579DFF]" />
-          </div>
-          <p className="text-2xl font-bold text-[#172B4D] dark:text-[#F1F5F9] mt-2">
-            {stats.total}
-          </p>
-          <span className="text-[11px] text-neutral-500">
-            All registered placements
-          </span>
-        </div>
+        <KpiMetricCard
+          title="Total Placements"
+          value={stats.total}
+          context="All registered assignments"
+          badgeText="Total Roster"
+          accentColor="#0052CC"
+          icon={Users}
+          iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
+          iconColor="text-[#0052CC] dark:text-[#579DFF]"
+        />
 
-        <div className="p-4 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#6B778C] dark:text-neutral-400">
-              Completed Tours
-            </span>
-            <CheckCircle2 size={16} className="text-[#0052CC]" />
-          </div>
-          <p className="text-2xl font-bold text-[#172B4D] dark:text-[#F1F5F9] mt-2">
-            {stats.completed}
-          </p>
-          <span className="text-[11px] text-neutral-500">
-            Full-term concluded assignments
-          </span>
-        </div>
+        <KpiMetricCard
+          title="Completed Tours"
+          value={stats.completed}
+          context="Full-term completed stints"
+          badgeText="Completed"
+          accentColor="#579DFF"
+          icon={CheckCircle2}
+          iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
+          iconColor="text-[#0052CC] dark:text-[#579DFF]"
+        />
 
-        <div className="p-4 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#6B778C] dark:text-neutral-400">
-              Terminated Early
-            </span>
-            <XCircle size={16} className="text-[#DE350B]" />
-          </div>
-          <p className="text-2xl font-bold text-[#DE350B] mt-2">
-            {stats.terminated}
-          </p>
-          <span className="text-[11px] text-rose-500">
-            Recalled / Replaced
-          </span>
-        </div>
+        <KpiMetricCard
+          title="Terminated Early"
+          value={stats.terminated}
+          context="Recalled / Substituted"
+          badgeText="Recalled"
+          accentColor="#DE350B"
+          icon={XCircle}
+          iconBg="bg-[#FFEBE6] dark:bg-rose-950/40"
+          iconColor="text-[#DE350B] dark:text-rose-400"
+        />
       </div>
 
       {/* Filter Toolbar */}
-      <div className="p-3 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="p-3 bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
         <form onSubmit={handleSearchSubmit} className="relative w-full sm:w-80">
           <Search
-            size={14}
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6B778C] dark:text-neutral-400"
+            size={13}
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6B778C] dark:text-[#94A3B8]"
           />
           <input
             type="text"
@@ -185,11 +171,11 @@ function Deployments() {
         </select>
       </div>
 
-      {/* Deployments Table */}
-      <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg shadow-xs overflow-hidden">
+      {/* Staffify Atlassian Table */}
+      <div className="bg-white dark:bg-[#151B26] rounded border border-[#DFE1E6] dark:border-[#263042] overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#172B4D] dark:text-[#F1F5F9]">
-            <thead className="bg-[#FAFBFC] dark:bg-[#0F131C] border-b border-[#DFE1E6] dark:border-[#263042] text-[10px] uppercase font-bold text-[#6B778C] dark:text-neutral-400 tracking-wider">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-[#F4F5F7] dark:bg-[#1C2331] text-[#6B778C] dark:text-[#94A3B8] border-b border-[#DFE1E6] dark:border-[#263042] font-semibold uppercase tracking-wider text-[11px]">
               <tr>
                 <th className="px-4 py-3">Worker & ID</th>
                 <th className="px-4 py-3">Staffing Agency</th>
@@ -205,13 +191,13 @@ function Deployments() {
             <tbody className="divide-y divide-[#DFE1E6] dark:divide-[#263042]">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-8 text-center text-xs text-[#6B778C]">
+                  <td colSpan={9} className="px-4 py-10 text-center text-xs text-[#6B778C] dark:text-[#94A3B8]">
                     Loading deployment roster...
                   </td>
                 </tr>
               ) : deployments.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-8 text-center text-xs text-[#6B778C]">
+                  <td colSpan={9} className="px-4 py-10 text-center text-xs text-[#6B778C] dark:text-[#94A3B8]">
                     No worker deployments found. Click "Deploy Worker" to assign.
                   </td>
                 </tr>
@@ -219,21 +205,21 @@ function Deployments() {
                 deployments.map((d) => (
                   <tr
                     key={d._id}
-                    className="hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331] transition-colors"
+                    className="hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331]/50 transition-colors"
                   >
                     <td className="px-4 py-3">
                       <div className="font-semibold text-[#172B4D] dark:text-white">
                         {d.workerName}
                       </div>
-                      <div className="font-mono text-[10px] text-[#0052CC] dark:text-[#579DFF]">
+                      <span className="font-mono text-[10px] text-[#0747A6] dark:text-[#579DFF] font-semibold bg-[#DEEBFF] dark:bg-[#1C2331] px-1.5 py-0.2 rounded border border-[#B3D4FF] dark:border-[#263042] inline-block mt-0.5">
                         {d.workerId}
-                      </div>
+                      </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="text-[#172B4D] dark:text-neutral-200">
+                      <div className="text-[#172B4D] dark:text-neutral-200 font-medium">
                         {d.vendorName}
                       </div>
-                      <div className="text-[10px] font-mono text-[#6B778C] dark:text-neutral-400">
+                      <div className="text-[10px] font-mono text-[#6B778C] dark:text-[#94A3B8]">
                         {d.vendorId}
                       </div>
                     </td>
@@ -241,28 +227,26 @@ function Deployments() {
                       <div className="font-medium text-[#172B4D] dark:text-neutral-200">
                         {d.clientName}
                       </div>
-                      <div className="flex items-center gap-1 text-[10px] text-[#6B778C] dark:text-neutral-400">
+                      <div className="flex items-center gap-1 text-[10px] text-[#6B778C] dark:text-[#94A3B8]">
                         <MapPin size={11} className="text-[#0052CC]" />
                         <span>{d.siteName}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 font-mono text-[11px]">
-                      <div className="font-bold text-[#0052CC] dark:text-[#579DFF]">
+                    <td className="px-4 py-3">
+                      <span className="font-mono text-[10px] text-[#0747A6] dark:text-[#579DFF] font-semibold bg-[#DEEBFF] dark:bg-[#1C2331] px-1.5 py-0.2 rounded border border-[#B3D4FF] dark:border-[#263042] inline-block">
                         {d.poNumber}
-                      </div>
-                      <div className="text-[10px] text-[#6B778C] dark:text-neutral-400">
+                      </span>
+                      <div className="text-[10px] text-[#6B778C] dark:text-[#94A3B8] font-mono mt-0.5">
                         {d.contractNumber}
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#DEEBFF] text-[#0052CC] dark:bg-[#1C2331] dark:text-[#579DFF]">
-                        {d.designation}
-                      </span>
+                      <StatusLozenge status={d.designation} size="xs" />
                     </td>
                     <td className="px-4 py-3 font-mono font-bold text-[#172B4D] dark:text-white">
                       ₹{d.billableRate.toLocaleString("en-IN")}/{d.billingUnit?.charAt(0) || "M"}
                     </td>
-                    <td className="px-4 py-3 text-[11px] text-[#6B778C] dark:text-neutral-400">
+                    <td className="px-4 py-3 text-[11px] text-[#6B778C] dark:text-[#94A3B8]">
                       {new Date(d.startDate).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3">
@@ -289,7 +273,7 @@ function Deployments() {
                           </button>
                         </div>
                       ) : (
-                        <span className="text-[10px] text-[#6B778C] dark:text-neutral-400 italic">
+                        <span className="text-[10px] text-[#6B778C] dark:text-[#94A3B8] italic">
                           Closed
                         </span>
                       )}

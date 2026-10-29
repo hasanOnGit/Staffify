@@ -8,11 +8,13 @@ import {
   FileCheck2,
   ShieldAlert,
   ShieldCheck,
-  ChevronRight,
-  ExternalLink,
   RefreshCw,
+  ExternalLink,
+  ChevronRight,
+  Eye,
 } from "lucide-react";
 import StatusLozenge from "../components/StatusLozenge";
+import KpiMetricCard from "../components/KpiMetricCard";
 import OnboardVendorModal from "../components/vendors/OnboardVendorModal";
 import VendorDrawer from "../components/vendors/VendorDrawer";
 import { vendorsApi } from "../services/api";
@@ -65,14 +67,14 @@ function Vendors() {
 
   return (
     <div className="space-y-5">
-      {/* Top Banner & Action */}
+      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold text-[#172B4D] dark:text-[#F1F5F9] tracking-tight">
+          <h2 className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9] tracking-tight">
             Staffing Agencies & Vendors Directory
           </h2>
-          <p className="text-xs text-[#6B778C] dark:text-neutral-400">
-            Manage agency Master Service Agreements, statutory compliances, and contracted headcount
+          <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
+            Partner credential verification, statutory GSTIN compliances, and contracted workforce quotas
           </p>
         </div>
 
@@ -80,16 +82,17 @@ function Vendors() {
           <button
             type="button"
             onClick={loadVendors}
-            className="p-2 text-[#42526E] dark:text-neutral-300 hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded border border-[#DFE1E6] dark:border-[#263042] transition cursor-pointer"
+            className="bg-white dark:bg-[#151B26] hover:bg-[#EBECF0] dark:hover:bg-[#1E293B] text-[#172B4D] dark:text-[#F1F5F9] border border-[#DFE1E6] dark:border-[#263042] text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer flex items-center gap-1.5"
             title="Refresh list"
           >
-            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+            <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
+            <span>Refresh</span>
           </button>
 
           <button
             type="button"
             onClick={() => setModalOpen(true)}
-            className="px-3.5 py-2 text-xs font-semibold text-white bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] rounded transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+            className="bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-semibold px-3.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1.5 shadow-xs"
           >
             <Plus size={14} />
             <span>Onboard Agency</span>
@@ -97,82 +100,66 @@ function Vendors() {
         </div>
       </div>
 
-      {/* KPI Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-4 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#6B778C] dark:text-neutral-400">
-              Total Agencies
-            </span>
-            <Building2 size={16} className="text-[#0052CC] dark:text-[#579DFF]" />
-          </div>
-          <p className="text-2xl font-bold text-[#172B4D] dark:text-[#F1F5F9] mt-2">
-            {stats.total}
-          </p>
-          <span className="text-[11px] text-neutral-500 dark:text-neutral-400">
-            Enrolled in system
-          </span>
-        </div>
+      {/* Replicated Staffify KpiMetricCards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KpiMetricCard
+          title="Total Agencies"
+          value={stats.total}
+          context="Enrolled staffing partners"
+          badgeText="Verified MSAs"
+          accentColor="#0052CC"
+          icon={Building2}
+          iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
+          iconColor="text-[#0052CC] dark:text-[#579DFF]"
+        />
 
-        <div className="p-4 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#6B778C] dark:text-neutral-400">
-              Active Partners
-            </span>
-            <ShieldCheck size={16} className="text-emerald-600 dark:text-emerald-400" />
-          </div>
-          <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 mt-2">
-            {stats.active}
-          </p>
-          <span className="text-[11px] text-emerald-600 dark:text-emerald-400">
-            In good compliance standing
-          </span>
-        </div>
+        <KpiMetricCard
+          title="Active Partners"
+          value={stats.active}
+          context="In full statutory standing"
+          badgeText="98% Compliant"
+          accentColor="#00875A"
+          icon={ShieldCheck}
+          iconBg="bg-[#E3FCEF] dark:bg-emerald-950/40"
+          iconColor="text-[#00875A] dark:text-emerald-400"
+        />
 
-        <div className="p-4 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#6B778C] dark:text-neutral-400">
-              Deployed Workforce
-            </span>
-            <Users size={16} className="text-[#0052CC] dark:text-[#579DFF]" />
-          </div>
-          <p className="text-2xl font-bold text-[#172B4D] dark:text-[#F1F5F9] mt-2">
-            {stats.totalActiveWorkers}
-          </p>
-          <span className="text-[11px] text-[#0052CC] dark:text-[#579DFF]">
-            Contracted personnel on site
-          </span>
-        </div>
+        <KpiMetricCard
+          title="Deployed Workforce"
+          value={stats.totalActiveWorkers}
+          context="Contractors deployed on site"
+          badgeText="Live Shift"
+          accentColor="#579DFF"
+          icon={Users}
+          iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
+          iconColor="text-[#0052CC] dark:text-[#579DFF]"
+        />
 
-        <div className="p-4 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#6B778C] dark:text-neutral-400">
-              Blacklisted / Locked
-            </span>
-            <ShieldAlert size={16} className="text-[#DE350B]" />
-          </div>
-          <p className="text-2xl font-bold text-[#DE350B] mt-2">
-            {stats.blacklisted}
-          </p>
-          <span className="text-[11px] text-rose-500">
-            Blocked from new deployments
-          </span>
-        </div>
+        <KpiMetricCard
+          title="Restricted / Blacklist"
+          value={stats.blacklisted}
+          context="Suspended from placements"
+          badgeText="Audit Hold"
+          accentColor="#DE350B"
+          icon={ShieldAlert}
+          iconBg="bg-[#FFEBE6] dark:bg-rose-950/40"
+          iconColor="text-[#DE350B] dark:text-rose-400"
+        />
       </div>
 
-      {/* Filter Toolbar */}
-      <div className="p-3 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] flex flex-col md:flex-row md:items-center justify-between gap-3">
-        {/* Category Filter Pills */}
-        <div className="flex items-center gap-1 overflow-x-auto pb-1 md:pb-0">
+      {/* Filter Toolbar with Quick Preset Filter Pills */}
+      <div className="p-3 bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs">
+        {/* Rounded-full category pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
           {categories.map((cat) => (
             <button
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded text-xs font-medium transition cursor-pointer shrink-0 ${
+              className={`text-xs px-3 py-1 rounded-full transition cursor-pointer shrink-0 font-medium ${
                 selectedCategory === cat
-                  ? "bg-[#0052CC] text-white font-semibold"
-                  : "text-[#42526E] dark:text-neutral-300 hover:bg-[#EBECF0] dark:hover:bg-[#1C2331]"
+                  ? "bg-[#0052CC] text-white border border-[#0052CC] font-semibold shadow-2xs"
+                  : "bg-white dark:bg-[#151B26] text-[#6B778C] dark:text-[#94A3B8] border border-[#DFE1E6] dark:border-[#263042] hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331]"
               }`}
             >
               {cat}
@@ -184,8 +171,8 @@ function Vendors() {
         <div className="flex items-center gap-2">
           <form onSubmit={handleSearchSubmit} className="relative flex-1 sm:w-64">
             <Search
-              size={14}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6B778C] dark:text-neutral-400"
+              size={13}
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6B778C] dark:text-[#94A3B8]"
             />
             <input
               type="text"
@@ -209,11 +196,11 @@ function Vendors() {
         </div>
       </div>
 
-      {/* Vendors Data Table */}
-      <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg shadow-xs overflow-hidden">
+      {/* Staffify Atlassian Data Table */}
+      <div className="bg-white dark:bg-[#151B26] rounded border border-[#DFE1E6] dark:border-[#263042] overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#172B4D] dark:text-[#F1F5F9]">
-            <thead className="bg-[#FAFBFC] dark:bg-[#0F131C] border-b border-[#DFE1E6] dark:border-[#263042] text-[10px] uppercase font-bold text-[#6B778C] dark:text-neutral-400 tracking-wider">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-[#F4F5F7] dark:bg-[#1C2331] text-[#6B778C] dark:text-[#94A3B8] border-b border-[#DFE1E6] dark:border-[#263042] font-semibold uppercase tracking-wider text-[11px]">
               <tr>
                 <th className="px-4 py-3">Vendor ID</th>
                 <th className="px-4 py-3">Agency Name</th>
@@ -229,14 +216,14 @@ function Vendors() {
             <tbody className="divide-y divide-[#DFE1E6] dark:divide-[#263042]">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-8 text-center text-xs text-[#6B778C]">
+                  <td colSpan={9} className="px-4 py-10 text-center text-xs text-[#6B778C] dark:text-[#94A3B8]">
                     Loading staffing agencies...
                   </td>
                 </tr>
               ) : vendors.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-8 text-center text-xs text-[#6B778C]">
-                    No vendors match your search filters.
+                  <td colSpan={9} className="px-4 py-10 text-center text-xs text-[#6B778C] dark:text-[#94A3B8]">
+                    No vendors found matching your filter criteria.
                   </td>
                 </tr>
               ) : (
@@ -244,27 +231,29 @@ function Vendors() {
                   <tr
                     key={v._id}
                     onClick={() => handleOpenDossier(v.vendorId)}
-                    className="hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331] transition-colors cursor-pointer group"
+                    className="hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331]/50 transition-colors cursor-pointer group"
                   >
-                    <td className="px-4 py-3 font-mono font-bold text-[#0052CC] dark:text-[#579DFF]">
-                      {v.vendorId}
+                    <td className="px-4 py-3">
+                      <span className="font-mono text-[10px] text-[#0747A6] dark:text-[#579DFF] font-semibold bg-[#DEEBFF] dark:bg-[#1C2331] px-1.5 py-0.5 rounded border border-[#B3D4FF] dark:border-[#263042]">
+                        {v.vendorId}
+                      </span>
                     </td>
-                    <td className="px-4 py-3 font-semibold text-[#172B4D] dark:text-white">
-                      <div>{v.legalName}</div>
-                      <div className="text-[10px] text-[#6B778C] dark:text-neutral-400">
+                    <td className="px-4 py-3">
+                      <div className="font-semibold text-[#172B4D] dark:text-[#F1F5F9] group-hover:text-[#0052CC] dark:group-hover:text-[#579DFF] transition-colors">
+                        {v.legalName}
+                      </div>
+                      <div className="text-[10px] text-[#6B778C] dark:text-[#94A3B8]">
                         {v.billingAddress?.city || "India"}
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#DEEBFF] text-[#0052CC] dark:bg-[#1C2331] dark:text-[#579DFF]">
-                        {v.category}
-                      </span>
+                      <StatusLozenge status={v.category} size="xs" />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-[#172B4D] dark:text-neutral-200">
+                      <div className="font-medium text-[#172B4D] dark:text-[#F1F5F9]">
                         {v.spocName}
                       </div>
-                      <div className="text-[10px] text-[#6B778C] dark:text-neutral-400 font-mono">
+                      <div className="text-[10px] text-[#6B778C] dark:text-[#94A3B8] font-mono">
                         {v.phone}
                       </div>
                     </td>
@@ -278,7 +267,7 @@ function Vendors() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+                      <span className="inline-flex items-center gap-1 font-semibold text-[#00875A] dark:text-emerald-400">
                         <Users size={13} />
                         <span>{v.activeWorkersCount || 0}</span>
                       </span>
@@ -293,7 +282,7 @@ function Vendors() {
                           e.stopPropagation();
                           handleOpenDossier(v.vendorId);
                         }}
-                        className="px-2.5 py-1 text-[11px] font-medium text-[#0052CC] dark:text-[#579DFF] hover:bg-[#DEEBFF] dark:hover:bg-[#1C2331] rounded transition"
+                        className="px-2.5 py-1 text-[11px] font-semibold text-[#0052CC] dark:text-[#579DFF] hover:bg-[#DEEBFF] dark:hover:bg-[#1C2331] rounded transition"
                       >
                         View Dossier
                       </button>

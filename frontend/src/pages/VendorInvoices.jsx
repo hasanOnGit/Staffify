@@ -11,8 +11,10 @@ import {
   CheckCircle2,
   Clock,
   Printer,
+  Percent,
 } from "lucide-react";
 import StatusLozenge from "../components/StatusLozenge";
+import KpiMetricCard from "../components/KpiMetricCard";
 import GenerateInvoiceModal from "../components/invoices/GenerateInvoiceModal";
 import InvoicePrintPreviewModal from "../components/invoices/InvoicePrintPreviewModal";
 import { invoicesApi } from "../services/api";
@@ -67,14 +69,14 @@ function VendorInvoices() {
 
   return (
     <div className="space-y-5">
-      {/* Top Banner */}
+      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold text-[#172B4D] dark:text-[#F1F5F9] tracking-tight">
+          <h2 className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9] tracking-tight">
             Vendor Invoicing & Payout Settlements
           </h2>
-          <p className="text-xs text-[#6B778C] dark:text-neutral-400">
-            Generate monthly vendor bills from deployed timesheets, reconcile 18% GST, and deduct PO balances
+          <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
+            Generate monthly vendor bills from deployed timesheets, reconcile 18% GST, and deduct client PO balances
           </p>
         </div>
 
@@ -82,16 +84,17 @@ function VendorInvoices() {
           <button
             type="button"
             onClick={loadInvoices}
-            className="p-2 text-[#42526E] dark:text-neutral-300 hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded border border-[#DFE1E6] dark:border-[#263042] transition cursor-pointer"
+            className="bg-white dark:bg-[#151B26] hover:bg-[#EBECF0] dark:hover:bg-[#1E293B] text-[#172B4D] dark:text-[#F1F5F9] border border-[#DFE1E6] dark:border-[#263042] text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer flex items-center gap-1.5"
             title="Refresh list"
           >
-            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+            <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
+            <span>Refresh</span>
           </button>
 
           <button
             type="button"
             onClick={() => setGenerateModalOpen(true)}
-            className="px-3.5 py-2 text-xs font-semibold text-white bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] rounded transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+            className="bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-semibold px-3.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1.5 shadow-xs"
           >
             <Plus size={14} />
             <span>Generate Monthly Invoice</span>
@@ -99,63 +102,59 @@ function VendorInvoices() {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-4 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xs">
-          <span className="text-xs font-semibold text-[#6B778C] dark:text-neutral-400 block">
-            Total Invoiced Volume
-          </span>
-          <p className="text-xl font-bold font-mono text-[#172B4D] dark:text-[#F1F5F9] mt-2">
-            ₹{(stats.totalInvoiced || 0).toLocaleString("en-IN")}
-          </p>
-          <span className="text-[11px] text-neutral-500">
-            {stats.totalInvoices} generated invoices
-          </span>
-        </div>
+      {/* Staffify KpiMetricCards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <KpiMetricCard
+          title="Total Invoiced Volume"
+          value={`₹${(stats.totalInvoiced || 0).toLocaleString("en-IN")}`}
+          context={`${stats.totalInvoices} generated invoices`}
+          badgeText="Total Ledger"
+          accentColor="#0052CC"
+          icon={Receipt}
+          iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
+          iconColor="text-[#0052CC] dark:text-[#579DFF]"
+        />
 
-        <div className="p-4 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xs">
-          <span className="text-xs font-semibold text-[#6B778C] dark:text-neutral-400 block">
-            Statutory GST (18%)
-          </span>
-          <p className="text-xl font-bold font-mono text-[#0052CC] dark:text-[#579DFF] mt-2">
-            ₹{(stats.totalGst || 0).toLocaleString("en-IN")}
-          </p>
-          <span className="text-[11px] text-[#0052CC] dark:text-[#579DFF]">
-            Input tax credit pass-through
-          </span>
-        </div>
+        <KpiMetricCard
+          title="Statutory GST (18%)"
+          value={`₹${(stats.totalGst || 0).toLocaleString("en-IN")}`}
+          context="Input tax credit pass-through"
+          badgeText="Statutory Tax"
+          accentColor="#579DFF"
+          icon={Percent}
+          iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
+          iconColor="text-[#0052CC] dark:text-[#579DFF]"
+        />
 
-        <div className="p-4 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xs">
-          <span className="text-xs font-semibold text-[#6B778C] dark:text-neutral-400 block">
-            Disbursed / Settled
-          </span>
-          <p className="text-xl font-bold font-mono text-emerald-700 dark:text-emerald-400 mt-2">
-            ₹{(stats.paidAmount || 0).toLocaleString("en-IN")}
-          </p>
-          <span className="text-[11px] text-emerald-600 dark:text-emerald-400">
-            Paid to staffing agencies
-          </span>
-        </div>
+        <KpiMetricCard
+          title="Disbursed / Settled"
+          value={`₹${(stats.paidAmount || 0).toLocaleString("en-IN")}`}
+          context="Settled with agencies"
+          badgeText="Paid Out"
+          accentColor="#00875A"
+          icon={CheckCircle2}
+          iconBg="bg-[#E3FCEF] dark:bg-emerald-950/40"
+          iconColor="text-[#00875A] dark:text-emerald-400"
+        />
 
-        <div className="p-4 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xs">
-          <span className="text-xs font-semibold text-[#6B778C] dark:text-neutral-400 block">
-            Pending Vendor Payout
-          </span>
-          <p className="text-xl font-bold font-mono text-amber-600 dark:text-amber-400 mt-2">
-            ₹{(stats.pendingPayout || 0).toLocaleString("en-IN")}
-          </p>
-          <span className="text-[11px] text-amber-600 dark:text-amber-400">
-            Draft, Submitted or Approved
-          </span>
-        </div>
+        <KpiMetricCard
+          title="Pending Vendor Payout"
+          value={`₹${(stats.pendingPayout || 0).toLocaleString("en-IN")}`}
+          context="Draft, Submitted, or Approved"
+          badgeText="Pending Run"
+          accentColor="#B9770E"
+          icon={CreditCard}
+          iconBg="bg-[#FFF0B3] dark:bg-amber-950/40"
+          iconColor="text-[#B9770E] dark:text-amber-400"
+        />
       </div>
 
       {/* Filter Toolbar */}
-      <div className="p-3 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="p-3 bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
         <form onSubmit={handleSearchSubmit} className="relative w-full sm:w-80">
           <Search
-            size={14}
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6B778C] dark:text-neutral-400"
+            size={13}
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6B778C] dark:text-[#94A3B8]"
           />
           <input
             type="text"
@@ -179,11 +178,11 @@ function VendorInvoices() {
         </select>
       </div>
 
-      {/* Invoices Table */}
-      <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg shadow-xs overflow-hidden">
+      {/* Staffify Atlassian Table */}
+      <div className="bg-white dark:bg-[#151B26] rounded border border-[#DFE1E6] dark:border-[#263042] overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-[#172B4D] dark:text-[#F1F5F9]">
-            <thead className="bg-[#FAFBFC] dark:bg-[#0F131C] border-b border-[#DFE1E6] dark:border-[#263042] text-[10px] uppercase font-bold text-[#6B778C] dark:text-neutral-400 tracking-wider">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-[#F4F5F7] dark:bg-[#1C2331] text-[#6B778C] dark:text-[#94A3B8] border-b border-[#DFE1E6] dark:border-[#263042] font-semibold uppercase tracking-wider text-[11px]">
               <tr>
                 <th className="px-4 py-3">Invoice Number</th>
                 <th className="px-4 py-3">Staffing Agency</th>
@@ -200,14 +199,14 @@ function VendorInvoices() {
             <tbody className="divide-y divide-[#DFE1E6] dark:divide-[#263042]">
               {loading ? (
                 <tr>
-                  <td colSpan={10} className="px-4 py-8 text-center text-xs text-[#6B778C]">
+                  <td colSpan={10} className="px-4 py-10 text-center text-xs text-[#6B778C] dark:text-[#94A3B8]">
                     Loading vendor invoices...
                   </td>
                 </tr>
               ) : invoices.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="px-4 py-8 text-center text-xs text-[#6B778C]">
-                    No invoices match your search. Click "Generate Monthly Invoice" to create one.
+                  <td colSpan={10} className="px-4 py-10 text-center text-xs text-[#6B778C] dark:text-[#94A3B8]">
+                    No invoices found. Click "Generate Monthly Invoice" to run billing.
                   </td>
                 </tr>
               ) : (
@@ -215,25 +214,29 @@ function VendorInvoices() {
                   <tr
                     key={inv._id}
                     onClick={() => handleOpenPreview(inv.invoiceNumber)}
-                    className="hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331] transition-colors cursor-pointer group"
+                    className="hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331]/50 transition-colors cursor-pointer group"
                   >
-                    <td className="px-4 py-3 font-mono font-bold text-[#0052CC] dark:text-[#579DFF]">
-                      {inv.invoiceNumber}
+                    <td className="px-4 py-3">
+                      <span className="font-mono text-[10px] text-[#0747A6] dark:text-[#579DFF] font-semibold bg-[#DEEBFF] dark:bg-[#1C2331] px-1.5 py-0.5 rounded border border-[#B3D4FF] dark:border-[#263042]">
+                        {inv.invoiceNumber}
+                      </span>
                     </td>
                     <td className="px-4 py-3 font-semibold text-[#172B4D] dark:text-white">
                       <div>{inv.vendorName}</div>
-                      <div className="font-mono text-[10px] text-[#6B778C] dark:text-neutral-400">
+                      <div className="font-mono text-[10px] text-[#6B778C] dark:text-[#94A3B8]">
                         {inv.vendorId}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-[#172B4D] dark:text-neutral-200">
                       <div>{inv.clientName}</div>
-                      <div className="text-[10px] text-[#6B778C] dark:text-neutral-400">
+                      <div className="text-[10px] text-[#6B778C] dark:text-[#94A3B8]">
                         {inv.clientId}
                       </div>
                     </td>
-                    <td className="px-4 py-3 font-mono text-[11px] font-bold text-[#0052CC] dark:text-[#579DFF]">
-                      {inv.poNumber}
+                    <td className="px-4 py-3">
+                      <span className="font-mono text-[10px] text-[#0747A6] dark:text-[#579DFF] font-semibold bg-[#DEEBFF] dark:bg-[#1C2331] px-1.5 py-0.5 rounded border border-[#B3D4FF] dark:border-[#263042]">
+                        {inv.poNumber}
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-xs">
                       {inv.billingPeriod?.month} {inv.billingPeriod?.year}
@@ -241,7 +244,7 @@ function VendorInvoices() {
                     <td className="px-4 py-3 text-center font-mono font-semibold">
                       {inv.lineItems?.length || 0}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-[#6B778C] dark:text-neutral-400">
+                    <td className="px-4 py-3 text-right font-mono text-[#6B778C] dark:text-[#94A3B8]">
                       ₹{inv.subtotal.toLocaleString("en-IN")}
                     </td>
                     <td className="px-4 py-3 text-right font-mono font-bold text-[#172B4D] dark:text-white">

@@ -1,110 +1,220 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
-import { Menu, Sun, Moon, Sparkles, Building2, Briefcase, FileCheck2, Users, Receipt } from "lucide-react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Search,
+  Plus,
+  Sparkles,
+  Bell,
+  Sun,
+  Moon,
+  Menu,
+  X,
+  Building2,
+  Briefcase,
+  Users,
+  FileCheck2,
+  Receipt,
+  LogOut,
+  ShieldCheck,
+  CheckCircle2,
+} from "lucide-react";
+import StaffifyLogo from "./StaffifyLogo";
 import { useTheme } from "../context/ThemeContext";
+import toast from "react-hot-toast";
 
-const routeMeta = {
-  "/vendors": {
-    title: "Vendors & Staffing Agencies",
-    subtitle: "Agency compliance, agreements, and credential verification",
-    icon: Building2,
-  },
-  "/clients": {
-    title: "Clients & Work Sites",
-    subtitle: "Enterprise locations, operational hubs, and delivery centers",
-    icon: Briefcase,
-  },
-  "/commercials": {
-    title: "Commercials & Purchase Orders",
-    subtitle: "Rate card definitions and real-time PO budget burn-rate tracking",
-    icon: FileCheck2,
-  },
-  "/deployments": {
-    title: "Workforce Deployments Matrix",
-    subtitle: "Live site roster, billable assignments, and contractor registry",
-    icon: Users,
-  },
-  "/vendor-invoices": {
-    title: "Vendor Billing & Invoice Processing",
-    subtitle: "Monthly billing runs, GST reconciliations, and PO balance write-downs",
-    icon: Receipt,
-  },
-};
+function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onQuickCreate, onSearchClick }) {
+  const { toggleTheme, isDark } = useTheme();
+  const navigate = useNavigate();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showNotifMenu, setShowNotifMenu] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(3);
 
-function Navbar({ onToggleMobileMenu = () => {} }) {
-  const { theme, toggleTheme, isDark } = useTheme();
-  const location = useLocation();
-  const currentMeta = routeMeta[location.pathname] || {
-    title: "StaffifyGo ERP",
-    subtitle: "Workforce & Vendor Operations Management",
-    icon: Sparkles,
+  const handleNotificationClick = () => {
+    setShowNotifMenu(!showNotifMenu);
+    setUnreadCount(0);
   };
-  const Icon = currentMeta.icon;
 
   return (
-    <header className="h-14 bg-white dark:bg-[#0F131C] border-b border-[#DFE1E6] dark:border-[#263042] px-4 md:px-6 flex items-center justify-between shrink-0 select-none transition-colors z-20">
-      {/* Left: Mobile Toggle & Page Header */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={onToggleMobileMenu}
-          className="p-1.5 text-[#6B778C] dark:text-neutral-400 hover:text-[#172B4D] dark:hover:text-white hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded md:hidden cursor-pointer"
-          aria-label="Toggle navigation"
-        >
-          <Menu size={20} />
-        </button>
+    <>
+      <header className="h-12 bg-white/95 dark:bg-[#0F131C]/95 backdrop-blur-md border-b border-[#DFE1E6] dark:border-[#263042] flex items-center justify-between px-2.5 sm:px-3.5 sticky top-0 z-50 select-none transition-colors w-full">
+        {/* Left Side: Mobile Menu, Staffify Logo & Global Search Omnibar */}
+        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1 max-w-xl">
+          {/* Mobile Hamburger Toggle */}
+          <button
+            type="button"
+            onClick={onToggleMobileMenu}
+            className="md:hidden p-1.5 text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded transition cursor-pointer shrink-0"
+            title="Toggle Navigation Menu"
+            aria-label="Toggle navigation menu"
+          >
+            {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
 
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#DEEBFF] dark:bg-[#1C2331] border border-[#B3D4FF] dark:border-[#263042] hidden sm:flex items-center justify-center text-[#0052CC] dark:text-[#579DFF]">
-            <Icon size={16} />
+          {/* Staffify Logo */}
+          <div
+            onClick={() => navigate("/vendors")}
+            className="cursor-pointer shrink-0"
+          >
+            <StaffifyLogo size="sm" />
           </div>
-          <div>
-            <h1 className="text-sm md:text-base font-bold text-[#172B4D] dark:text-[#F1F5F9] leading-tight flex items-center gap-2">
-              <span>{currentMeta.title}</span>
-            </h1>
-            <p className="text-[11px] text-[#6B778C] dark:text-neutral-400 hidden lg:block leading-tight">
-              {currentMeta.subtitle}
-            </p>
+
+          {/* Global Search Omnibar Trigger */}
+          <div
+            onClick={onSearchClick}
+            role="button"
+            tabIndex={0}
+            className="relative ml-1 sm:ml-2 flex-1 max-w-[140px] xs:max-w-xs md:max-w-sm min-w-0 cursor-pointer"
+            title="Global Search (Ctrl + K)"
+          >
+            <div className="flex items-center bg-[#FAFBFC] dark:bg-[#090D14] hover:bg-white dark:hover:bg-[#1C2331] border border-[#DFE1E6] dark:border-[#263042] hover:border-[#0052CC] dark:hover:border-[#579DFF] rounded-md px-2 py-1 text-xs w-full transition-all duration-200 shadow-2xs">
+              <Search size={13} className="text-[#6B778C] dark:text-neutral-400 shrink-0 mr-1.5" />
+              <span className="w-full text-[#6B778C] dark:text-neutral-400 text-xs min-w-0 truncate select-none">
+                <span className="hidden xs:inline">Search vendors, clients, deployments...</span>
+                <span className="xs:hidden">Search...</span>
+              </span>
+              <kbd className="hidden md:inline-flex items-center gap-0.5 text-[10px] bg-[#EBECF0] dark:bg-[#1C2331] px-1.5 py-0.5 rounded text-[#6B778C] dark:text-neutral-400 font-mono border border-[#DFE1E6] dark:border-[#263042] shrink-0">
+                Ctrl K
+              </kbd>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Right: Actions & Sun/Moon Morph Toggle */}
-      <div className="flex items-center gap-2 md:gap-3">
-        <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold text-[#006644] dark:text-emerald-400 bg-[#E3FCEF] dark:bg-emerald-950/40 border border-[#ABF5D1] dark:border-emerald-800 rounded">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Live Mongoose Atlas</span>
-        </span>
+        {/* Right Side Controls */}
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          {/* Quick "+ Create" Action Button */}
+          <button
+            type="button"
+            onClick={onQuickCreate}
+            className="bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white px-2.5 sm:px-3 py-1 rounded text-xs font-semibold flex items-center gap-1 shadow-xs transition cursor-pointer shrink-0"
+            title="Quick Action"
+          >
+            <Plus size={14} />
+            <span className="hidden sm:inline">Create</span>
+          </button>
 
-        {/* 700ms Sun/Moon 360-degree rotation and scale morph */}
-        <button
-          type="button"
-          onClick={toggleTheme}
-          aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-          className="relative w-8 h-8 rounded-md border border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] flex items-center justify-center text-[#42526E] dark:text-neutral-300 transition-colors cursor-pointer overflow-hidden"
-          title={isDark ? "Activate Light Mode" : "Activate Dark Mode"}
-        >
-          {/* Moon Icon */}
-          <Moon
-            size={16}
-            className={`transition-all duration-700 ease-out absolute ${
-              isDark
-                ? "rotate-90 scale-0 opacity-0"
-                : "rotate-0 scale-100 opacity-100 text-[#0052CC]"
-            }`}
-          />
-          {/* Sun Icon */}
-          <Sun
-            size={16}
-            className={`transition-all duration-700 ease-out absolute ${
-              isDark
-                ? "rotate-0 scale-100 opacity-100 text-amber-400"
-                : "-rotate-90 scale-0 opacity-0"
-            }`}
-          />
-        </button>
-      </div>
-    </header>
+          {/* Ask AI Copilot Button */}
+          <button
+            type="button"
+            onClick={() => toast.success("StaffifyGo Copilot active on live database.")}
+            className="bg-[#DEEBFF] dark:bg-[#1C2536] hover:bg-[#B3D4FF] dark:hover:bg-[#263042] text-[#0052CC] dark:text-[#579DFF] border border-[#B3D4FF] dark:border-[#263042] px-2 sm:px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition cursor-pointer shrink-0"
+            title="Staffify AI Workforce Copilot"
+          >
+            <Sparkles size={13} className="text-[#0052CC] dark:text-[#579DFF]" />
+            <span className="hidden sm:inline">Ask AI</span>
+          </button>
+
+          {/* Notifications Bell */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={handleNotificationClick}
+              className="relative p-1.5 text-[#42526E] dark:text-neutral-300 hover:text-[#172B4D] dark:hover:text-white hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded transition cursor-pointer"
+              title="Notifications"
+            >
+              <Bell size={16} />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#DE350B] ring-2 ring-white dark:ring-[#0F131C]"></span>
+              )}
+            </button>
+
+            {/* Notification Dropdown */}
+            {showNotifMenu && (
+              <div className="absolute right-0 mt-2 w-72 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xl p-3 z-50 text-xs space-y-2 animate-page-enter">
+                <div className="flex items-center justify-between pb-2 border-b border-[#DFE1E6] dark:border-[#263042]">
+                  <span className="font-bold text-[#172B4D] dark:text-white text-xs">
+                    System Alerts
+                  </span>
+                  <span className="text-[10px] text-[#0052CC] dark:text-[#579DFF] font-semibold">
+                    Mark all read
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <div className="p-2 rounded bg-[#FAFBFC] dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042]">
+                    <p className="font-semibold text-[#172B4D] dark:text-white">PO-5001 Reached 74% Burn</p>
+                    <p className="text-[10px] text-[#6B778C] dark:text-neutral-400 mt-0.5">Titanium Tech H1 engineering budget on track</p>
+                  </div>
+                  <div className="p-2 rounded bg-[#FAFBFC] dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042]">
+                    <p className="font-semibold text-[#172B4D] dark:text-white">Monthly Invoice Approved</p>
+                    <p className="text-[10px] text-[#6B778C] dark:text-neutral-400 mt-0.5">Apex Security INV-2026-0002 approved for payout</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Theme Toggle Button (Sun / Moon) */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+            className="relative w-8 h-8 rounded-md border border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] flex items-center justify-center text-[#42526E] dark:text-neutral-300 transition-colors cursor-pointer overflow-hidden shrink-0"
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            <Moon
+              size={15}
+              className={`transition-all duration-700 ease-out absolute ${
+                isDark ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100 text-[#0052CC]"
+              }`}
+            />
+            <Sun
+              size={15}
+              className={`transition-all duration-700 ease-out absolute ${
+                isDark ? "rotate-0 scale-100 opacity-100 text-amber-400" : "-rotate-90 scale-0 opacity-0"
+              }`}
+            />
+          </button>
+
+          {/* User Avatar with Initials */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="w-7 h-7 rounded-full bg-[#0052CC] text-white font-bold text-xs flex items-center justify-center hover:ring-2 hover:ring-[#4C9AFF] transition cursor-pointer shrink-0"
+              title="User Account"
+            >
+              AD
+            </button>
+
+            {/* Profile Menu */}
+            {showProfileMenu && (
+              <div className="absolute right-0 mt-2 w-52 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xl p-2.5 z-50 text-xs animate-page-enter">
+                <div className="px-2 py-1.5 border-b border-[#DFE1E6] dark:border-[#263042] mb-1">
+                  <p className="font-bold text-[#172B4D] dark:text-white leading-tight">Admin User</p>
+                  <p className="text-[10px] text-[#6B778C] dark:text-neutral-400 truncate">admin@staffifygo.com</p>
+                  <span className="inline-block mt-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#DEEBFF] text-[#0052CC] dark:bg-[#1C2331] dark:text-[#579DFF]">
+                    Enterprise Lead
+                  </span>
+                </div>
+
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      toast.success("Active session authenticated.");
+                    }}
+                    className="w-full text-left px-2 py-1.5 rounded hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331] text-[#172B4D] dark:text-neutral-200 transition"
+                  >
+                    Account Settings
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      toast.success("Logged out successfully");
+                    }}
+                    className="w-full text-left px-2 py-1.5 rounded hover:bg-[#FFEBE6] dark:hover:bg-rose-950/30 text-[#DE350B] transition flex items-center justify-between mt-1"
+                  >
+                    <span>Sign Out</span>
+                    <LogOut size={12} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+    </>
   );
 }
 
