@@ -79,10 +79,10 @@ function Clients() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9] tracking-tight">
-            Enterprise Clients & Delivery Sites
+            Clients & Work Sites
           </h2>
           <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
-            Configure client corporate entities, regional work campuses, and track site-level contingent headcount
+            Manage client companies, work locations, and worker headcounts
           </p>
         </div>
 
@@ -103,7 +103,7 @@ function Clients() {
             className="bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-semibold px-3.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1.5 shadow-xs"
           >
             <Plus size={14} />
-            <span>Add Client & Sites</span>
+            <span>Add Client</span>
           </button>
         </div>
       </div>
@@ -111,10 +111,10 @@ function Clients() {
       {/* Staffify KpiMetricCards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <KpiMetricCard
-          title="Corporate Accounts"
+          title="Total Clients"
           value={stats.total}
-          context={`${stats.active} Active billing entities`}
-          badgeText="Verified Clients"
+          context={`${stats.active} Active clients`}
+          badgeText="Verified"
           accentColor="#0052CC"
           icon={Briefcase}
           iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
@@ -122,10 +122,10 @@ function Clients() {
         />
 
         <KpiMetricCard
-          title="Physical Work Sites"
+          title="Active Work Sites"
           value={stats.totalSites}
-          context="Regional deployment campuses"
-          badgeText="Multi-Facility"
+          context="Client work locations"
+          badgeText="Locations"
           accentColor="#00875A"
           icon={MapPin}
           iconBg="bg-[#E3FCEF] dark:bg-emerald-950/40"
@@ -133,10 +133,10 @@ function Clients() {
         />
 
         <KpiMetricCard
-          title="Deployed Contractors"
+          title="Assigned Workers"
           value={totalContractors}
-          context="Active personnel on site"
-          badgeText="Live Staffing"
+          context="Workers currently on site"
+          badgeText="On Site"
           accentColor="#579DFF"
           icon={Users}
           iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"

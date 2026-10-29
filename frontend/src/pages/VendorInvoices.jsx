@@ -76,10 +76,10 @@ function VendorInvoices() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9] tracking-tight">
-            Vendor Invoicing & Payout Settlements
+            Client Invoices & Payments
           </h2>
           <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
-            Generate monthly vendor bills from deployed timesheets, reconcile 18% GST, and deduct client PO balances
+            Generate monthly client invoices from attendance, track 18% GST, record payments, and monitor balances
           </p>
         </div>
 
@@ -100,7 +100,7 @@ function VendorInvoices() {
             className="bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-semibold px-3.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1.5 shadow-xs"
           >
             <Plus size={14} />
-            <span>Generate Monthly Invoice</span>
+            <span>Create Client Invoice</span>
           </button>
         </div>
       </div>
@@ -108,10 +108,10 @@ function VendorInvoices() {
       {/* Staffify KpiMetricCards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiMetricCard
-          title="Total Invoiced Volume"
+          title="Total Invoiced"
           value={`₹${(stats.totalInvoiced || 0).toLocaleString("en-IN")}`}
-          context={`${stats.totalInvoices} generated invoices`}
-          badgeText="Total Ledger"
+          context={`${stats.totalInvoices} client invoices`}
+          badgeText="Total"
           accentColor="#0052CC"
           icon={Receipt}
           iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
@@ -119,10 +119,10 @@ function VendorInvoices() {
         />
 
         <KpiMetricCard
-          title="Statutory GST (18%)"
+          title="GST Amount (18%)"
           value={`₹${(stats.totalGst || 0).toLocaleString("en-IN")}`}
-          context="Input tax credit pass-through"
-          badgeText="Statutory Tax"
+          context="Total GST tax billed"
+          badgeText="Tax"
           accentColor="#579DFF"
           icon={Percent}
           iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
@@ -130,10 +130,10 @@ function VendorInvoices() {
         />
 
         <KpiMetricCard
-          title="Disbursed / Settled"
+          title="Payments Received"
           value={`₹${(stats.paidAmount || 0).toLocaleString("en-IN")}`}
-          context="Settled with agencies"
-          badgeText="Paid Out"
+          context="Total collected from clients"
+          badgeText="Received"
           accentColor="#00875A"
           icon={CheckCircle2}
           iconBg="bg-[#E3FCEF] dark:bg-emerald-950/40"
@@ -141,10 +141,10 @@ function VendorInvoices() {
         />
 
         <KpiMetricCard
-          title="Pending Vendor Payout"
+          title="Unpaid Balance"
           value={`₹${(stats.pendingPayout || 0).toLocaleString("en-IN")}`}
-          context="Draft, Submitted, or Approved"
-          badgeText="Pending Run"
+          context="Pending client payments"
+          badgeText="Pending"
           accentColor="#B9770E"
           icon={CreditCard}
           iconBg="bg-[#FFF0B3] dark:bg-amber-950/40"
@@ -189,11 +189,11 @@ function VendorInvoices() {
               <tr>
                 <th className="px-4 py-3">Invoice Number</th>
                 <th className="px-4 py-3">Staffing Agency</th>
-                <th className="px-4 py-3">Client Entity</th>
-                <th className="px-4 py-3">Billing PO</th>
+                <th className="px-4 py-3">Client</th>
+                <th className="px-4 py-3">Budget (PO)</th>
                 <th className="px-4 py-3">Period</th>
-                <th className="px-4 py-3 text-right">Grand Total</th>
-                <th className="px-4 py-3 text-right">Collected</th>
+                <th className="px-4 py-3 text-right">Total Bill</th>
+                <th className="px-4 py-3 text-right">Paid</th>
                 <th className="px-4 py-3 text-right">Balance Due</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3 text-right">Action</th>
@@ -209,7 +209,7 @@ function VendorInvoices() {
               ) : invoices.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="px-4 py-10 text-center text-xs text-[#6B778C] dark:text-[#94A3B8]">
-                    No invoices found. Click "Generate Monthly Invoice" to run billing.
+                    No invoices found. Click "Create Client Invoice" to generate one.
                   </td>
                 </tr>
               ) : (
@@ -255,7 +255,7 @@ function VendorInvoices() {
                       </td>
                       <td className="px-4 py-3 text-right font-mono font-bold">
                         {bal === 0 ? (
-                          <span className="text-[#00875A]">Nil (Settled)</span>
+                          <span className="text-[#00875A]">Paid</span>
                         ) : (
                           <span className="text-[#DE350B]">Rs {bal?.toLocaleString()}</span>
                         )}
@@ -274,7 +274,7 @@ function VendorInvoices() {
                             }}
                             className="px-2 py-1 text-[11px] font-semibold bg-[#00875A] text-white hover:bg-[#006644] rounded transition shadow-2xs"
                           >
-                            Collect
+                            Record Payment
                           </button>
                         )}
                         <button

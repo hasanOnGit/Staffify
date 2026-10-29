@@ -60,11 +60,11 @@ function OnboardWorkerModal({ isOpen, onClose, onSuccess }) {
     try {
       setLoading(true);
       const res = await workersApi.create(formData);
-      toast.success(res.data.message || "Worker added to talent bench successfully.");
+      toast.success(res.data.message || "Worker added successfully.");
       onSuccess?.(res.data.data);
       onClose();
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to onboard worker.");
+      toast.error(err.response?.data?.message || "Failed to add worker.");
     } finally {
       setLoading(false);
     }
@@ -81,10 +81,10 @@ function OnboardWorkerModal({ isOpen, onClose, onSuccess }) {
             </div>
             <div>
               <h2 className="text-sm font-bold text-[#172B4D] dark:text-white">
-                Onboard Talent to Worker Bench
+                Add New Worker
               </h2>
               <p className="text-xs text-[#6B778C] dark:text-neutral-400">
-                Enroll skilled manpower into ready talent pool with statutory KYC verification
+                Register worker profile, contact details, ID verification, and bank account
               </p>
             </div>
           </div>
@@ -103,7 +103,7 @@ function OnboardWorkerModal({ isOpen, onClose, onSuccess }) {
           <div>
             <h3 className="text-xs font-bold text-[#172B4D] dark:text-neutral-200 uppercase tracking-wide flex items-center gap-1.5 mb-2.5">
               <FileText size={13} className="text-[#0052CC] dark:text-[#579DFF]" />
-              Profile & Trade Specialization
+              Worker Profile & Role
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
@@ -235,7 +235,7 @@ function OnboardWorkerModal({ isOpen, onClose, onSuccess }) {
           <div className="pt-2 border-t border-[#DFE1E6] dark:border-[#263042]">
             <h3 className="text-xs font-bold text-[#172B4D] dark:text-neutral-200 uppercase tracking-wide flex items-center gap-1.5 mb-2.5">
               <ShieldCheck size={13} className="text-[#00875A]" />
-              Statutory KYC & Compliance
+              Identity Verification & Documents
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
@@ -247,7 +247,7 @@ function OnboardWorkerModal({ isOpen, onClose, onSuccess }) {
                   name="kyc_aadhaarNumber"
                   value={formData.kycDetails.aadhaarNumber}
                   onChange={handleChange}
-                  placeholder="12-digit UIDAI number"
+                  placeholder="12-digit Aadhaar number"
                   className="w-full px-3 py-1.5 text-xs rounded border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] text-[#172B4D] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0052CC]"
                 />
               </div>
@@ -305,7 +305,7 @@ function OnboardWorkerModal({ isOpen, onClose, onSuccess }) {
           <div className="pt-2 border-t border-[#DFE1E6] dark:border-[#263042]">
             <h3 className="text-xs font-bold text-[#172B4D] dark:text-neutral-200 uppercase tracking-wide flex items-center gap-1.5 mb-2.5">
               <CreditCard size={13} className="text-[#0052CC] dark:text-[#579DFF]" />
-              Bank Payout Account Details
+              Bank Account Details
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
@@ -368,11 +368,11 @@ function OnboardWorkerModal({ isOpen, onClose, onSuccess }) {
               className="px-4 py-1.5 rounded text-xs font-semibold bg-[#0052CC] hover:bg-[#0747A6] text-white shadow-xs transition flex items-center gap-1.5"
             >
               {loading ? (
-                <span>Adding to Bench...</span>
+                <span>Saving Worker...</span>
               ) : (
                 <>
                   <UserPlus size={14} />
-                  <span>Enroll Worker</span>
+                  <span>Save Worker</span>
                 </>
               )}
             </button>

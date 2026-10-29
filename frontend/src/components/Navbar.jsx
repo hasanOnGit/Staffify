@@ -91,7 +91,7 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onQuickCreate, onSearchC
             <div className="flex items-center bg-[#FAFBFC] dark:bg-[#090D14] hover:bg-white dark:hover:bg-[#1C2331] border border-[#DFE1E6] dark:border-[#263042] hover:border-[#0052CC] dark:hover:border-[#579DFF] rounded-md px-2 py-1 text-xs w-full transition-all duration-200 shadow-2xs">
               <Search size={13} className="text-[#6B778C] dark:text-neutral-400 shrink-0 mr-1.5" />
               <span className="w-full text-[#6B778C] dark:text-neutral-400 text-xs min-w-0 truncate select-none">
-                <span className="hidden xs:inline">Search vendors, clients, deployments...</span>
+                <span className="hidden xs:inline">Search workers, clients, assignments, invoices...</span>
                 <span className="xs:hidden">Search...</span>
               </span>
               <kbd className="hidden md:inline-flex items-center gap-0.5 text-[10px] bg-[#EBECF0] dark:bg-[#1C2331] px-1.5 py-0.5 rounded text-[#6B778C] dark:text-neutral-400 font-mono border border-[#DFE1E6] dark:border-[#263042] shrink-0">
@@ -103,13 +103,13 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onQuickCreate, onSearchC
 
         {/* Right Side Controls */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          {/* Workspace Switcher (Platform Admin vs Agency Workspace) */}
+          {/* Workspace Switcher */}
           <div className="relative">
             <button
               type="button"
               onClick={handleToggleWorkspaceMenu}
               className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-md border border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] text-[#172B4D] dark:text-white hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] transition cursor-pointer"
-              title="Switch Workspace Scope"
+              title="Switch Workspace"
             >
               {isPlatformAdmin ? (
                 <span className="flex items-center gap-1 text-[#0052CC] dark:text-[#579DFF]">
@@ -128,7 +128,7 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onQuickCreate, onSearchC
             {showWorkspaceMenu && (
               <div className="absolute right-0 mt-2 w-72 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xl p-2 z-50 text-xs space-y-1.5 animate-page-enter">
                 <div className="px-2 py-1 text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
-                  Select Operating Workspace
+                  Switch Workspace
                 </div>
 
                 {/* Platform Admin Option */}
@@ -137,7 +137,7 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onQuickCreate, onSearchC
                   onClick={() => {
                     switchToPlatform();
                     setShowWorkspaceMenu(false);
-                    toast.success("Switched to Enterprise Platform Admin (Global)");
+                    toast.success("Switched to Platform Admin view (All Agencies)");
                   }}
                   className={`w-full text-left p-2 rounded flex items-center justify-between transition cursor-pointer ${
                     isPlatformAdmin
@@ -148,15 +148,15 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onQuickCreate, onSearchC
                   <div className="flex items-center gap-2">
                     <ShieldCheck size={14} className="text-[#0052CC] dark:text-[#579DFF]" />
                     <div>
-                      <div className="font-semibold text-xs leading-tight">Enterprise Platform Admin</div>
-                      <div className="text-[10px] text-[#6B778C] dark:text-neutral-400">Global oversight & all agencies</div>
+                      <div className="font-semibold text-xs leading-tight">Platform Admin</div>
+                      <div className="text-[10px] text-[#6B778C] dark:text-neutral-400">All staffing agencies & clients</div>
                     </div>
                   </div>
                   {isPlatformAdmin && <CheckCircle2 size={14} className="text-[#0052CC] dark:text-[#579DFF]" />}
                 </button>
 
                 <div className="pt-1 border-t border-[#DFE1E6] dark:border-[#263042] px-2 text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
-                  Private Agency Workspaces
+                  Staffing Agency Workspaces
                 </div>
 
                 {/* Agency Options */}

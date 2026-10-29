@@ -51,17 +51,17 @@ function Dashboard() {
         <div>
           <h1 className="text-xl font-bold text-[#172B4D] dark:text-white tracking-tight flex items-center gap-2">
             <LayoutDashboard size={20} className="text-[#0052CC] dark:text-[#579DFF]" />
-            Executive Command Center
+            Dashboard Overview
           </h1>
           <p className="text-xs text-[#6B778C] dark:text-neutral-400 mt-0.5">
-            Real-time enterprise intelligence across contractor deployments, talent bench, and Purchase Order burn rates
+            Summary of your workers, active site assignments, monthly attendance, and billing
           </p>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            ERP Live Feed Active
+            Live Data Active
           </span>
         </div>
       </div>
@@ -69,45 +69,45 @@ function Dashboard() {
       {/* Top 4 Primary Pulse KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
         <KpiMetricCard
-          title="Active Contractor Placements"
+          title="Workers on Site"
           value={stats.activeDeployments || 0}
-          subtitle={`Across ${stats.totalClients || 0} client corporate sites`}
+          subtitle={`Across ${stats.totalClients || 0} client work sites`}
           accentColor="#0052CC"
           icon={Users}
         />
         <KpiMetricCard
-          title="Ready Talent on Bench"
+          title="Available Workers"
           value={stats.benchWorkers || 0}
-          subtitle="Available for instant site deployment"
-          badgeText="KYC Ready"
+          subtitle="Ready for new job assignments"
+          badgeText="Available"
           badgeType="success"
           accentColor="#00875A"
           icon={UserCheck}
         />
         <KpiMetricCard
-          title="Overall PO Budget Burn"
+          title="Client Budget Used (POs)"
           value={`${stats.overallPoBurnRate || 0}%`}
           subtitle={`Rs ${(stats.totalPoBurned || 0).toLocaleString()} of Rs ${(stats.totalPoBudget || 0).toLocaleString()}`}
-          badgeText={stats.overallPoBurnRate > 75 ? "High Burn" : "Healthy"}
+          badgeText={stats.overallPoBurnRate > 75 ? "High Spending" : "On Track"}
           badgeType={stats.overallPoBurnRate > 75 ? "danger" : "neutral"}
           accentColor={stats.overallPoBurnRate > 75 ? "#DE350B" : "#579DFF"}
           icon={TrendingUp}
         />
         <KpiMetricCard
-          title="Pending Receivables"
+          title="Unpaid Client Bills"
           value={`Rs ${(stats.pendingReceivables || 0).toLocaleString()}`}
-          subtitle={`Total billed volume: Rs ${(stats.totalInvoiced || 0).toLocaleString()}`}
-          badgeText="Receivables"
+          subtitle={`Total billed: Rs ${(stats.totalInvoiced || 0).toLocaleString()}`}
+          badgeText="Pending"
           badgeType="warning"
           accentColor="#B9770E"
           icon={Receipt}
         />
       </div>
 
-      {/* Quick Actions Command Center Bar */}
+      {/* Quick Actions Bar */}
       <div>
         <h2 className="text-xs font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider mb-2.5">
-          Quick Actions Command Center
+          Quick Actions
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <Link
@@ -119,10 +119,10 @@ function Dashboard() {
             </div>
             <div className="min-w-0">
               <h3 className="text-xs font-bold text-[#172B4D] dark:text-white group-hover:text-[#0052CC] dark:group-hover:text-[#579DFF] transition">
-                Onboard Bench Talent
+                Add New Worker
               </h3>
               <p className="text-[11px] text-[#6B778C] dark:text-neutral-400 truncate">
-                Verify Aadhaar, PAN & police clearance
+                Register candidate & verify Aadhaar/PAN
               </p>
             </div>
           </Link>
@@ -136,10 +136,10 @@ function Dashboard() {
             </div>
             <div className="min-w-0">
               <h3 className="text-xs font-bold text-[#172B4D] dark:text-white group-hover:text-[#0052CC] dark:group-hover:text-[#579DFF] transition">
-                Deploy Worker to Site
+                Assign Worker to Site
               </h3>
               <p className="text-[11px] text-[#6B778C] dark:text-neutral-400 truncate">
-                Assign contractor against approved PO
+                Place contractor on client project
               </p>
             </div>
           </Link>
@@ -153,10 +153,10 @@ function Dashboard() {
             </div>
             <div className="min-w-0">
               <h3 className="text-xs font-bold text-[#172B4D] dark:text-white group-hover:text-[#0052CC] dark:group-hover:text-[#579DFF] transition">
-                Record Site Muster Roll
+                Record Attendance & OT
               </h3>
               <p className="text-[11px] text-[#6B778C] dark:text-neutral-400 truncate">
-                Log attendance shifts and 1.5x OT hours
+                Track days worked and 1.5x overtime
               </p>
             </div>
           </Link>
@@ -170,27 +170,27 @@ function Dashboard() {
             </div>
             <div className="min-w-0">
               <h3 className="text-xs font-bold text-[#172B4D] dark:text-white group-hover:text-[#0052CC] dark:group-hover:text-[#579DFF] transition">
-                Generate Tax Invoice
+                Create Client Bill
               </h3>
               <p className="text-[11px] text-[#6B778C] dark:text-neutral-400 truncate">
-                Compute GST & trigger PO write-down
+                Generate invoice with 18% GST
               </p>
             </div>
           </Link>
         </div>
       </div>
 
-      {/* PO Watchdog: At-Risk & High-Burn Purchase Orders */}
+      {/* PO Watchdog: Budget Limits */}
       <div className="bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] rounded-lg shadow-xs overflow-hidden">
         <div className="p-4 border-b border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <AlertTriangle size={16} className="text-amber-500" />
             <div>
               <h2 className="text-xs font-bold text-[#172B4D] dark:text-white uppercase tracking-wider">
-                Purchase Order Budget Watchdog
+                Budget Alerts (Spending Near Limit)
               </h2>
               <p className="text-[11px] text-[#6B778C] dark:text-neutral-400">
-                Purchase orders approaching financial budget cap (&gt; 60% burn rate or exhausted)
+                Purchase orders where spending exceeds 60% of the approved cap
               </p>
             </div>
           </div>

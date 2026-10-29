@@ -17,7 +17,7 @@ function PayslipModal({ isOpen, onClose, payroll, record }) {
           <div className="flex items-center gap-2">
             <Banknote size={16} className="text-[#0052CC] dark:text-[#579DFF]" />
             <span className="text-xs font-bold text-[#172B4D] dark:text-white uppercase tracking-wider">
-              Salary Payslip & Remittance Advice
+              Salary Payslip
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -49,7 +49,7 @@ function PayslipModal({ isOpen, onClose, payroll, record }) {
                 {payroll?.vendorName || "Staffing Services Agency"}
               </div>
               <div className="text-[11px] text-[#6B778C] dark:text-neutral-400">
-                Staffing Partner & Manpower Contractor
+                Staffing Partner & Manpower Provider
               </div>
             </div>
             <div className="text-right">
@@ -66,7 +66,7 @@ function PayslipModal({ isOpen, onClose, payroll, record }) {
           <div className="grid grid-cols-2 gap-4 p-3.5 rounded-lg border border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26]">
             <div className="space-y-1">
               <div className="flex justify-between">
-                <span className="text-[#6B778C] dark:text-neutral-400">Employee Name:</span>
+                <span className="text-[#6B778C] dark:text-neutral-400">Worker Name:</span>
                 <span className="font-bold text-[#172B4D] dark:text-white">{record.workerName}</span>
               </div>
               <div className="flex justify-between">
@@ -74,22 +74,22 @@ function PayslipModal({ isOpen, onClose, payroll, record }) {
                 <span className="font-mono font-medium text-[#172B4D] dark:text-white">{record.workerId}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#6B778C] dark:text-neutral-400">Designation / Role:</span>
+                <span className="text-[#6B778C] dark:text-neutral-400">Role:</span>
                 <span className="font-medium text-[#172B4D] dark:text-white">{record.designation}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#6B778C] dark:text-neutral-400">Client Work Site:</span>
+                <span className="text-[#6B778C] dark:text-neutral-400">Work Site:</span>
                 <span className="text-[#172B4D] dark:text-white">{payroll?.siteName || "Client Site Alpha"}</span>
               </div>
             </div>
 
             <div className="space-y-1">
               <div className="flex justify-between">
-                <span className="text-[#6B778C] dark:text-neutral-400">Payable Days:</span>
+                <span className="text-[#6B778C] dark:text-neutral-400">Working Days:</span>
                 <span className="font-bold text-[#172B4D] dark:text-white">{record.payableDays} days</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#6B778C] dark:text-neutral-400">Overtime Hours:</span>
+                <span className="text-[#6B778C] dark:text-neutral-400">Overtime:</span>
                 <span className="font-bold text-amber-600 dark:text-amber-400">{record.overtimeHours || 0} hrs</span>
               </div>
               <div className="flex justify-between">
@@ -110,7 +110,7 @@ function PayslipModal({ isOpen, onClose, payroll, record }) {
             {/* Earnings */}
             <div className="border border-[#DFE1E6] dark:border-[#263042] rounded-lg overflow-hidden">
               <div className="px-3 py-2 bg-[#DEEBFF]/50 dark:bg-[#1C2331] font-bold text-[#0052CC] dark:text-[#579DFF] border-b border-[#DFE1E6] dark:border-[#263042] uppercase text-[10px]">
-                Gross Earnings
+                Earnings
               </div>
               <div className="p-3 space-y-2">
                 <div className="flex justify-between">
@@ -120,7 +120,7 @@ function PayslipModal({ isOpen, onClose, payroll, record }) {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#42526E] dark:text-neutral-300">Overtime Allowance (1.5x)</span>
+                  <span className="text-[#42526E] dark:text-neutral-300">Overtime Pay (1.5x)</span>
                   <span className="font-mono font-semibold text-[#172B4D] dark:text-white">
                     Rs {record.overtimePay?.toLocaleString()}
                   </span>
@@ -137,7 +137,7 @@ function PayslipModal({ isOpen, onClose, payroll, record }) {
             {/* Statutory Deductions */}
             <div className="border border-[#DFE1E6] dark:border-[#263042] rounded-lg overflow-hidden">
               <div className="px-3 py-2 bg-red-50 dark:bg-red-950/20 font-bold text-red-600 dark:text-red-400 border-b border-[#DFE1E6] dark:border-[#263042] uppercase text-[10px]">
-                Statutory Deductions
+                Deductions
               </div>
               <div className="p-3 space-y-2">
                 <div className="flex justify-between">

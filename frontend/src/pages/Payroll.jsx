@@ -109,10 +109,10 @@ function Payroll() {
         <div>
           <h1 className="text-xl font-bold text-[#172B4D] dark:text-white tracking-tight flex items-center gap-2">
             <Banknote size={20} className="text-[#0052CC] dark:text-[#579DFF]" />
-            Payroll & Salary Processing Engine
+            Salaries & Monthly Payroll
           </h1>
           <p className="text-xs text-[#6B778C] dark:text-neutral-400 mt-0.5">
-            Calculate contractor wages from site muster rolls, compute statutory EPF, ESIC & PT deductions, and generate payslips
+            Calculate worker monthly salaries from attendance sheets, apply standard PF & ESI deductions, and view payslips
           </p>
         </div>
 
@@ -122,7 +122,7 @@ function Payroll() {
           className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded bg-[#0052CC] hover:bg-[#0747A6] text-white shadow-xs transition shrink-0 cursor-pointer"
         >
           <Plus size={14} />
-          <span>Run Monthly Payroll</span>
+          <span>Calculate Salaries</span>
         </button>
       </div>
 
@@ -131,33 +131,33 @@ function Payroll() {
         <KpiMetricCard
           title="Total Gross Wages"
           value={`Rs ${stats.totalGross.toLocaleString()}`}
-          subtitle="Earned basic + overtime base"
+          subtitle="Earned basic + overtime wages"
           accentColor="#0052CC"
           icon={TrendingUp}
         />
         <KpiMetricCard
-          title="Statutory Deductions"
+          title="Taxes & PF/ESI Deductions"
           value={`Rs ${stats.totalDeductions.toLocaleString()}`}
           subtitle="EPF (12%), ESIC (0.75%), PT"
-          badgeText="Compliance"
+          badgeText="Deductions"
           badgeType="warning"
           accentColor="#B9770E"
           icon={TrendingDown}
         />
         <KpiMetricCard
-          title="Net Take-Home Disbursed"
+          title="Total Take-Home Pay"
           value={`Rs ${stats.totalNet.toLocaleString()}`}
-          subtitle="Bank remittance payout pool"
-          badgeText="Verified"
+          subtitle="Total net worker bank payout"
+          badgeText="Take-Home"
           badgeType="success"
           accentColor="#00875A"
           icon={CheckCircle2}
         />
         <KpiMetricCard
-          title="Completed Payroll Runs"
+          title="Payroll Cycles"
           value={stats.totalRuns}
-          subtitle="Monthly approved site cycles"
-          badgeText="Runs"
+          subtitle="Completed monthly salary cycles"
+          badgeText="Completed"
           badgeType="neutral"
           accentColor="#579DFF"
           icon={Banknote}
@@ -243,7 +243,7 @@ function Payroll() {
                     {selectedPayroll.clientName} — {selectedPayroll.siteName}
                   </h2>
                   <p className="text-xs text-[#6B778C] dark:text-neutral-400">
-                    Cycle: {selectedPayroll.month} {selectedPayroll.year} &bull; {selectedPayroll.records?.length} Contractors &bull; Muster Roll: {selectedPayroll.musterRollId}
+                    Cycle: {selectedPayroll.month} {selectedPayroll.year} &bull; {selectedPayroll.records?.length} Workers &bull; Attendance Sheet: {selectedPayroll.musterRollId}
                   </p>
                 </div>
 
@@ -264,13 +264,13 @@ function Payroll() {
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
                     <tr className="bg-[#FAFBFC] dark:bg-[#151B26] border-b border-[#DFE1E6] dark:border-[#263042] text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider font-semibold text-[10px]">
-                      <th className="px-3.5 py-2.5">Contractor</th>
+                      <th className="px-3.5 py-2.5">Worker</th>
                       <th className="px-3.5 py-2.5">Role</th>
                       <th className="px-3.5 py-2.5 text-center">Days / OT</th>
                       <th className="px-3.5 py-2.5 text-right">Gross Pay</th>
-                      <th className="px-3.5 py-2.5 text-right">EPF (12%)</th>
-                      <th className="px-3.5 py-2.5 text-right">ESIC/PT</th>
-                      <th className="px-3.5 py-2.5 text-right">Net Take-Home</th>
+                      <th className="px-3.5 py-2.5 text-right">PF (12%)</th>
+                      <th className="px-3.5 py-2.5 text-right">ESI / Tax</th>
+                      <th className="px-3.5 py-2.5 text-right">Take-Home Pay</th>
                       <th className="px-3.5 py-2.5 text-right">Payslip</th>
                     </tr>
                   </thead>
@@ -309,7 +309,7 @@ function Payroll() {
                             className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-[#0052CC] dark:text-[#579DFF] hover:bg-[#DEEBFF] dark:hover:bg-[#1C2331] rounded transition cursor-pointer"
                           >
                             <Printer size={12} />
-                            <span>Slip</span>
+                            <span>Payslip</span>
                           </button>
                         </td>
                       </tr>
@@ -339,7 +339,7 @@ function Payroll() {
             </div>
           ) : (
             <div className="p-12 bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] rounded-lg text-center text-xs text-[#6B778C] dark:text-neutral-400">
-              Select a payroll run from the left panel to inspect wages and statutory breakdown.
+              Select a payroll cycle from the left panel to inspect wages and tax deductions.
             </div>
           )}
         </div>
@@ -353,7 +353,7 @@ function Payroll() {
               <div className="flex items-center gap-2">
                 <Banknote size={16} className="text-[#0052CC] dark:text-[#579DFF]" />
                 <h3 className="text-xs font-bold text-[#172B4D] dark:text-white uppercase tracking-wider">
-                  Calculate Site Payroll
+                  Calculate Salaries
                 </h3>
               </div>
               <button
@@ -368,7 +368,7 @@ function Payroll() {
             <form onSubmit={handleRunPayroll} className="p-5 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-[#172B4D] dark:text-neutral-300 mb-1">
-                  Source Site Muster Roll <span className="text-red-500">*</span>
+                  Approved Attendance Sheet <span className="text-red-500">*</span>
                 </label>
                 <select
                   required
@@ -376,7 +376,7 @@ function Payroll() {
                   onChange={(e) => setSelectedMusterRollId(e.target.value)}
                   className="w-full px-3 py-1.5 text-xs rounded border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] text-[#172B4D] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0052CC]"
                 >
-                  <option value="">Select Muster Roll...</option>
+                  <option value="">Select Attendance Sheet...</option>
                   {approvedMusterRolls.map((mr) => (
                     <option key={mr.musterRollId} value={mr.musterRollId}>
                       {mr.musterRollId} &bull; {mr.clientName} ({mr.siteName}) &bull; {mr.month} {mr.year}
@@ -386,11 +386,11 @@ function Payroll() {
               </div>
 
               <div className="p-3 rounded bg-[#DEEBFF]/50 dark:bg-[#1C2331] border border-[#B3D4FF] dark:border-[#263042] text-[11px] text-[#0747A6] dark:text-[#579DFF] leading-relaxed space-y-1">
-                <div className="font-semibold">Automated Statutory Indian Compliance:</div>
-                <div>&bull; EPF Employee Deduction: 12% of basic wages</div>
-                <div>&bull; ESIC Employee Deduction: 0.75% of gross (if &le; ₹21,000)</div>
-                <div>&bull; Professional Tax: ₹200 standard monthly slab</div>
-                <div>&bull; Overtime Calculation: 1.5x statutory multiplier</div>
+                <div className="font-semibold">Standard Deductions & Overtime Rules:</div>
+                <div>&bull; Provident Fund (EPF): 12% deduction</div>
+                <div>&bull; ESI Scheme (ESIC): 0.75% deduction (if eligible)</div>
+                <div>&bull; Professional Tax: Rs 200 standard monthly deduction</div>
+                <div>&bull; Overtime Calculation: 1.5x regular rate</div>
               </div>
 
               <div className="pt-3 border-t border-[#DFE1E6] dark:border-[#263042] flex justify-end gap-2">
@@ -407,11 +407,11 @@ function Payroll() {
                   className="px-4 py-1.5 text-xs font-semibold rounded bg-[#0052CC] hover:bg-[#0747A6] text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer"
                 >
                   {isRunning ? (
-                    <span>Calculating Wages...</span>
+                    <span>Calculating Salaries...</span>
                   ) : (
                     <>
                       <Banknote size={14} />
-                      <span>Execute Payroll Run</span>
+                      <span>Calculate Salaries</span>
                     </>
                   )}
                 </button>

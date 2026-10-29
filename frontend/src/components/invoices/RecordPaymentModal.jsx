@@ -48,7 +48,7 @@ function RecordPaymentModal({ isOpen, onClose, invoice, onSuccess }) {
           <div className="flex items-center gap-2">
             <CreditCard size={16} className="text-[#00875A]" />
             <h3 className="text-xs font-bold text-[#172B4D] dark:text-white uppercase tracking-wider">
-              Record Client Invoice Collection
+              Record Payment Received
             </h3>
           </div>
           <button
@@ -167,11 +167,11 @@ function RecordPaymentModal({ isOpen, onClose, invoice, onSuccess }) {
               className="px-4 py-1.5 text-xs font-semibold rounded bg-[#00875A] hover:bg-[#006644] text-white shadow-xs transition flex items-center gap-1.5 cursor-pointer"
             >
               {loading ? (
-                <span>Reconciling...</span>
+                <span>Saving Payment...</span>
               ) : (
                 <>
                   <CheckCircle2 size={13} />
-                  <span>Post Payment</span>
+                  <span>Save Payment</span>
                 </>
               )}
             </button>

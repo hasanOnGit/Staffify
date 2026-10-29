@@ -207,10 +207,10 @@ function MusterRoll() {
         <div>
           <h1 className="text-xl font-bold text-[#172B4D] dark:text-white tracking-tight flex items-center gap-2">
             <CalendarCheck size={20} className="text-[#0052CC] dark:text-[#579DFF]" />
-            Site Muster Roll & Overtime Tracking
+            Attendance & Overtime Records
           </h1>
           <p className="text-xs text-[#6B778C] dark:text-neutral-400 mt-0.5">
-            Log client-site contractor attendance, monthly shifts, LOP, and overtime (OT) hours feeding directly into billing
+            Track daily worker attendance, shifts, leave, and overtime (OT) hours for client billing and payroll
           </p>
         </div>
 
@@ -220,41 +220,41 @@ function MusterRoll() {
           className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded bg-[#0052CC] hover:bg-[#0747A6] text-white shadow-xs transition shrink-0 cursor-pointer"
         >
           <Plus size={14} />
-          <span>Generate Muster Roll</span>
+          <span>New Attendance Sheet</span>
         </button>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
         <KpiMetricCard
-          title="Active Muster Rolls"
+          title="Attendance Sheets"
           value={totalSheets}
-          subtitle="Monthly site attendance sheets"
+          subtitle="Monthly attendance sheets"
           accentColor="#0052CC"
           icon={FileSpreadsheet}
         />
         <KpiMetricCard
-          title="Billed Contractor Days"
+          title="Total Days Worked"
           value={totalDaysBilled.toFixed(1)}
-          subtitle="Effective regular man-days"
+          subtitle="Total regular working days"
           badgeText="Work Days"
           badgeType="neutral"
           accentColor="#579DFF"
           icon={TrendingUp}
         />
         <KpiMetricCard
-          title="Total Overtime Hours"
+          title="Overtime Hours"
           value={`${totalOtHours} hrs`}
-          subtitle="Computed at 1.5x statutory multiplier"
-          badgeText="OT Pool"
+          subtitle="Logged at 1.5x overtime rate"
+          badgeText="Overtime"
           badgeType="warning"
           accentColor="#B9770E"
           icon={Clock}
         />
         <KpiMetricCard
-          title="Gross Labor Volume"
+          title="Total Wages Earned"
           value={`Rs ${totalGrossPay.toLocaleString()}`}
-          subtitle="Direct wage base before GST"
+          subtitle="Total worker earnings before tax"
           badgeText="Verified"
           badgeType="success"
           accentColor="#00875A"
@@ -269,7 +269,7 @@ function MusterRoll() {
           <div className="bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] rounded-lg p-3 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#172B4D] dark:text-white uppercase tracking-wider">
-                Site Roster Sheets
+                Attendance Sheets
               </span>
               <span className="text-[11px] font-mono text-[#6B778C] dark:text-neutral-400">
                 {musterRolls.length} available
@@ -381,7 +381,7 @@ function MusterRoll() {
                     {selectedMusterRoll.clientName} — {selectedMusterRoll.siteName}
                   </h2>
                   <p className="text-xs text-[#6B778C] dark:text-neutral-400">
-                    Period: {selectedMusterRoll.month} {selectedMusterRoll.year} &bull; {activeRecords.length} Deployed Contractors
+                    Period: {selectedMusterRoll.month} {selectedMusterRoll.year} &bull; {activeRecords.length} Workers
                   </p>
                 </div>
 
@@ -396,7 +396,7 @@ function MusterRoll() {
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded border border-[#DFE1E6] dark:border-[#263042] text-[#172B4D] dark:text-white hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] transition cursor-pointer"
                       >
                         <Save size={13} />
-                        <span>{isSaving ? "Saving..." : "Save Edits"}</span>
+                        <span>{isSaving ? "Saving..." : "Save Changes"}</span>
                       </button>
 
                       <button
@@ -405,7 +405,7 @@ function MusterRoll() {
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded bg-[#00875A] hover:bg-[#006644] text-white shadow-xs transition cursor-pointer"
                       >
                         <CheckCircle2 size={13} />
-                        <span>Lock & Approve</span>
+                        <span>Approve Attendance</span>
                       </button>
                     </>
                   )}
@@ -417,14 +417,14 @@ function MusterRoll() {
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
                     <tr className="bg-[#FAFBFC] dark:bg-[#151B26] border-b border-[#DFE1E6] dark:border-[#263042] text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider font-semibold text-[10px]">
-                      <th className="px-3 py-2.5">Contractor</th>
+                      <th className="px-3 py-2.5">Worker</th>
                       <th className="px-3 py-2.5">Role</th>
                       <th className="px-3 py-2.5 text-right">Daily Rate</th>
                       <th className="px-3 py-2.5 text-center w-20">Days Present</th>
                       <th className="px-3 py-2.5 text-center w-20">Half Days</th>
                       <th className="px-3 py-2.5 text-center w-20">OT Hours</th>
-                      <th className="px-3 py-2.5 text-right">OT Rate (1.5x)</th>
-                      <th className="px-3 py-2.5 text-right">Gross Earned</th>
+                      <th className="px-3 py-2.5 text-right">OT Rate/Hour</th>
+                      <th className="px-3 py-2.5 text-right">Total Earned</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#DFE1E6] dark:divide-[#263042]">
@@ -560,7 +560,7 @@ function MusterRoll() {
               <div className="flex items-center gap-2">
                 <FileSpreadsheet size={16} className="text-[#0052CC] dark:text-[#579DFF]" />
                 <h3 className="text-xs font-bold text-[#172B4D] dark:text-white uppercase tracking-wider">
-                  Generate Site Muster Roll
+                  Create Attendance Sheet
                 </h3>
               </div>
               <button
@@ -575,7 +575,7 @@ function MusterRoll() {
             <form onSubmit={handleGenerateMusterRoll} className="p-5 space-y-3.5">
               <div>
                 <label className="block text-xs font-semibold text-[#172B4D] dark:text-neutral-300 mb-1">
-                  Client Organization <span className="text-red-500">*</span>
+                  Client <span className="text-red-500">*</span>
                 </label>
                 <select
                   required
@@ -594,7 +594,7 @@ function MusterRoll() {
 
               <div>
                 <label className="block text-xs font-semibold text-[#172B4D] dark:text-neutral-300 mb-1">
-                  Physical Work Site <span className="text-red-500">*</span>
+                  Work Site <span className="text-red-500">*</span>
                 </label>
                 <select
                   required
@@ -643,7 +643,7 @@ function MusterRoll() {
               </div>
 
               <div className="p-3 rounded bg-[#DEEBFF]/50 dark:bg-[#1C2331] border border-[#B3D4FF] dark:border-[#263042] text-[11px] text-[#0747A6] dark:text-[#579DFF] leading-relaxed">
-                Muster roll generation automatically crawls all active manpower deployments assigned to this site, computes daily rates, and initializes standard 26 billable days.
+                Automatically creates an attendance sheet for all active workers assigned to this site with standard 26 billable days.
               </div>
 
               <div className="pt-3 border-t border-[#DFE1E6] dark:border-[#263042] flex justify-end gap-2">
@@ -660,11 +660,11 @@ function MusterRoll() {
                   className="px-4 py-1.5 text-xs font-semibold rounded bg-[#0052CC] hover:bg-[#0747A6] text-white shadow-xs transition flex items-center gap-1.5"
                 >
                   {isGenerating ? (
-                    <span>Generating...</span>
+                    <span>Creating...</span>
                   ) : (
                     <>
                       <Plus size={13} />
-                      <span>Generate Sheet</span>
+                      <span>Create Sheet</span>
                     </>
                   )}
                 </button>

@@ -71,10 +71,10 @@ function Vendors() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9] tracking-tight">
-            Staffing Agencies & Vendors Directory
+            Staffing Agencies Directory
           </h2>
           <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
-            Partner credential verification, statutory GSTIN compliances, and contracted workforce quotas
+            Manage staffing agencies, business registration details, and active agency workers
           </p>
         </div>
 
@@ -95,7 +95,7 @@ function Vendors() {
             className="bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-semibold px-3.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1.5 shadow-xs"
           >
             <Plus size={14} />
-            <span>Onboard Agency</span>
+            <span>Add Agency</span>
           </button>
         </div>
       </div>
@@ -105,8 +105,8 @@ function Vendors() {
         <KpiMetricCard
           title="Total Agencies"
           value={stats.total}
-          context="Enrolled staffing partners"
-          badgeText="Verified MSAs"
+          context="Registered staffing agencies"
+          badgeText="Verified"
           accentColor="#0052CC"
           icon={Building2}
           iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
@@ -114,10 +114,10 @@ function Vendors() {
         />
 
         <KpiMetricCard
-          title="Active Partners"
+          title="Active Agencies"
           value={stats.active}
-          context="In full statutory standing"
-          badgeText="98% Compliant"
+          context="Approved and operational"
+          badgeText="Active"
           accentColor="#00875A"
           icon={ShieldCheck}
           iconBg="bg-[#E3FCEF] dark:bg-emerald-950/40"
@@ -125,10 +125,10 @@ function Vendors() {
         />
 
         <KpiMetricCard
-          title="Deployed Workforce"
+          title="Workers on Site"
           value={stats.totalActiveWorkers}
-          context="Contractors deployed on site"
-          badgeText="Live Shift"
+          context="Workers deployed at client sites"
+          badgeText="On Site"
           accentColor="#579DFF"
           icon={Users}
           iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
@@ -136,10 +136,10 @@ function Vendors() {
         />
 
         <KpiMetricCard
-          title="Restricted / Blacklist"
+          title="Blocked Agencies"
           value={stats.blacklisted}
           context="Suspended from placements"
-          badgeText="Audit Hold"
+          badgeText="Blocked"
           accentColor="#DE350B"
           icon={ShieldAlert}
           iconBg="bg-[#FFEBE6] dark:bg-rose-950/40"

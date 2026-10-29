@@ -65,7 +65,7 @@ function WorkerDossierDrawer({ workerId, isOpen, onClose }) {
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
         <aside
-          aria-label="Worker Profile Dossier"
+          aria-label="Worker Profile"
           className="w-screen max-w-md bg-white dark:bg-[#0F131C] border-l border-[#DFE1E6] dark:border-[#263042] shadow-2xl flex flex-col"
         >
           {/* Header */}
@@ -75,7 +75,7 @@ function WorkerDossierDrawer({ workerId, isOpen, onClose }) {
                 {worker?.workerId || workerId}
               </span>
               <span className="text-xs font-bold text-[#172B4D] dark:text-white">
-                Worker Talent Dossier
+                Worker Profile & Documents
               </span>
             </div>
             <button
@@ -91,7 +91,7 @@ function WorkerDossierDrawer({ workerId, isOpen, onClose }) {
           <div className="flex-1 overflow-y-auto p-5 space-y-5">
             {loading ? (
               <div className="py-12 text-center text-xs text-[#6B778C] dark:text-neutral-400">
-                Loading worker dossier...
+                Loading worker profile...
               </div>
             ) : worker ? (
               <>
@@ -130,11 +130,11 @@ function WorkerDossierDrawer({ workerId, isOpen, onClose }) {
                 <div>
                   <h4 className="text-xs font-bold text-[#172B4D] dark:text-neutral-200 uppercase tracking-wide flex items-center gap-1.5 mb-2.5">
                     <ShieldCheck size={14} className="text-[#00875A]" />
-                    Statutory KYC Verification
+                    ID Verification & Documents
                   </h4>
                   <div className="p-3.5 rounded-lg border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] space-y-2.5 text-xs">
                     <div className="flex items-center justify-between">
-                      <span className="text-[#6B778C] dark:text-neutral-400">Police Clearance:</span>
+                      <span className="text-[#6B778C] dark:text-neutral-400">Police Verification:</span>
                       <StatusLozenge status={worker.kycDetails?.policeVerificationStatus || "Pending"} />
                     </div>
                     <div className="flex items-center justify-between">
@@ -150,13 +150,13 @@ function WorkerDossierDrawer({ workerId, isOpen, onClose }) {
                       )}
                     </div>
                     <div className="flex items-center justify-between pt-1 border-t border-[#DFE1E6] dark:border-[#263042]">
-                      <span className="text-[#6B778C] dark:text-neutral-400">Aadhaar (UIDAI):</span>
+                      <span className="text-[#6B778C] dark:text-neutral-400">Aadhaar:</span>
                       <span className="font-mono font-medium text-[#172B4D] dark:text-neutral-200">
                         {maskAadhaar(worker.kycDetails?.aadhaarNumber)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[#6B778C] dark:text-neutral-400">Income Tax PAN:</span>
+                      <span className="text-[#6B778C] dark:text-neutral-400">PAN:</span>
                       <span className="font-mono font-medium text-[#172B4D] dark:text-neutral-200">
                         {maskPan(worker.kycDetails?.panNumber)}
                       </span>
@@ -168,7 +168,7 @@ function WorkerDossierDrawer({ workerId, isOpen, onClose }) {
                 <div>
                   <h4 className="text-xs font-bold text-[#172B4D] dark:text-neutral-200 uppercase tracking-wide flex items-center gap-1.5 mb-2.5">
                     <CreditCard size={14} className="text-[#0052CC] dark:text-[#579DFF]" />
-                    Direct Bank Remittance
+                    Bank Account Details
                   </h4>
                   <div className="p-3.5 rounded-lg border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] space-y-1.5 text-xs">
                     <div className="flex justify-between">
@@ -196,11 +196,11 @@ function WorkerDossierDrawer({ workerId, isOpen, onClose }) {
                 <div>
                   <h4 className="text-xs font-bold text-[#172B4D] dark:text-neutral-200 uppercase tracking-wide flex items-center gap-1.5 mb-2.5">
                     <Briefcase size={14} className="text-[#0052CC] dark:text-[#579DFF]" />
-                    Deployment & Billing Terms
+                    Current Assignment & Pay Rate
                   </h4>
                   <div className="p-3.5 rounded-lg border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] space-y-2 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-[#6B778C] dark:text-neutral-400">Base Wage / Compensation:</span>
+                      <span className="text-[#6B778C] dark:text-neutral-400">Worker Pay Rate:</span>
                       <span className="font-semibold text-[#172B4D] dark:text-white">
                         Rs {worker.wagePerDayOrMonth?.toLocaleString()} / {worker.billingUnit}
                       </span>
@@ -209,7 +209,7 @@ function WorkerDossierDrawer({ workerId, isOpen, onClose }) {
                     {worker.status === "Deployed" && worker.currentDeployment?.clientId ? (
                       <div className="pt-2 border-t border-[#DFE1E6] dark:border-[#263042] space-y-1.5">
                         <div className="flex justify-between">
-                          <span className="text-[#6B778C] dark:text-neutral-400">Assigned Client:</span>
+                          <span className="text-[#6B778C] dark:text-neutral-400">Client:</span>
                           <span className="font-medium text-[#0052CC] dark:text-[#579DFF]">
                             {worker.currentDeployment.clientName}
                           </span>
@@ -221,13 +221,13 @@ function WorkerDossierDrawer({ workerId, isOpen, onClose }) {
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-[#6B778C] dark:text-neutral-400">PO Reference:</span>
+                          <span className="text-[#6B778C] dark:text-neutral-400">Budget (PO):</span>
                           <span className="font-mono text-[#172B4D] dark:text-white">
                             {worker.currentDeployment.poNumber}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-[#6B778C] dark:text-neutral-400">Client Billable Rate:</span>
+                          <span className="text-[#6B778C] dark:text-neutral-400">Client Charge Rate:</span>
                           <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                             Rs {worker.currentDeployment.billableRate?.toLocaleString()} / {worker.billingUnit}
                           </span>
@@ -236,7 +236,7 @@ function WorkerDossierDrawer({ workerId, isOpen, onClose }) {
                     ) : (
                       <div className="pt-2 border-t border-[#DFE1E6] dark:border-[#263042] text-[#00875A] font-medium flex items-center gap-1.5">
                         <CheckCircle2 size={13} />
-                        Available on bench for immediate site deployment.
+                        Available for immediate assignment.
                       </div>
                     )}
                   </div>
@@ -247,7 +247,7 @@ function WorkerDossierDrawer({ workerId, isOpen, onClose }) {
                   <div>
                     <h4 className="text-xs font-bold text-[#172B4D] dark:text-neutral-200 uppercase tracking-wide flex items-center gap-1.5 mb-2.5">
                       <Clock size={14} className="text-[#6B778C]" />
-                      Site Placement Track Record
+                      Work History
                     </h4>
                     <div className="space-y-2">
                       {worker.deploymentHistory.map((hist) => (

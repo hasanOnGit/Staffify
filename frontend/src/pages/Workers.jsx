@@ -71,10 +71,10 @@ function Workers() {
         <div>
           <h1 className="text-xl font-bold text-[#172B4D] dark:text-white tracking-tight flex items-center gap-2">
             <Users size={20} className="text-[#0052CC] dark:text-[#579DFF]" />
-            Worker Talent Bench Directory
+            Workers Directory
           </h1>
           <p className="text-xs text-[#6B778C] dark:text-neutral-400 mt-0.5">
-            Maintain ready talent inventory, statutory Aadhaar & PAN KYC compliance, and client-site deployments
+            Manage worker profiles, identity verification (Aadhaar/PAN), and job assignments
           </p>
         </div>
 
@@ -84,42 +84,42 @@ function Workers() {
           className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded bg-[#0052CC] hover:bg-[#0747A6] text-white shadow-xs transition shrink-0 cursor-pointer"
         >
           <Plus size={14} />
-          <span>Enroll Worker</span>
+          <span>Add Worker</span>
         </button>
       </div>
 
       {/* Top Pulse KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
         <KpiMetricCard
-          title="Total Registered Bench"
+          title="Total Workers"
           value={stats.total}
-          subtitle="All skilled talent in database"
+          subtitle="All registered workers"
           accentColor="#0052CC"
           icon={Users}
         />
         <KpiMetricCard
-          title="Available for Deployment"
+          title="Available Workers"
           value={stats.available}
-          subtitle="Ready to dispatch immediately"
-          badgeText="Ready"
+          subtitle="Ready for work assignments"
+          badgeText="Available"
           badgeType="success"
           accentColor="#00875A"
           icon={UserCheck}
         />
         <KpiMetricCard
-          title="Active On-Site"
+          title="Assigned to Sites"
           value={stats.deployed}
-          subtitle="Deployed at client operations"
-          badgeText="Active"
+          subtitle="Currently working at client sites"
+          badgeText="On Site"
           badgeType="neutral"
           accentColor="#579DFF"
           icon={Briefcase}
         />
         <KpiMetricCard
-          title="On Leave / Standby"
+          title="On Leave"
           value={stats.onLeave}
-          subtitle="Temporarily offline"
-          badgeText="Reserve"
+          subtitle="Temporarily unavailable"
+          badgeText="Leave"
           badgeType="warning"
           accentColor="#B9770E"
           icon={Clock}
@@ -193,12 +193,12 @@ function Workers() {
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-[#FAFBFC] dark:bg-[#151B26] border-b border-[#DFE1E6] dark:border-[#263042] text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider font-semibold text-[10px]">
-                <th className="px-4 py-2.5">Worker Profile</th>
-                <th className="px-4 py-2.5">Trade & Skill</th>
-                <th className="px-4 py-2.5">Statutory KYC</th>
-                <th className="px-4 py-2.5">Base Rate</th>
-                <th className="px-4 py-2.5">Current Placement</th>
-                <th className="px-4 py-2.5">Bench Status</th>
+                <th className="px-4 py-2.5">Worker</th>
+                <th className="px-4 py-2.5">Role & Skill</th>
+                <th className="px-4 py-2.5">Documents & KYC</th>
+                <th className="px-4 py-2.5">Daily/Monthly Rate</th>
+                <th className="px-4 py-2.5">Current Site</th>
+                <th className="px-4 py-2.5">Status</th>
                 <th className="px-4 py-2.5 text-right">Action</th>
               </tr>
             </thead>
@@ -206,7 +206,7 @@ function Workers() {
               {loading ? (
                 <tr>
                   <td colSpan={7} className="px-4 py-12 text-center text-[#6B778C] dark:text-neutral-400">
-                    Loading worker bench directory...
+                    Loading workers...
                   </td>
                 </tr>
               ) : workers.length === 0 ? (
@@ -275,7 +275,7 @@ function Workers() {
                         </span>
                       </div>
                       <div className="text-[10px] text-[#6B778C] dark:text-neutral-400 font-mono mt-0.5">
-                        {w.kycDetails?.aadhaarNumber ? "Aadhaar verified" : "UIDAI pending"}
+                        {w.kycDetails?.aadhaarNumber ? "Aadhaar verified" : "Aadhaar pending"}
                       </div>
                     </td>
 
@@ -302,7 +302,7 @@ function Workers() {
                         </div>
                       ) : (
                         <span className="text-[11px] text-[#00875A] font-medium inline-flex items-center gap-1">
-                          <CheckCircle2 size={12} /> Ready on Bench
+                          <CheckCircle2 size={12} /> Available
                         </span>
                       )}
                     </td>
@@ -322,7 +322,7 @@ function Workers() {
                         }}
                         className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-[#0052CC] dark:text-[#579DFF] hover:bg-[#DEEBFF] dark:hover:bg-[#1C2331] rounded transition"
                       >
-                        <span>Dossier</span>
+                        <span>View Profile</span>
                         <ChevronRight size={13} />
                       </button>
                     </td>

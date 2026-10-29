@@ -75,10 +75,10 @@ function Commercials() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9] tracking-tight">
-            Commercial Contracts, Purchase Orders & Rate Cards
+            Client Contracts & Budgets
           </h2>
           <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
-            Define role billable markups, track real-time client PO budget burn, and enforce contractual limits
+            Manage client agreements, worker billing rates, and track purchase order budget spending
           </p>
         </div>
 
@@ -108,7 +108,7 @@ function Commercials() {
             className="bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-semibold px-3.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1.5 shadow-xs"
           >
             <Plus size={14} />
-            <span>Issue Purchase Order</span>
+            <span>New Purchase Order</span>
           </button>
         </div>
       </div>
@@ -116,10 +116,10 @@ function Commercials() {
       {/* Staffify KpiMetricCards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiMetricCard
-          title="Approved PO Budget"
+          title="Total Approved Budget"
           value={`₹${(poStats.totalBudget || 0).toLocaleString("en-IN")}`}
-          context={`Across ${pos.length} issued POs`}
-          badgeText="Cap Authorized"
+          context={`Across ${pos.length} purchase orders`}
+          badgeText="Approved"
           accentColor="#0052CC"
           icon={CreditCard}
           iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
@@ -127,10 +127,10 @@ function Commercials() {
         />
 
         <KpiMetricCard
-          title="Utilized (Invoiced Burn)"
+          title="Budget Spent"
           value={`₹${(poStats.totalUtilized || 0).toLocaleString("en-IN")}`}
-          context={`${poStats.averageUtilization || 0}% overall burn rate`}
-          badgeText="Burn Ratio"
+          context={`${poStats.averageUtilization || 0}% of budget used`}
+          badgeText="Used"
           accentColor="#B9770E"
           icon={Percent}
           iconBg="bg-[#FFF0B3] dark:bg-amber-950/40"
@@ -138,10 +138,10 @@ function Commercials() {
         />
 
         <KpiMetricCard
-          title="Remaining PO Runway"
+          title="Remaining Budget"
           value={`₹${(poStats.totalRemaining || 0).toLocaleString("en-IN")}`}
-          context="Available for deployment"
-          badgeText="Available Cap"
+          context="Available for new assignments"
+          badgeText="Available"
           accentColor="#00875A"
           icon={CheckCircle2}
           iconBg="bg-[#E3FCEF] dark:bg-emerald-950/40"
@@ -149,10 +149,10 @@ function Commercials() {
         />
 
         <KpiMetricCard
-          title="Active Contracts"
-          value={`${contracts.length} MSAs`}
-          context="With defined rate cards"
-          badgeText="Live Agreements"
+          title="Active Agreements"
+          value={`${contracts.length} Contracts`}
+          context="Signed client agreements"
+          badgeText="Active"
           accentColor="#579DFF"
           icon={FileCheck2}
           iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
@@ -185,7 +185,7 @@ function Commercials() {
                 : "bg-white dark:bg-[#151B26] text-[#6B778C] dark:text-[#94A3B8] border border-[#DFE1E6] dark:border-[#263042] hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331]"
             }`}
           >
-            <span>Contracts & Rate Cards ({contracts.length})</span>
+            <span>Contracts & Rates ({contracts.length})</span>
           </button>
         </div>
 
@@ -213,10 +213,10 @@ function Commercials() {
               <thead className="bg-[#F4F5F7] dark:bg-[#1C2331] text-[#6B778C] dark:text-[#94A3B8] border-b border-[#DFE1E6] dark:border-[#263042] font-semibold uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="px-4 py-3">PO Number</th>
-                  <th className="px-4 py-3">Client Entity</th>
-                  <th className="px-4 py-3">Associated Contract</th>
-                  <th className="px-4 py-3">PO Budget Value</th>
-                  <th className="px-4 py-3 min-w-[200px]">Budget Utilization Burn-Rate</th>
+                  <th className="px-4 py-3">Client</th>
+                  <th className="px-4 py-3">Contract</th>
+                  <th className="px-4 py-3">Approved Budget</th>
+                  <th className="px-4 py-3 min-w-[200px]">Budget Spent & Remaining</th>
                   <th className="px-4 py-3">Validity</th>
                   <th className="px-4 py-3">Status</th>
                 </tr>
@@ -369,7 +369,7 @@ function Commercials() {
                     {isExpanded && (
                       <div className="mt-4 pt-3 border-t border-[#DFE1E6] dark:border-[#263042] space-y-2 animate-page-enter">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B778C] dark:text-[#94A3B8] block">
-                          Contracted Rate Cards & Commercials:
+                          Agreed Roles & Pay Rates:
                         </span>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
@@ -389,7 +389,7 @@ function Commercials() {
 
                               <div className="flex items-center justify-between text-xs pt-1">
                                 <span className="text-[#6B778C] dark:text-[#94A3B8] text-[11px]">
-                                  Base Cost: ₹{rc.baseCost.toLocaleString("en-IN")}
+                                  Worker Cost: ₹{rc.baseCost.toLocaleString("en-IN")}
                                 </span>
                                 <span className="text-[11px] font-semibold text-[#00875A] dark:text-emerald-400">
                                   +{rc.markupPercent}% Markup
@@ -398,7 +398,7 @@ function Commercials() {
 
                               <div className="pt-1 border-t border-[#DFE1E6] dark:border-[#263042] flex items-center justify-between">
                                 <span className="text-[10px] font-bold text-[#6B778C] dark:text-[#94A3B8] uppercase">
-                                  Billable Rate
+                                  Client Rate
                                 </span>
                                 <span className="text-xs font-mono font-bold text-[#0052CC] dark:text-[#579DFF]">
                                   ₹{rc.billableRate.toLocaleString("en-IN")}

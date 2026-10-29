@@ -21,77 +21,67 @@ import toast from "react-hot-toast";
 
 const navSections = [
   {
-    title: "Executive Overview",
+    title: "Overview",
     links: [
       {
         path: "/dashboard",
-        label: "Executive Dashboard",
+        label: "Dashboard",
         icon: LayoutDashboard,
       },
     ],
   },
   {
-    title: "Core Manpower",
+    title: "People & Work",
     links: [
       {
         path: "/workers",
-        label: "Worker Talent Bench",
+        label: "Workers",
         icon: UserCheck,
       },
       {
-        path: "/vendors",
-        label: "Vendors & Agencies",
-        icon: Building2,
-      },
-    ],
-  },
-  {
-    title: "Client Operations",
-    links: [
-      {
-        path: "/clients",
-        label: "Clients & Work Sites",
-        icon: Briefcase,
-      },
-    ],
-  },
-  {
-    title: "Deployments & Sourcing",
-    links: [
-      {
         path: "/deployments",
-        label: "Workforce Deployment Matrix",
+        label: "Work Assignments",
         icon: Users,
       },
       {
         path: "/muster-roll",
-        label: "Site Muster Roll & OT",
+        label: "Attendance & Overtime",
         icon: CalendarCheck,
       },
     ],
   },
   {
-    title: "Commercials & Budgets",
+    title: "Clients & Partners",
     links: [
       {
-        path: "/commercials",
-        label: "Commercial Contracts & POs",
-        icon: FileCheck2,
+        path: "/clients",
+        label: "Clients & Sites",
+        icon: Briefcase,
+      },
+      {
+        path: "/vendors",
+        label: "Staffing Agencies",
+        icon: Building2,
       },
     ],
   },
   {
-    title: "Billing & Compliance",
+    title: "Money & Billing",
     links: [
       {
         path: "/payroll",
-        label: "Payroll & Salary Processing",
+        label: "Salaries & Payroll",
         icon: Banknote,
       },
       {
         path: "/vendor-invoices",
-        label: "Vendor Invoicing & Payouts",
+        label: "Invoices & Payments",
         icon: Receipt,
+      },
+      {
+        path: "/commercials",
+        label: "Contracts & Budgets (POs)",
+        icon: FileCheck2,
       },
     ],
   },
@@ -156,7 +146,7 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
           className="w-full flex items-center gap-2 px-2.5 py-1.5 text-[11px] font-semibold text-[#0052CC] dark:text-[#579DFF] bg-[#DEEBFF]/60 dark:bg-[#1C2331] hover:bg-[#DEEBFF] dark:hover:bg-[#263042] rounded border border-[#B3D4FF] dark:border-[#263042] transition cursor-pointer"
         >
           <Database size={13} />
-          <span>Reset & Seed ERP Data</span>
+          <span>Reset Demo Data</span>
         </button>
       </div>
     </nav>

@@ -141,10 +141,10 @@ function DeployWorkerModal({ isOpen, onClose, onSuccess }) {
             </div>
             <div>
               <h2 className="text-sm font-bold text-[#172B4D] dark:text-[#F1F5F9]">
-                Deploy Contingent Worker to Site
+                Assign Worker to Site
               </h2>
               <p className="text-[11px] text-[#6B778C] dark:text-neutral-400">
-                Assign contractor to client location under authorized PO budget
+                Place a worker at a client location under an approved contract and budget
               </p>
             </div>
           </div>
@@ -354,7 +354,7 @@ function DeployWorkerModal({ isOpen, onClose, onSuccess }) {
               className="px-4 py-2 text-xs font-semibold text-white bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] disabled:opacity-50 rounded transition cursor-pointer flex items-center gap-1.5 shadow-xs"
             >
               <CheckCircle2 size={14} />
-              <span>{loading ? "Deploying..." : "Confirm Deployment"}</span>
+              <span>{loading ? "Assigning..." : "Confirm Assignment"}</span>
             </button>
           </div>
         </form>

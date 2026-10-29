@@ -67,10 +67,10 @@ function Deployments() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9] tracking-tight">
-            Workforce Deployment Matrix
+            Work Assignments
           </h2>
           <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
-            Real-time assignment roster mapping contingent workers to client delivery sites under authorized POs
+            Assign and manage workers placed at client sites under active contracts and purchase orders
           </p>
         </div>
 
@@ -91,7 +91,7 @@ function Deployments() {
             className="bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-semibold px-3.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1.5 shadow-xs"
           >
             <UserPlus size={14} />
-            <span>Deploy Worker</span>
+            <span>Assign Worker</span>
           </button>
         </div>
       </div>
@@ -99,10 +99,10 @@ function Deployments() {
       {/* Staffify KpiMetricCards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiMetricCard
-          title="Active Deployments"
+          title="Active Assignments"
           value={stats.active}
-          context="Currently on active site duty"
-          badgeText="Active Shift"
+          context="Currently working on site"
+          badgeText="Active"
           accentColor="#00875A"
           icon={Users}
           iconBg="bg-[#E3FCEF] dark:bg-emerald-950/40"
@@ -110,10 +110,10 @@ function Deployments() {
         />
 
         <KpiMetricCard
-          title="Total Placements"
+          title="Total Assignments"
           value={stats.total}
           context="All registered assignments"
-          badgeText="Total Roster"
+          badgeText="Total"
           accentColor="#0052CC"
           icon={Users}
           iconBg="bg-[#DEEBFF] dark:bg-[#1C2331]"
@@ -121,9 +121,9 @@ function Deployments() {
         />
 
         <KpiMetricCard
-          title="Completed Tours"
+          title="Completed Assignments"
           value={stats.completed}
-          context="Full-term completed stints"
+          context="Finished contracts or terms"
           badgeText="Completed"
           accentColor="#579DFF"
           icon={CheckCircle2}
@@ -132,10 +132,10 @@ function Deployments() {
         />
 
         <KpiMetricCard
-          title="Terminated Early"
+          title="Ended Early"
           value={stats.terminated}
-          context="Recalled / Substituted"
-          badgeText="Recalled"
+          context="Recalled or ended early"
+          badgeText="Ended"
           accentColor="#DE350B"
           icon={XCircle}
           iconBg="bg-[#FFEBE6] dark:bg-rose-950/40"
@@ -164,10 +164,10 @@ function Deployments() {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-2.5 py-1.5 text-xs rounded border border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#0F131C] text-[#172B4D] dark:text-white"
         >
-          <option value="All">All Deployment Statuses</option>
-          <option value="Active">Active Duty</option>
-          <option value="Completed">Completed Tour</option>
-          <option value="Terminated">Terminated</option>
+          <option value="All">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Completed">Completed</option>
+          <option value="Terminated">Ended Early</option>
         </select>
       </div>
 
@@ -180,9 +180,9 @@ function Deployments() {
                 <th className="px-4 py-3">Worker & ID</th>
                 <th className="px-4 py-3">Staffing Agency</th>
                 <th className="px-4 py-3">Client & Work Site</th>
-                <th className="px-4 py-3">PO & Contract</th>
-                <th className="px-4 py-3">Designation</th>
-                <th className="px-4 py-3">Billable Rate</th>
+                <th className="px-4 py-3">Budget (PO) & Contract</th>
+                <th className="px-4 py-3">Role</th>
+                <th className="px-4 py-3">Client Rate</th>
                 <th className="px-4 py-3">Start Date</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3 text-right">Actions</th>
@@ -192,13 +192,13 @@ function Deployments() {
               {loading ? (
                 <tr>
                   <td colSpan={9} className="px-4 py-10 text-center text-xs text-[#6B778C] dark:text-[#94A3B8]">
-                    Loading deployment roster...
+                    Loading assignments...
                   </td>
                 </tr>
               ) : deployments.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-4 py-10 text-center text-xs text-[#6B778C] dark:text-[#94A3B8]">
-                    No worker deployments found. Click "Deploy Worker" to assign.
+                    No worker assignments found. Click "Assign Worker" to create one.
                   </td>
                 </tr>
               ) : (
@@ -259,7 +259,7 @@ function Deployments() {
                             type="button"
                             onClick={() => handleUpdateStatus(d.deploymentId, "Completed")}
                             className="px-2 py-0.5 text-[10px] font-semibold text-[#006644] dark:text-emerald-400 hover:bg-[#E3FCEF] dark:hover:bg-emerald-950/40 rounded transition"
-                            title="Mark tour completed"
+                            title="Mark assignment completed"
                           >
                             Complete
                           </button>
@@ -267,9 +267,9 @@ function Deployments() {
                             type="button"
                             onClick={() => handleUpdateStatus(d.deploymentId, "Terminated")}
                             className="px-2 py-0.5 text-[10px] font-semibold text-[#DE350B] hover:bg-[#FFEBE6] dark:hover:bg-rose-950/40 rounded transition"
-                            title="Terminate assignment"
+                            title="End assignment"
                           >
-                            Terminate
+                            End Early
                           </button>
                         </div>
                       ) : (
