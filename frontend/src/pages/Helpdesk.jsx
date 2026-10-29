@@ -36,7 +36,10 @@ import {
   Key,
 } from "lucide-react";
 
+import { useLocation } from "react-router-dom";
+
 function Helpdesk() {
+  const location = useLocation();
   const { user, isAdmin, isManager } = useAuth();
   const canManage = isAdmin || isManager;
 
@@ -53,6 +56,16 @@ function Helpdesk() {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [ticketModalMode, setTicketModalMode] = useState("create");
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+
+  // Handle deep link action triggers (e.g. from AI Copilot /helpdesk?ticket=true)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("ticket") === "true") {
+      setTicketModalMode("create");
+      setSelectedTicket(null);
+      setIsTicketModalOpen(true);
+    }
+  }, [location.search]);
 
   // Assets state
   const [assets, setAssets] = useState([]);

@@ -28,9 +28,11 @@ import {
 } from "lucide-react";
 import BulkActionBar from "../components/BulkActionBar";
 import { exportToCsv } from "../utils/csvExporter";
+import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 
 function Leaves() {
+  const location = useLocation();
   const { user, isManager } = useAuth();
   const currentUserId = user?.userId;
   const currentUserName = user?.name || "Employee";
@@ -46,6 +48,14 @@ function Leaves() {
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [showPolicyModal, setShowPolicyModal] = useState(false);
   const [statusFilter, setStatusFilter] = useState("All");
+
+  // Handle deep link action triggers (e.g., from AI Copilot /leaves?apply=true)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("apply") === "true") {
+      setShowApplyModal(true);
+    }
+  }, [location.search]);
 
   /* =============================
      FETCH LEAVES & BALANCES

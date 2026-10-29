@@ -24,9 +24,11 @@ import {
   User,
 } from "lucide-react";
 import { exportToCsv } from "../utils/csvExporter";
+import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 
 function Attendance() {
+  const location = useLocation();
   const { user, isManager, isAdmin } = useAuth();
   const canManage = isManager || isAdmin;
 
@@ -64,6 +66,20 @@ function Attendance() {
   const [regIn, setRegIn] = useState("09:00");
   const [regOut, setRegOut] = useState("18:00");
   const [regSubmitting, setRegSubmitting] = useState(false);
+
+  // Handle deep link action triggers (e.g. from AI Copilot /attendance?regularize=true)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("regularize") === "true") {
+      setShowRegModal(true);
+    }
+    if (params.get("geofence") === "true") {
+      setShowGeofenceModal(true);
+    }
+    if (params.get("biometric") === "true") {
+      setShowBiometricModal(true);
+    }
+  }, [location.search]);
 
   /* ---------- Fetch Live Records with Role-Based Scoping ---------- */
   const fetchRecords = useCallback(async () => {

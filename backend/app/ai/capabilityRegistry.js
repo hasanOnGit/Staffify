@@ -543,8 +543,8 @@ const CAPABILITY_REGISTRY = {
     displayName: "Salary Advances & Employee Loans",
     description: "Salary advance disbursements, monthly EMI deduction amortization, interest rates, and loan balances.",
     section: "Self Service (ESS)",
-    route: "/loans",
-    actionRoute: "/loans?apply=true",
+    route: "/payslips",
+    actionRoute: "/payslips?loan=true",
     icon: "CreditCard",
     allowedRoles: ["Admin", "Manager", "Employee"],
     modelName: "Loan",
@@ -562,9 +562,9 @@ const CAPABILITY_REGISTRY = {
       "apply for advance",
     ],
     steps: [
-      "Ask Copilot to draft a loan request or open the advance section.",
-      "Specify the principal loan amount and repayment tenure (1 to 12 monthly EMIs).",
-      "Review the auto-calculated monthly deductions and submit for finance approval.",
+      "Navigate to 'Payslips & Salary' from the sidebar.",
+      "Click 'Apply for Loan / Salary Advance' in the Quick Actions toolbar.",
+      "Specify your principal loan amount and repayment tenure (1 to 12 monthly EMIs) to submit for finance approval.",
     ],
     displayColumns: [
       { key: "loanId", label: "Loan ID" },

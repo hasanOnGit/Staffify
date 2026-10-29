@@ -34,8 +34,10 @@ import {
   MapPin,
   TrendingUp,
 } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 function Recruitment() {
+  const location = useLocation();
   const { user } = useAuth();
 
   const [activeTab, setActiveTab] = useState("pipeline"); // "pipeline" | "jobs" | "analytics"
@@ -55,6 +57,17 @@ function Recruitment() {
   const [isJobModalOpen, setIsJobModalOpen] = useState(false);
   const [isCandidateModalOpen, setIsCandidateModalOpen] = useState(false);
   const [isDossierModalOpen, setIsDossierModalOpen] = useState(false);
+
+  // Handle deep link action triggers (e.g. from AI Copilot /recruitment?create=true)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("create") === "true" || params.get("job") === "true") {
+      setIsJobModalOpen(true);
+    }
+    if (params.get("candidate") === "true") {
+      setIsCandidateModalOpen(true);
+    }
+  }, [location.search]);
 
   // Load Jobs
   const loadJobs = async () => {

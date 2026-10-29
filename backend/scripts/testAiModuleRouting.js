@@ -99,6 +99,10 @@ async function runTestSuite() {
   const rosterMatch = findModuleByTask('Where can I check my shift roster?', 'Employee');
   assert(rosterMatch && rosterMatch.module.id === 'roster', 'Roster query matches roster module');
 
+  const loanMatch = findModuleByTask('Where do I apply for a salary advance?', 'Employee');
+  assert(loanMatch && loanMatch.module.id === 'loans', 'Salary advance matches loans module');
+  assert(loanMatch && loanMatch.module.actionRoute === '/payslips?loan=true', 'Loan actionRoute is /payslips?loan=true');
+
   // 2. Role-Based Access Control Tests
   console.log('\n>>> SECTION 2: RBAC PERMISSIONS ON TASK ROUTING');
 

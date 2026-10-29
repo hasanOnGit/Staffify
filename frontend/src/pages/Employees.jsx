@@ -13,9 +13,11 @@ import { TableSkeleton } from "../components/Skeleton";
 import { Users, Search, PlusCircle, Filter, RefreshCw, X, Shield, Landmark, User, Briefcase, FileText, Download } from "lucide-react";
 import BulkActionBar from "../components/BulkActionBar";
 import { exportToCsv } from "../utils/csvExporter";
+import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 
 function Employees() {
+  const location = useLocation();
   const [employees, setEmployees] = useState([]);
   const [pageLoading, setPageLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -29,6 +31,16 @@ function Employees() {
   const [formTab, setFormTab] = useState("personal");
 
   const searchInputRef = useRef(null);
+
+  // Handle deep link action triggers (e.g. from AI Copilot /employees?create=true)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("create") === "true" || params.get("add") === "true") {
+      setEditingId(null);
+      setFormTab("personal");
+      setShowFormModal(true);
+    }
+  }, [location.search]);
 
   // Keyboard shortcut: Press '/' or 'Shift + S' to quickly jump to search input
   useEffect(() => {

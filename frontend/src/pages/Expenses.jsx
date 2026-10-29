@@ -78,7 +78,10 @@ const POLICY_LIMITS = [
   },
 ];
 
+import { useLocation } from "react-router-dom";
+
 function Expenses() {
+  const location = useLocation();
   const { user, isAdmin, isManager } = useAuth();
   const [activeTab, setActiveTab] = useState("my_claims"); // "my_claims", "approvals", "policies"
   const [claims, setClaims] = useState([]);
@@ -91,6 +94,14 @@ function Expenses() {
   const [rejectionReason, setRejectionReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
   const [viewingReceiptClaim, setViewingReceiptClaim] = useState(null);
+
+  // Handle deep link action triggers (e.g. from AI Copilot /expenses?claim=true)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("claim") === "true") {
+      setShowSubmitModal(true);
+    }
+  }, [location.search]);
 
   const formatCurrency = (val = 0) => {
     return new Intl.NumberFormat("en-IN", {

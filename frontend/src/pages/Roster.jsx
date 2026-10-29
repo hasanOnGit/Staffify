@@ -33,14 +33,27 @@ import {
   FileText,
   Sliders,
 } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 function Roster() {
+  const location = useLocation();
   const { user, isAdmin, isManager } = useAuth();
   const canManageRoster = isAdmin || isManager;
 
   const [activeTab, setActiveTab] = useState("matrix"); // "matrix" | "shifts" | "swaps"
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+
+  // Handle deep link action triggers (e.g. from AI Copilot /roster?swap=true)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("swap") === "true") {
+      setIsSwapModalOpen(true);
+    }
+    if (params.get("bulk") === "true") {
+      setIsBulkModalOpen(true);
+    }
+  }, [location.search]);
 
   // Matrix State
   const [matrixData, setMatrixData] = useState(null);

@@ -21,8 +21,10 @@ import {
   Calculator,
 } from "lucide-react";
 import { printPayslip } from "../utils/payslipPrinter";
+import { useLocation } from "react-router-dom";
 
 function Payslips() {
+  const location = useLocation();
   const { user } = useAuth();
   const [payslips, setPayslips] = useState([]);
   const [salaryStructure, setSalaryStructure] = useState(null);
@@ -31,6 +33,20 @@ function Payslips() {
   const [showTaxModal, setShowTaxModal] = useState(false);
   const [showLoanModal, setShowLoanModal] = useState(false);
   const [showCtcModal, setShowCtcModal] = useState(false);
+
+  // Handle deep link action triggers (e.g. from AI Copilot /payslips?loan=true)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("loan") === "true" || params.get("advance") === "true") {
+      setShowLoanModal(true);
+    }
+    if (params.get("tax") === "true") {
+      setShowTaxModal(true);
+    }
+    if (params.get("ctc") === "true") {
+      setShowCtcModal(true);
+    }
+  }, [location.search]);
 
   const formatCurrency = (val = 0) => {
     return new Intl.NumberFormat("en-IN", {
