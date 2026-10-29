@@ -118,6 +118,15 @@ export const complianceApi = {
   getEsicReturn: (params) => API.get("/compliance/esic-return", { params }),
 };
 
+export const shiftsApi = {
+  getShifts: () => API.get("/shifts"),
+  createShift: (data) => API.post("/shifts", data),
+  getRoster: (params) => API.get("/shifts/roster", { params }),
+  assignShift: (data) => API.post("/shifts/roster/assign", data),
+  bulkApplyTemplate: (data) => API.post("/shifts/roster/bulk-apply", data),
+  swapShifts: (data) => API.post("/shifts/roster/swap", data),
+};
+
 export const seedApi = {
   seedDatabase: () => API.post("/seed"),
   getStatus: () => API.get("/seed/status"),

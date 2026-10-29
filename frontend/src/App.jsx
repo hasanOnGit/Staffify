@@ -15,6 +15,7 @@ import Payroll from "./pages/Payroll";
 import VendorInvoices from "./pages/VendorInvoices";
 import Requisitions from "./pages/Requisitions";
 import Compliance from "./pages/Compliance";
+import Shifts from "./pages/Shifts";
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
               <Route path="/commercials" element={<Commercials />} />
               <Route path="/deployments" element={<Deployments />} />
               <Route path="/muster-roll" element={<MusterRoll />} />
+              <Route path="/shifts" element={<Shifts />} />
               <Route path="/payroll" element={<Payroll />} />
               <Route path="/vendor-invoices" element={<VendorInvoices />} />
               <Route path="/compliance" element={<Compliance />} />
