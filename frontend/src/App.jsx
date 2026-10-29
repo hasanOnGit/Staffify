@@ -16,6 +16,7 @@ import VendorInvoices from "./pages/VendorInvoices";
 import Requisitions from "./pages/Requisitions";
 import Compliance from "./pages/Compliance";
 import Shifts from "./pages/Shifts";
+import Loans from "./pages/Loans";
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
               <Route path="/payroll" element={<Payroll />} />
               <Route path="/vendor-invoices" element={<VendorInvoices />} />
               <Route path="/compliance" element={<Compliance />} />
+              <Route path="/loans" element={<Loans />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </DashboardLayout>

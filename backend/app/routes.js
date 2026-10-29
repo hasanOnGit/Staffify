@@ -9,6 +9,7 @@ const payrollRoutes = require("./controllers/payroll.controller");
 const requisitionRoutes = require("./controllers/requisition.controller");
 const complianceRoutes = require("./controllers/compliance.controller");
 const shiftRoutes = require("./controllers/shift.controller");
+const loanRoutes = require("./controllers/loan.controller");
 const dashboardRoutes = require("./controllers/dashboard.controller");
 const { router: seedRoutes } = require("./controllers/seed.controller");
 
@@ -25,5 +26,6 @@ module.exports = function (app) {
   app.use("/api/requisitions", requisitionRoutes);
   app.use("/api/compliance", complianceRoutes);
   app.use("/api/shifts", shiftRoutes);
+  app.use("/api/loans", loanRoutes);
   app.use("/api/seed", seedRoutes);
 };

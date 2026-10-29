@@ -17,6 +17,7 @@ import {
   UserCheck,
   UserPlus,
   Banknote,
+  CreditCard,
 } from "lucide-react";
 import { seedApi } from "../services/api";
 import toast from "react-hot-toast";
@@ -94,6 +95,11 @@ const navSections = [
         path: "/compliance",
         label: "Compliance & Labor Forms",
         icon: ShieldCheck,
+      },
+      {
+        path: "/loans",
+        label: "Worker Advances & Loans",
+        icon: CreditCard,
       },
       {
         path: "/commercials",

@@ -127,6 +127,14 @@ export const shiftsApi = {
   swapShifts: (data) => API.post("/shifts/roster/swap", data),
 };
 
+export const loansApi = {
+  getAll: (params) => API.get("/loans", { params }),
+  getById: (id) => API.get(`/loans/${id}`),
+  create: (data) => API.post("/loans", data),
+  recordRepayment: (id, data) => API.post(`/loans/${id}/repay`, data),
+  updateStatus: (id, status) => API.patch(`/loans/${id}/status`, { status }),
+};
+
 export const seedApi = {
   seedDatabase: () => API.post("/seed"),
   getStatus: () => API.get("/seed/status"),
