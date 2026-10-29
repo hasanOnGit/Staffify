@@ -1,0 +1,601 @@
+const express = require("express");
+const router = express.Router();
+const Vendor = require("../models/vendor.model");
+const Client = require("../models/client.model");
+const Contract = require("../models/contract.model");
+const PurchaseOrder = require("../models/purchaseOrder.model");
+const Deployment = require("../models/deployment.model");
+const VendorInvoice = require("../models/vendorInvoice.model");
+
+const seedData = async (req, res) => {
+  try {
+    // Clear existing ERP collections
+    await Vendor.deleteMany({});
+    await Client.deleteMany({});
+    await Contract.deleteMany({});
+    await PurchaseOrder.deleteMany({});
+    await Deployment.deleteMany({});
+    await VendorInvoice.deleteMany({});
+
+    // 1. Create Vendors
+    const vendors = await Vendor.insertMany([
+      {
+        vendorId: "VND-1001",
+        legalName: "Apex Security & Allied Solutions Pvt Ltd",
+        gstin: "27AABCA1234F1Z5",
+        pan: "AABCA1234F",
+        spocName: "Rajesh Shinde",
+        email: "rajesh@apexsecurity.in",
+        phone: "+91 98201 12345",
+        billingAddress: {
+          street: "Plot 45, MIDC Industrial Area",
+          city: "Navi Mumbai",
+          state: "Maharashtra",
+          pincode: "400705",
+          country: "India",
+        },
+        bankDetails: {
+          accountNumber: "91802001928374",
+          bankName: "HDFC Bank",
+          ifscCode: "HDFC0000240",
+          accountHolderName: "Apex Security & Allied Solutions Pvt Ltd",
+        },
+        category: "Security",
+        status: "Active",
+        rating: 4.8,
+      },
+      {
+        vendorId: "VND-1002",
+        legalName: "Infiniti TechStaffing Services LLP",
+        gstin: "29BBDFG5678K1Z2",
+        pan: "BBDFG5678K",
+        spocName: "Priyanka Narang",
+        email: "priyanka@infinititech.com",
+        phone: "+91 99800 67890",
+        billingAddress: {
+          street: "7th Floor, Indiranagar Tech Tower",
+          city: "Bengaluru",
+          state: "Karnataka",
+          pincode: "560038",
+          country: "India",
+        },
+        bankDetails: {
+          accountNumber: "000210400039281",
+          bankName: "ICICI Bank",
+          ifscCode: "ICIC0000002",
+          accountHolderName: "Infiniti TechStaffing Services LLP",
+        },
+        category: "IT",
+        status: "Active",
+        rating: 4.9,
+      },
+      {
+        vendorId: "VND-1003",
+        legalName: "EcoClean Integrated Facility Services",
+        gstin: "07AAJCE9988M1Z9",
+        pan: "AAJCE9988M",
+        spocName: "Vikas Mehra",
+        email: "vikas@ecocleanindia.com",
+        phone: "+91 98110 54321",
+        billingAddress: {
+          street: "24, Okhla Phase III",
+          city: "New Delhi",
+          state: "Delhi",
+          pincode: "110020",
+          country: "India",
+        },
+        bankDetails: {
+          accountNumber: "50200018928311",
+          bankName: "Axis Bank",
+          ifscCode: "UTIB0000004",
+          accountHolderName: "EcoClean Facility Services",
+        },
+        category: "Facilities",
+        status: "Active",
+        rating: 4.6,
+      },
+      {
+        vendorId: "VND-1004",
+        legalName: "QuickHire Manpower & Logistics Corp",
+        gstin: "33AAECQ4433D1Z1",
+        pan: "AAECQ4433D",
+        spocName: "Murugan Swamy",
+        email: "murugan@quickhirecorp.com",
+        phone: "+91 94440 88776",
+        billingAddress: {
+          street: "Guindy Industrial Estate",
+          city: "Chennai",
+          state: "Tamil Nadu",
+          pincode: "600032",
+          country: "India",
+        },
+        bankDetails: {
+          accountNumber: "109823471029",
+          bankName: "State Bank of India",
+          ifscCode: "SBIN0001015",
+          accountHolderName: "QuickHire Manpower Corp",
+        },
+        category: "General",
+        status: "Active",
+        rating: 4.3,
+      },
+      {
+        vendorId: "VND-1005",
+        legalName: "Starlight Guarding (Suspended)",
+        gstin: "27AABCS9911P1Z4",
+        pan: "AABCS9911P",
+        spocName: "Dinesh Kulkarni",
+        email: "dinesh@starlightguards.com",
+        phone: "+91 98200 99887",
+        billingAddress: {
+          street: "Thane West",
+          city: "Thane",
+          state: "Maharashtra",
+          pincode: "400601",
+          country: "India",
+        },
+        category: "Security",
+        status: "Blacklisted",
+        rating: 2.1,
+      },
+    ]);
+
+    // 2. Create Clients with Physical Sites
+    const clients = await Client.insertMany([
+      {
+        clientId: "CLI-1001",
+        legalName: "Titanium Tech Hub Enterprises",
+        industry: "Information Technology",
+        gstin: "29AABCT8899E1Z8",
+        billingAddress: {
+          street: "Electronic City Phase 1",
+          city: "Bengaluru",
+          state: "Karnataka",
+          pincode: "560100",
+          country: "India",
+        },
+        sites: [
+          {
+            siteId: "CLI-1001-SITE-01",
+            siteName: "E-City Campus Alpha",
+            location: "Bengaluru (Electronic City)",
+            address: "Campus Alpha, Hosur Road, Bengaluru 560100",
+            contactPerson: { name: "Anand Verma", phone: "+91 98450 11223", email: "anand.v@titaniumtech.com" },
+            isActive: true,
+          },
+          {
+            siteId: "CLI-1001-SITE-02",
+            siteName: "Whitefield Innovation Center",
+            location: "Bengaluru (Whitefield)",
+            address: "ITPL Main Road, Whitefield, Bengaluru 560066",
+            contactPerson: { name: "Deepa Menon", phone: "+91 98450 44556", email: "deepa.m@titaniumtech.com" },
+            isActive: true,
+          },
+        ],
+        paymentTermsDays: 30,
+        spocName: "Sunil Grover",
+        spocEmail: "sunil.grover@titaniumtech.com",
+        spocPhone: "+91 98800 23456",
+        status: "Active",
+      },
+      {
+        clientId: "CLI-1002",
+        legalName: "Novartis Healthcare Logistics India",
+        industry: "Pharmaceuticals & Logistics",
+        gstin: "27AABCN7766K1Z3",
+        billingAddress: {
+          street: "Bandra Kurla Complex",
+          city: "Mumbai",
+          state: "Maharashtra",
+          pincode: "400051",
+          country: "India",
+        },
+        sites: [
+          {
+            siteId: "CLI-1002-SITE-01",
+            siteName: "BKC Corporate HQ",
+            location: "Mumbai (BKC)",
+            address: "G-Block, BKC, Bandra East, Mumbai 400051",
+            contactPerson: { name: "Farhan Qureshi", phone: "+91 98201 33445", email: "farhan@novartis-log.in" },
+            isActive: true,
+          },
+          {
+            siteId: "CLI-1002-SITE-02",
+            siteName: "Bhiwandi Cold Storage Hub",
+            location: "Thane (Bhiwandi)",
+            address: "Survey 108, Mankoli, Bhiwandi, Thane 421302",
+            contactPerson: { name: "Ganesh Patil", phone: "+91 98201 77889", email: "ganesh@novartis-log.in" },
+            isActive: true,
+          },
+        ],
+        paymentTermsDays: 45,
+        spocName: "Ritu Singhania",
+        spocEmail: "ritu@novartis-log.in",
+        spocPhone: "+91 98200 45678",
+        status: "Active",
+      },
+      {
+        clientId: "CLI-1003",
+        legalName: "Metro FinServe Capital Bank",
+        industry: "Banking & Financial Services",
+        gstin: "07AABCM6655L1Z1",
+        billingAddress: {
+          street: "Barakhamba Road, Connaught Place",
+          city: "New Delhi",
+          state: "Delhi",
+          pincode: "110001",
+          country: "India",
+        },
+        sites: [
+          {
+            siteId: "CLI-1003-SITE-01",
+            siteName: "CP Central Treasury Branch",
+            location: "New Delhi (CP)",
+            address: "Statesman House, Barakhamba Rd, New Delhi 110001",
+            contactPerson: { name: "Suresh Gupta", phone: "+91 98110 33441", email: "suresh@metrofinserve.com" },
+            isActive: true,
+          },
+          {
+            siteId: "CLI-1003-SITE-02",
+            siteName: "Gurugram Cyber City Hub",
+            location: "Gurugram (DLF Cyber City)",
+            address: "Building 10B, Cyber City, DLF Phase 2, Gurugram 122002",
+            contactPerson: { name: "Neha Mathur", phone: "+91 98110 99881", email: "neha.m@metrofinserve.com" },
+            isActive: true,
+          },
+        ],
+        paymentTermsDays: 15,
+        spocName: "Ashish Bajaj",
+        spocEmail: "ashish@metrofinserve.com",
+        spocPhone: "+91 98100 88223",
+        status: "Active",
+      },
+    ]);
+
+    // 3. Create Commercial Contracts with Rate Cards
+    const contracts = await Contract.insertMany([
+      {
+        contractNumber: "CNT-2001",
+        title: "Infiniti Tech - Titanium Tech Software Staffing MSA",
+        clientId: "CLI-1001",
+        clientName: "Titanium Tech Hub Enterprises",
+        vendorId: "VND-1002",
+        vendorName: "Infiniti TechStaffing Services LLP",
+        startDate: new Date("2026-01-01"),
+        endDate: new Date("2026-12-31"),
+        status: "Active",
+        rateCards: [
+          { designation: "Full Stack Engineer", billingUnit: "Monthly", baseCost: 120000, markupPercent: 20, billableRate: 144000 },
+          { designation: "DevOps Specialist", billingUnit: "Monthly", baseCost: 140000, markupPercent: 18, billableRate: 165200 },
+          { designation: "QA Automation Engineer", billingUnit: "Monthly", baseCost: 85000, markupPercent: 20, billableRate: 102000 },
+        ],
+        termsAndConditions: "Standard 30-day notice, biometric swipe billing compliance.",
+      },
+      {
+        contractNumber: "CNT-2002",
+        title: "Apex Security - Novartis Guarding & Surveillance SLA",
+        clientId: "CLI-1002",
+        clientName: "Novartis Healthcare Logistics India",
+        vendorId: "VND-1001",
+        vendorName: "Apex Security & Allied Solutions Pvt Ltd",
+        startDate: new Date("2026-01-01"),
+        endDate: new Date("2026-12-31"),
+        status: "Active",
+        rateCards: [
+          { designation: "Security Supervisor", billingUnit: "Monthly", baseCost: 28000, markupPercent: 15, billableRate: 32200 },
+          { designation: "Armed Security Guard", billingUnit: "Monthly", baseCost: 24000, markupPercent: 15, billableRate: 27600 },
+          { designation: "Unarmed Security Guard", billingUnit: "Monthly", baseCost: 19000, markupPercent: 15, billableRate: 21850 },
+        ],
+        termsAndConditions: "24/7 rota, statutory minimum wages plus PF/ESIC adherence.",
+      },
+      {
+        contractNumber: "CNT-2003",
+        title: "EcoClean - Metro FinServe Facility Operations",
+        clientId: "CLI-1003",
+        clientName: "Metro FinServe Capital Bank",
+        vendorId: "VND-1003",
+        vendorName: "EcoClean Integrated Facility Services",
+        startDate: new Date("2026-02-01"),
+        endDate: new Date("2027-01-31"),
+        status: "Active",
+        rateCards: [
+          { designation: "Facility Manager", billingUnit: "Monthly", baseCost: 45000, markupPercent: 18, billableRate: 53100 },
+          { designation: "Housekeeping Executive", billingUnit: "Monthly", baseCost: 17500, markupPercent: 15, billableRate: 20125 },
+          { designation: "Technical Electrician", billingUnit: "Monthly", baseCost: 23000, markupPercent: 15, billableRate: 26450 },
+        ],
+      },
+      {
+        contractNumber: "CNT-2004",
+        title: "QuickHire - Titanium Logistics Support Agreement",
+        clientId: "CLI-1001",
+        clientName: "Titanium Tech Hub Enterprises",
+        vendorId: "VND-1004",
+        vendorName: "QuickHire Manpower & Logistics Corp",
+        startDate: new Date("2026-03-01"),
+        endDate: new Date("2027-02-28"),
+        status: "Active",
+        rateCards: [
+          { designation: "Material Handler", billingUnit: "Monthly", baseCost: 18000, markupPercent: 15, billableRate: 20700 },
+          { designation: "Dispatch Coordinator", billingUnit: "Monthly", baseCost: 25000, markupPercent: 15, billableRate: 28750 },
+        ],
+      },
+    ]);
+
+    // 4. Create Purchase Orders
+    const pos = await PurchaseOrder.insertMany([
+      {
+        poNumber: "PO-5001",
+        contractId: "CNT-2001",
+        contractNumber: "CNT-2001",
+        clientId: "CLI-1001",
+        clientName: "Titanium Tech Hub Enterprises",
+        poValue: 2500000,
+        utilizedAmount: 1850000,
+        startDate: new Date("2026-01-01"),
+        expiryDate: new Date("2026-06-30"),
+        status: "Active",
+        description: "H1 Engineering Augmentation PO for Core Platform Dev",
+      },
+      {
+        poNumber: "PO-5002",
+        contractId: "CNT-2002",
+        contractNumber: "CNT-2002",
+        clientId: "CLI-1002",
+        clientName: "Novartis Healthcare Logistics India",
+        poValue: 1200000,
+        utilizedAmount: 480000,
+        startDate: new Date("2026-01-01"),
+        expiryDate: new Date("2026-12-31"),
+        status: "Active",
+        description: "Annual Warehouse & HQ Physical Guarding Contract PO",
+      },
+      {
+        poNumber: "PO-5003",
+        contractId: "CNT-2003",
+        contractNumber: "CNT-2003",
+        clientId: "CLI-1003",
+        clientName: "Metro FinServe Capital Bank",
+        poValue: 800000,
+        utilizedAmount: 760000,
+        startDate: new Date("2026-02-01"),
+        expiryDate: new Date("2026-08-31"),
+        status: "Active",
+        description: "Facility Upkeep & Sanitization Services for Treasury CP",
+      },
+      {
+        poNumber: "PO-5004",
+        contractId: "CNT-2001",
+        contractNumber: "CNT-2001",
+        clientId: "CLI-1001",
+        clientName: "Titanium Tech Hub Enterprises",
+        poValue: 1500000,
+        utilizedAmount: 0,
+        startDate: new Date("2026-07-01"),
+        expiryDate: new Date("2026-12-31"),
+        status: "Active",
+        description: "H2 Engineering Augmentation PO",
+      },
+    ]);
+
+    // 5. Create Deployments (Active Workforce)
+    const deployments = await Deployment.insertMany([
+      // Software Engineers deployed at Titanium Tech
+      {
+        deploymentId: "DEP-3001",
+        workerId: "WRK-8001",
+        workerName: "Abhishek Rao",
+        workerPhone: "+91 98450 91823",
+        vendorId: "VND-1002",
+        vendorName: "Infiniti TechStaffing Services LLP",
+        clientId: "CLI-1001",
+        clientName: "Titanium Tech Hub Enterprises",
+        siteId: "CLI-1001-SITE-01",
+        siteName: "E-City Campus Alpha",
+        contractId: "CNT-2001",
+        contractNumber: "CNT-2001",
+        poNumber: "PO-5001",
+        designation: "Full Stack Engineer",
+        billingUnit: "Monthly",
+        billableRate: 144000,
+        startDate: new Date("2026-01-15"),
+        status: "Active",
+      },
+      {
+        deploymentId: "DEP-3002",
+        workerId: "WRK-8002",
+        workerName: "Sneha Mukherjee",
+        workerPhone: "+91 98450 91824",
+        vendorId: "VND-1002",
+        vendorName: "Infiniti TechStaffing Services LLP",
+        clientId: "CLI-1001",
+        clientName: "Titanium Tech Hub Enterprises",
+        siteId: "CLI-1001-SITE-01",
+        siteName: "E-City Campus Alpha",
+        contractId: "CNT-2001",
+        contractNumber: "CNT-2001",
+        poNumber: "PO-5001",
+        designation: "DevOps Specialist",
+        billingUnit: "Monthly",
+        billableRate: 165200,
+        startDate: new Date("2026-02-01"),
+        status: "Active",
+      },
+      {
+        deploymentId: "DEP-3003",
+        workerId: "WRK-8003",
+        workerName: "Karthik Iyer",
+        workerPhone: "+91 98450 91825",
+        vendorId: "VND-1002",
+        vendorName: "Infiniti TechStaffing Services LLP",
+        clientId: "CLI-1001",
+        clientName: "Titanium Tech Hub Enterprises",
+        siteId: "CLI-1001-SITE-02",
+        siteName: "Whitefield Innovation Center",
+        contractId: "CNT-2001",
+        contractNumber: "CNT-2001",
+        poNumber: "PO-5001",
+        designation: "QA Automation Engineer",
+        billingUnit: "Monthly",
+        billableRate: 102000,
+        startDate: new Date("2026-01-20"),
+        status: "Active",
+      },
+      // Security Guards deployed at Novartis
+      {
+        deploymentId: "DEP-3004",
+        workerId: "WRK-8004",
+        workerName: "Bhimrao Shinde",
+        workerPhone: "+91 98201 11221",
+        vendorId: "VND-1001",
+        vendorName: "Apex Security & Allied Solutions Pvt Ltd",
+        clientId: "CLI-1002",
+        clientName: "Novartis Healthcare Logistics India",
+        siteId: "CLI-1002-SITE-01",
+        siteName: "BKC Corporate HQ",
+        contractId: "CNT-2002",
+        contractNumber: "CNT-2002",
+        poNumber: "PO-5002",
+        designation: "Security Supervisor",
+        billingUnit: "Monthly",
+        billableRate: 32200,
+        startDate: new Date("2026-01-01"),
+        status: "Active",
+      },
+      {
+        deploymentId: "DEP-3005",
+        workerId: "WRK-8005",
+        workerName: "Santosh Ghadge",
+        workerPhone: "+91 98201 11222",
+        vendorId: "VND-1001",
+        vendorName: "Apex Security & Allied Solutions Pvt Ltd",
+        clientId: "CLI-1002",
+        clientName: "Novartis Healthcare Logistics India",
+        siteId: "CLI-1002-SITE-02",
+        siteName: "Bhiwandi Cold Storage Hub",
+        contractId: "CNT-2002",
+        contractNumber: "CNT-2002",
+        poNumber: "PO-5002",
+        designation: "Armed Security Guard",
+        billingUnit: "Monthly",
+        billableRate: 27600,
+        startDate: new Date("2026-01-05"),
+        status: "Active",
+      },
+      {
+        deploymentId: "DEP-3006",
+        workerId: "WRK-8006",
+        workerName: "Kavita Ramesh",
+        workerPhone: "+91 98110 55441",
+        vendorId: "VND-1003",
+        vendorName: "EcoClean Integrated Facility Services",
+        clientId: "CLI-1003",
+        clientName: "Metro FinServe Capital Bank",
+        siteId: "CLI-1003-SITE-01",
+        siteName: "CP Central Treasury Branch",
+        contractId: "CNT-2003",
+        contractNumber: "CNT-2003",
+        poNumber: "PO-5003",
+        designation: "Housekeeping Executive",
+        billingUnit: "Monthly",
+        billableRate: 20125,
+        startDate: new Date("2026-02-01"),
+        status: "Active",
+      },
+    ]);
+
+    // 6. Create Sample Invoices
+    const invoices = await VendorInvoice.insertMany([
+      {
+        invoiceNumber: "INV-2026-0001",
+        vendorId: "VND-1002",
+        vendorName: "Infiniti TechStaffing Services LLP",
+        clientId: "CLI-1001",
+        clientName: "Titanium Tech Hub Enterprises",
+        contractId: "CNT-2001",
+        contractNumber: "CNT-2001",
+        poNumber: "PO-5001",
+        billingPeriod: { month: "March", year: 2026 },
+        lineItems: [
+          { workerId: "WRK-8001", workerName: "Abhishek Rao", designation: "Full Stack Engineer", billingUnit: "Monthly", daysOrHoursWorked: 26, rate: 144000, lineTotal: 144000 },
+          { workerId: "WRK-8002", workerName: "Sneha Mukherjee", designation: "DevOps Specialist", billingUnit: "Monthly", daysOrHoursWorked: 26, rate: 165200, lineTotal: 165200 },
+          { workerId: "WRK-8003", workerName: "Karthik Iyer", designation: "QA Automation Engineer", billingUnit: "Monthly", daysOrHoursWorked: 26, rate: 102000, lineTotal: 102000 },
+        ],
+        subtotal: 411200,
+        gstRate: 18,
+        gstAmount: 74016,
+        grandTotal: 485216,
+        status: "Paid",
+        issueDate: new Date("2026-04-01"),
+        dueDate: new Date("2026-05-01"),
+        paymentDate: new Date("2026-04-20"),
+        paymentReference: "UTR-HDFC-99182371",
+      },
+      {
+        invoiceNumber: "INV-2026-0002",
+        vendorId: "VND-1001",
+        vendorName: "Apex Security & Allied Solutions Pvt Ltd",
+        clientId: "CLI-1002",
+        clientName: "Novartis Healthcare Logistics India",
+        contractId: "CNT-2002",
+        contractNumber: "CNT-2002",
+        poNumber: "PO-5002",
+        billingPeriod: { month: "March", year: 2026 },
+        lineItems: [
+          { workerId: "WRK-8004", workerName: "Bhimrao Shinde", designation: "Security Supervisor", billingUnit: "Monthly", daysOrHoursWorked: 26, rate: 32200, lineTotal: 32200 },
+          { workerId: "WRK-8005", workerName: "Santosh Ghadge", designation: "Armed Security Guard", billingUnit: "Monthly", daysOrHoursWorked: 26, rate: 27600, lineTotal: 27600 },
+        ],
+        subtotal: 59800,
+        gstRate: 18,
+        gstAmount: 10764,
+        grandTotal: 70564,
+        status: "Approved",
+        issueDate: new Date("2026-04-02"),
+        dueDate: new Date("2026-05-17"),
+      },
+    ]);
+
+    if (res) {
+      return res.json({
+        success: true,
+        message: "Vendor & Staffing ERP database seeded successfully.",
+        seededCounts: {
+          vendors: vendors.length,
+          clients: clients.length,
+          contracts: contracts.length,
+          purchaseOrders: pos.length,
+          deployments: deployments.length,
+          invoices: invoices.length,
+        },
+      });
+    }
+  } catch (err) {
+    console.error("Error seeding database:", err);
+    if (res) {
+      return res.status(500).json({ success: false, message: err.message });
+    }
+  }
+};
+
+router.post("/", seedData);
+router.get("/status", async (req, res) => {
+  const v = await Vendor.countDocuments();
+  const c = await Client.countDocuments();
+  const con = await Contract.countDocuments();
+  const po = await PurchaseOrder.countDocuments();
+  const d = await Deployment.countDocuments();
+  const inv = await VendorInvoice.countDocuments();
+
+  res.json({
+    success: true,
+    counts: {
+      vendors: v,
+      clients: c,
+      contracts: con,
+      purchaseOrders: po,
+      deployments: d,
+      invoices: inv,
+    },
+  });
+});
+
+module.exports = { router, seedData };

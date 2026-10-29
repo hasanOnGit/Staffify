@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #F4F5F7;
+    color: #172B4D;
+  }
+
+  .dark body {
+    background-color: #090D14;
+    color: #F1F5F9;
+  }
+
+  /* Mobile Touch Ergonomics */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  /* Tactile Button Feedback */
+  button:not(:disabled):active {
+    transform: scale(0.98);
+  }
+}
+
+/* =========================================================
+   Enterprise-Grade Theme Transition Engine
+   Linear / Raycast fluid circular reveal via View Transitions
+   ========================================================= */
+
+::view-transition-group(root) {
+  animation: none;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+/* =========================================================
+   Smooth Motion & Transition System
+   ========================================================= */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-enter {
+  animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Card Smooth Elevation */
+.card-smooth {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s ease;
+}
+.card-smooth:hover {
+  transform: translateY(-2px);
+}
+
+/* Smooth Focus Ring */
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
+}
+
+/* =========================================================
+   Enterprise Dark Mode Semantic Class Mappings (WCAG AAA)
+   ========================================================= */
+.dark .text-\[\#172B4D\] {
+  color: #F1F5F9;
+}
+.dark .text-\[\#42526E\] {
+  color: #CBD5E1;
+}
+.dark .text-\[\#6B778C\] {
+  color: #94A3B8;
+}
+.dark .text-\[\#5E6C84\] {
+  color: #A5B2C6;
+}
+.dark .border-\[\#DFE1E6\] {
+  border-color: #263042;
+}
+.dark .border-\[\#EBECF0\] {
+  border-color: #1C2433;
+}
+.dark .bg-\[\#F4F5F7\] {
+  background-color: #151B26;
+}
+.dark .bg-\[\#FAFBFC\] {
+  background-color: #101520;
+}
+.dark .bg-\[\#EBECF0\] {
+  background-color: #1C2331;
+}
+.dark .bg-white {
+  background-color: #151B26;
+}
+.dark .hover\:bg-\[\#EBECF0\]:hover {
+  background-color: #1C2331;
+}
+.dark .hover\:bg-\[\#F4F5F7\]:hover {
+  background-color: #1C2331;
+}
+.dark .hover\:bg-white:hover {
+  background-color: #1C2331;
+}
+
+/* High Precision Atlassian Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F4F5F7;
+}
+::-webkit-scrollbar-thumb {
+  background: #DFE1E6;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B3BAC5;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #090D14;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #263042;
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3B465C;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
