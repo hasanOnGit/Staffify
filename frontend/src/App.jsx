@@ -14,6 +14,7 @@ import MusterRoll from "./pages/MusterRoll";
 import Payroll from "./pages/Payroll";
 import VendorInvoices from "./pages/VendorInvoices";
 import Requisitions from "./pages/Requisitions";
+import Compliance from "./pages/Compliance";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
               <Route path="/muster-roll" element={<MusterRoll />} />
               <Route path="/payroll" element={<Payroll />} />
               <Route path="/vendor-invoices" element={<VendorInvoices />} />
+              <Route path="/compliance" element={<Compliance />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </DashboardLayout>

@@ -110,6 +110,14 @@ export const requisitionsApi = {
   updateStatus: (id, status) => API.patch(`/requisitions/${id}/status`, { status }),
 };
 
+export const complianceApi = {
+  getOverview: (params) => API.get("/compliance/overview", { params }),
+  getFormB: (params) => API.get("/compliance/form-b", { params }),
+  getFormD: (params) => API.get("/compliance/form-d", { params }),
+  getEpfEcr: (params) => API.get("/compliance/epf-ecr", { params }),
+  getEsicReturn: (params) => API.get("/compliance/esic-return", { params }),
+};
+
 export const seedApi = {
   seedDatabase: () => API.post("/seed"),
   getStatus: () => API.get("/seed/status"),

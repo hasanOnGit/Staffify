@@ -1117,6 +1117,7 @@ const seedData = async (req, res) => {
           musterRolls: musterRolls.length,
           payrolls: payrolls.length,
           requisitions: requisitions.length,
+        },
       });
     }
   } catch (err) {

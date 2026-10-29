@@ -7,6 +7,7 @@ const workerRoutes = require("./controllers/worker.controller");
 const musterRollRoutes = require("./controllers/musterRoll.controller");
 const payrollRoutes = require("./controllers/payroll.controller");
 const requisitionRoutes = require("./controllers/requisition.controller");
+const complianceRoutes = require("./controllers/compliance.controller");
 const dashboardRoutes = require("./controllers/dashboard.controller");
 const { router: seedRoutes } = require("./controllers/seed.controller");
 
@@ -21,5 +22,6 @@ module.exports = function (app) {
   app.use("/api/muster-rolls", musterRollRoutes);
   app.use("/api/payroll", payrollRoutes);
   app.use("/api/requisitions", requisitionRoutes);
+  app.use("/api/compliance", complianceRoutes);
   app.use("/api/seed", seedRoutes);
 };

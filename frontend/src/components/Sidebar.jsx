@@ -85,6 +85,11 @@ const navSections = [
         icon: Receipt,
       },
       {
+        path: "/compliance",
+        label: "Compliance & Labor Forms",
+        icon: ShieldCheck,
+      },
+      {
         path: "/commercials",
         label: "Contracts & Budgets (POs)",
         icon: FileCheck2,
