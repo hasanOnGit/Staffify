@@ -59,6 +59,25 @@ export const invoicesApi = {
   updateStatus: (id, data) => API.patch(`/vendor-invoices/${id}/status`, data),
 };
 
+export const workersApi = {
+  getAll: (params) => API.get("/workers", { params }),
+  getById: (id) => API.get(`/workers/${id}`),
+  create: (data) => API.post("/workers", data),
+  update: (id, data) => API.put(`/workers/${id}`, data),
+};
+
+export const musterRollApi = {
+  getAll: (params) => API.get("/muster-rolls", { params }),
+  getById: (id) => API.get(`/muster-rolls/${id}`),
+  generate: (data) => API.post("/muster-rolls/generate", data),
+  update: (id, data) => API.put(`/muster-rolls/${id}`, data),
+  approve: (id) => API.patch(`/muster-rolls/${id}/approve`),
+};
+
+export const dashboardApi = {
+  getStats: () => API.get("/dashboard/stats"),
+};
+
 export const seedApi = {
   seedDatabase: () => API.post("/seed"),
   getStatus: () => API.get("/seed/status"),

@@ -6,6 +6,8 @@ const Contract = require("../models/contract.model");
 const PurchaseOrder = require("../models/purchaseOrder.model");
 const Deployment = require("../models/deployment.model");
 const VendorInvoice = require("../models/vendorInvoice.model");
+const Worker = require("../models/worker.model");
+const MusterRoll = require("../models/musterRoll.model");
 
 const seedData = async (req, res) => {
   try {
@@ -16,6 +18,8 @@ const seedData = async (req, res) => {
     await PurchaseOrder.deleteMany({});
     await Deployment.deleteMany({});
     await VendorInvoice.deleteMany({});
+    await Worker.deleteMany({});
+    await MusterRoll.deleteMany({});
 
     // 1. Create Vendors
     const vendors = await Vendor.insertMany([
@@ -554,6 +558,331 @@ const seedData = async (req, res) => {
       },
     ]);
 
+    // 7. Create Workers (Deployed + Bench with KYC)
+    const workers = await Worker.insertMany([
+      {
+        workerId: "WRK-8001",
+        fullName: "Abhishek Rao",
+        phone: "+91 98450 91823",
+        email: "abhishek.rao@talentpool.in",
+        tradeCategory: "IT",
+        primarySkill: "Full Stack Engineer (Node/React)",
+        experienceYears: 4,
+        wagePerDayOrMonth: 120000,
+        billingUnit: "Monthly",
+        kycDetails: {
+          aadhaarNumber: "7821-9920-1123",
+          panNumber: "ABCDE1234F",
+          policeVerificationStatus: "Verified",
+          medicalFitnessCleared: true,
+          bankAccountNumber: "029100192837",
+          ifscCode: "HDFC0000123",
+          bankName: "HDFC Bank",
+        },
+        currentDeployment: {
+          clientId: "CLI-1001",
+          clientName: "Titanium Tech Hub Enterprises",
+          siteId: "CLI-1001-SITE-01",
+          siteName: "E-City Campus Alpha",
+          poNumber: "PO-5001",
+          contractId: "CNT-2001",
+          billableRate: 144000,
+          startDate: new Date("2026-01-15"),
+        },
+        status: "Deployed",
+        rating: 4.8,
+      },
+      {
+        workerId: "WRK-8002",
+        fullName: "Sneha Mukherjee",
+        phone: "+91 98450 91824",
+        email: "sneha.m@talentpool.in",
+        tradeCategory: "IT",
+        primarySkill: "DevOps & Cloud Specialist (AWS/K8s)",
+        experienceYears: 5,
+        wagePerDayOrMonth: 140000,
+        billingUnit: "Monthly",
+        kycDetails: {
+          aadhaarNumber: "4532-8871-3321",
+          panNumber: "FGHIJ5678K",
+          policeVerificationStatus: "Verified",
+          medicalFitnessCleared: true,
+          bankAccountNumber: "501002938471",
+          ifscCode: "ICIC0000002",
+          bankName: "ICICI Bank",
+        },
+        currentDeployment: {
+          clientId: "CLI-1001",
+          clientName: "Titanium Tech Hub Enterprises",
+          siteId: "CLI-1001-SITE-01",
+          siteName: "E-City Campus Alpha",
+          poNumber: "PO-5001",
+          contractId: "CNT-2001",
+          billableRate: 165200,
+          startDate: new Date("2026-02-01"),
+        },
+        status: "Deployed",
+        rating: 4.9,
+      },
+      {
+        workerId: "WRK-8003",
+        fullName: "Karthik Iyer",
+        phone: "+91 98450 91825",
+        email: "karthik.i@talentpool.in",
+        tradeCategory: "IT",
+        primarySkill: "QA Automation Engineer (Cypress/Playwright)",
+        experienceYears: 3,
+        wagePerDayOrMonth: 85000,
+        billingUnit: "Monthly",
+        kycDetails: {
+          aadhaarNumber: "9912-4412-8876",
+          panNumber: "KLMNO9012L",
+          policeVerificationStatus: "Verified",
+          medicalFitnessCleared: true,
+          bankAccountNumber: "991827364512",
+          ifscCode: "UTIB0000010",
+          bankName: "Axis Bank",
+        },
+        currentDeployment: {
+          clientId: "CLI-1001",
+          clientName: "Titanium Tech Hub Enterprises",
+          siteId: "CLI-1001-SITE-02",
+          siteName: "Whitefield Innovation Center",
+          poNumber: "PO-5001",
+          contractId: "CNT-2001",
+          billableRate: 102000,
+          startDate: new Date("2026-01-20"),
+        },
+        status: "Deployed",
+        rating: 4.7,
+      },
+      {
+        workerId: "WRK-8004",
+        fullName: "Bhimrao Shinde",
+        phone: "+91 98201 11221",
+        tradeCategory: "Security",
+        primarySkill: "Armed Security Guard / Patrol Supervisor",
+        experienceYears: 8,
+        wagePerDayOrMonth: 28000,
+        billingUnit: "Monthly",
+        kycDetails: {
+          aadhaarNumber: "3321-7765-9988",
+          panNumber: "PQRST3456M",
+          policeVerificationStatus: "Verified",
+          medicalFitnessCleared: true,
+          bankAccountNumber: "201928374651",
+          ifscCode: "SBIN0000210",
+          bankName: "State Bank of India",
+        },
+        currentDeployment: {
+          clientId: "CLI-1002",
+          clientName: "Novartis Healthcare Logistics India",
+          siteId: "CLI-1002-SITE-01",
+          siteName: "BKC Corporate HQ",
+          poNumber: "PO-5002",
+          contractId: "CNT-2002",
+          billableRate: 32200,
+          startDate: new Date("2026-01-01"),
+        },
+        status: "Deployed",
+        rating: 4.6,
+      },
+      {
+        workerId: "WRK-8005",
+        fullName: "Santosh Ghadge",
+        phone: "+91 98201 11222",
+        tradeCategory: "Security",
+        primarySkill: "Armed Security Guard (Ex-Defense)",
+        experienceYears: 6,
+        wagePerDayOrMonth: 24000,
+        billingUnit: "Monthly",
+        kycDetails: {
+          aadhaarNumber: "6654-1123-4490",
+          panNumber: "UVWXY7890N",
+          policeVerificationStatus: "Verified",
+          medicalFitnessCleared: true,
+          bankAccountNumber: "441092837461",
+          ifscCode: "BKID0001011",
+          bankName: "Bank of India",
+        },
+        currentDeployment: {
+          clientId: "CLI-1002",
+          clientName: "Novartis Healthcare Logistics India",
+          siteId: "CLI-1002-SITE-02",
+          siteName: "Bhiwandi Cold Storage Hub",
+          poNumber: "PO-5002",
+          contractId: "CNT-2002",
+          billableRate: 27600,
+          startDate: new Date("2026-01-05"),
+        },
+        status: "Deployed",
+        rating: 4.5,
+      },
+      {
+        workerId: "WRK-8006",
+        fullName: "Kavita Ramesh",
+        phone: "+91 98110 55441",
+        tradeCategory: "Facilities",
+        primarySkill: "Housekeeping & Sanitization Executive",
+        experienceYears: 4,
+        wagePerDayOrMonth: 17500,
+        billingUnit: "Monthly",
+        kycDetails: {
+          aadhaarNumber: "1122-3344-5566",
+          panNumber: "ZABCD1122O",
+          policeVerificationStatus: "Verified",
+          medicalFitnessCleared: true,
+          bankAccountNumber: "109823471029",
+          ifscCode: "PUNB0002100",
+          bankName: "Punjab National Bank",
+        },
+        currentDeployment: {
+          clientId: "CLI-1003",
+          clientName: "Metro FinServe Capital Bank",
+          siteId: "CLI-1003-SITE-01",
+          siteName: "CP Central Treasury Branch",
+          poNumber: "PO-5003",
+          contractId: "CNT-2003",
+          billableRate: 20125,
+          startDate: new Date("2026-02-01"),
+        },
+        status: "Deployed",
+        rating: 4.4,
+      },
+      // Bench Talent (Available for immediate deployment)
+      {
+        workerId: "WRK-8007",
+        fullName: "Rohan Vashisht",
+        phone: "+91 99880 12345",
+        email: "rohan.v@talentpool.in",
+        tradeCategory: "IT",
+        primarySkill: "Frontend React & TypeScript Specialist",
+        experienceYears: 4,
+        wagePerDayOrMonth: 110000,
+        billingUnit: "Monthly",
+        kycDetails: {
+          aadhaarNumber: "4490-8812-3321",
+          panNumber: "MNOPQ4567R",
+          policeVerificationStatus: "Verified",
+          medicalFitnessCleared: true,
+          bankAccountNumber: "501009827361",
+          ifscCode: "HDFC0000060",
+          bankName: "HDFC Bank",
+        },
+        status: "Available",
+        rating: 4.9,
+      },
+      {
+        workerId: "WRK-8008",
+        fullName: "Maheshwari Gowda",
+        phone: "+91 98450 77112",
+        tradeCategory: "Logistics",
+        primarySkill: "Warehouse Inventory & Dispatch Lead",
+        experienceYears: 5,
+        wagePerDayOrMonth: 26000,
+        billingUnit: "Monthly",
+        kycDetails: {
+          aadhaarNumber: "8823-1190-4456",
+          panNumber: "STUVW8901S",
+          policeVerificationStatus: "Verified",
+          medicalFitnessCleared: true,
+          bankAccountNumber: "301928374652",
+          ifscCode: "SBIN0004021",
+          bankName: "State Bank of India",
+        },
+        status: "Available",
+        rating: 4.6,
+      },
+      {
+        workerId: "WRK-8009",
+        fullName: "Dharmendra Yadav",
+        phone: "+91 98110 44221",
+        tradeCategory: "Security",
+        primarySkill: "CCTV Control Room Operator",
+        experienceYears: 6,
+        wagePerDayOrMonth: 25000,
+        billingUnit: "Monthly",
+        kycDetails: {
+          aadhaarNumber: "7721-3344-9981",
+          panNumber: "WXYZA2345T",
+          policeVerificationStatus: "Pending",
+          medicalFitnessCleared: true,
+          bankAccountNumber: "601928374651",
+          ifscCode: "BARB0CYBERP",
+          bankName: "Bank of Baroda",
+        },
+        status: "Available",
+        rating: 4.3,
+      },
+      {
+        workerId: "WRK-8010",
+        fullName: "Pooja Deshmukh",
+        phone: "+91 98200 66778",
+        tradeCategory: "Facilities",
+        primarySkill: "Corporate Reception & Facility Concierge",
+        experienceYears: 3,
+        wagePerDayOrMonth: 22000,
+        billingUnit: "Monthly",
+        kycDetails: {
+          aadhaarNumber: "5544-2211-9988",
+          panNumber: "BCDEF6789U",
+          policeVerificationStatus: "Verified",
+          medicalFitnessCleared: true,
+          bankAccountNumber: "801928374650",
+          ifscCode: "ICIC0000104",
+          bankName: "ICICI Bank",
+        },
+        status: "Available",
+        rating: 4.7,
+      },
+    ]);
+
+    // 8. Create Sample Muster Roll for Titanium Tech Campus Alpha
+    const musterRolls = await MusterRoll.insertMany([
+      {
+        musterRollId: "MR-2026-0001",
+        clientId: "CLI-1001",
+        clientName: "Titanium Tech Hub Enterprises",
+        siteId: "CLI-1001-SITE-01",
+        siteName: "E-City Campus Alpha",
+        month: "March",
+        year: 2026,
+        records: [
+          {
+            workerId: "WRK-8001",
+            workerName: "Abhishek Rao",
+            designation: "Full Stack Engineer",
+            daysPresent: 26,
+            halfDays: 0,
+            lossOfPayDays: 0,
+            overtimeHours: 12,
+            normalDailyRate: 5538,
+            otHourlyRate: 1038,
+            totalEarned: 156444, // 26 * 5538 + 12 * 1038
+          },
+          {
+            workerId: "WRK-8002",
+            workerName: "Sneha Mukherjee",
+            designation: "DevOps Specialist",
+            daysPresent: 25,
+            halfDays: 1,
+            lossOfPayDays: 0,
+            overtimeHours: 8,
+            normalDailyRate: 6354,
+            otHourlyRate: 1191,
+            totalEarned: 171555,
+          },
+        ],
+        totalHeadcount: 2,
+        totalDaysBilled: 51.5,
+        totalOtHours: 20,
+        totalGrossPay: 327999,
+        status: "Approved",
+        approvedBy: "Priyanka Narang (Account Director)",
+        approvedAt: new Date("2026-04-01"),
+      },
+    ]);
+
     if (res) {
       return res.json({
         success: true,
@@ -565,6 +894,8 @@ const seedData = async (req, res) => {
           purchaseOrders: pos.length,
           deployments: deployments.length,
           invoices: invoices.length,
+          workers: workers.length,
+          musterRolls: musterRolls.length,
         },
       });
     }
@@ -584,6 +915,8 @@ router.get("/status", async (req, res) => {
   const po = await PurchaseOrder.countDocuments();
   const d = await Deployment.countDocuments();
   const inv = await VendorInvoice.countDocuments();
+  const w = await Worker.countDocuments();
+  const mr = await MusterRoll.countDocuments();
 
   res.json({
     success: true,
@@ -594,6 +927,8 @@ router.get("/status", async (req, res) => {
       purchaseOrders: po,
       deployments: d,
       invoices: inv,
+      workers: w,
+      musterRolls: mr,
     },
   });
 });

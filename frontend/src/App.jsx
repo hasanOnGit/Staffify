@@ -3,10 +3,13 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "./context/ThemeContext";
 import DashboardLayout from "./layouts/DashboardLayout";
+import Dashboard from "./pages/Dashboard";
+import Workers from "./pages/Workers";
 import Vendors from "./pages/Vendors";
 import Clients from "./pages/Clients";
 import Commercials from "./pages/Commercials";
 import Deployments from "./pages/Deployments";
+import MusterRoll from "./pages/MusterRoll";
 import VendorInvoices from "./pages/VendorInvoices";
 
 function App() {
@@ -42,13 +45,16 @@ function App() {
 
         <DashboardLayout>
           <Routes>
-            <Route path="/" element={<Navigate to="/vendors" replace />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/workers" element={<Workers />} />
             <Route path="/vendors" element={<Vendors />} />
             <Route path="/clients" element={<Clients />} />
             <Route path="/commercials" element={<Commercials />} />
             <Route path="/deployments" element={<Deployments />} />
+            <Route path="/muster-roll" element={<MusterRoll />} />
             <Route path="/vendor-invoices" element={<VendorInvoices />} />
-            <Route path="*" element={<Navigate to="/vendors" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </DashboardLayout>
       </ThemeProvider>

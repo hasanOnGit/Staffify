@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import {
+  LayoutDashboard,
   Building2,
   Briefcase,
   FileCheck2,
@@ -11,14 +12,31 @@ import {
   ShieldCheck,
   LogOut,
   ChevronRight,
+  CalendarCheck,
+  UserCheck,
 } from "lucide-react";
 import { seedApi } from "../services/api";
 import toast from "react-hot-toast";
 
 const navSections = [
   {
+    title: "Executive Overview",
+    links: [
+      {
+        path: "/dashboard",
+        label: "Executive Dashboard",
+        icon: LayoutDashboard,
+      },
+    ],
+  },
+  {
     title: "Core Manpower",
     links: [
+      {
+        path: "/workers",
+        label: "Worker Talent Bench",
+        icon: UserCheck,
+      },
       {
         path: "/vendors",
         label: "Vendors & Agencies",
@@ -37,22 +55,27 @@ const navSections = [
     ],
   },
   {
-    title: "Commercials & Budgets",
-    links: [
-      {
-        path: "/commercials",
-        label: "Commercial Contracts & POs",
-        icon: FileCheck2,
-      },
-    ],
-  },
-  {
     title: "Deployments & Sourcing",
     links: [
       {
         path: "/deployments",
         label: "Workforce Deployment Matrix",
         icon: Users,
+      },
+      {
+        path: "/muster-roll",
+        label: "Site Muster Roll & OT",
+        icon: CalendarCheck,
+      },
+    ],
+  },
+  {
+    title: "Commercials & Budgets",
+    links: [
+      {
+        path: "/commercials",
+        label: "Commercial Contracts & POs",
+        icon: FileCheck2,
       },
     ],
   },
