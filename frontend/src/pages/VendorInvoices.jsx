@@ -17,6 +17,7 @@ import StatusLozenge from "../components/StatusLozenge";
 import KpiMetricCard from "../components/KpiMetricCard";
 import GenerateInvoiceModal from "../components/invoices/GenerateInvoiceModal";
 import InvoicePrintPreviewModal from "../components/invoices/InvoicePrintPreviewModal";
+import RecordPaymentModal from "../components/invoices/RecordPaymentModal";
 import { invoicesApi } from "../services/api";
 import toast from "react-hot-toast";
 
@@ -26,8 +27,8 @@ function VendorInvoices() {
     totalInvoices: 0,
     totalInvoiced: 0,
     totalGst: 0,
-    paidAmount: 0,
-    pendingPayout: 0,
+    totalCollected: 0,
+    pendingReceivables: 0,
   });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -35,7 +36,9 @@ function VendorInvoices() {
 
   const [generateModalOpen, setGenerateModalOpen] = useState(false);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState(null);
+  const [selectedInvoiceForPayment, setSelectedInvoiceForPayment] = useState(null);
 
   useEffect(() => {
     loadInvoices();
@@ -189,9 +192,9 @@ function VendorInvoices() {
                 <th className="px-4 py-3">Client Entity</th>
                 <th className="px-4 py-3">Billing PO</th>
                 <th className="px-4 py-3">Period</th>
-                <th className="px-4 py-3 text-center">Contractors</th>
-                <th className="px-4 py-3 text-right">Subtotal</th>
-                <th className="px-4 py-3 text-right">Grand Total (incl GST)</th>
+                <th className="px-4 py-3 text-right">Grand Total</th>
+                <th className="px-4 py-3 text-right">Collected</th>
+                <th className="px-4 py-3 text-right">Balance Due</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3 text-right">Action</th>
               </tr>
@@ -200,7 +203,7 @@ function VendorInvoices() {
               {loading ? (
                 <tr>
                   <td colSpan={10} className="px-4 py-10 text-center text-xs text-[#6B778C] dark:text-[#94A3B8]">
-                    Loading vendor invoices...
+                    Loading invoices...
                   </td>
                 </tr>
               ) : invoices.length === 0 ? (
@@ -210,63 +213,84 @@ function VendorInvoices() {
                   </td>
                 </tr>
               ) : (
-                invoices.map((inv) => (
-                  <tr
-                    key={inv._id}
-                    onClick={() => handleOpenPreview(inv.invoiceNumber)}
-                    className="hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331]/50 transition-colors cursor-pointer group"
-                  >
-                    <td className="px-4 py-3">
-                      <span className="font-mono text-[10px] text-[#0747A6] dark:text-[#579DFF] font-semibold bg-[#DEEBFF] dark:bg-[#1C2331] px-1.5 py-0.5 rounded border border-[#B3D4FF] dark:border-[#263042]">
-                        {inv.invoiceNumber}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-semibold text-[#172B4D] dark:text-white">
-                      <div>{inv.vendorName}</div>
-                      <div className="font-mono text-[10px] text-[#6B778C] dark:text-[#94A3B8]">
-                        {inv.vendorId}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-[#172B4D] dark:text-neutral-200">
-                      <div>{inv.clientName}</div>
-                      <div className="text-[10px] text-[#6B778C] dark:text-[#94A3B8]">
-                        {inv.clientId}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="font-mono text-[10px] text-[#0747A6] dark:text-[#579DFF] font-semibold bg-[#DEEBFF] dark:bg-[#1C2331] px-1.5 py-0.5 rounded border border-[#B3D4FF] dark:border-[#263042]">
-                        {inv.poNumber}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-xs">
-                      {inv.billingPeriod?.month} {inv.billingPeriod?.year}
-                    </td>
-                    <td className="px-4 py-3 text-center font-mono font-semibold">
-                      {inv.lineItems?.length || 0}
-                    </td>
-                    <td className="px-4 py-3 text-right font-mono text-[#6B778C] dark:text-[#94A3B8]">
-                      ₹{inv.subtotal.toLocaleString("en-IN")}
-                    </td>
-                    <td className="px-4 py-3 text-right font-mono font-bold text-[#172B4D] dark:text-white">
-                      ₹{inv.grandTotal.toLocaleString("en-IN")}
-                    </td>
-                    <td className="px-4 py-3">
-                      <StatusLozenge status={inv.status} size="sm" />
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenPreview(inv.invoiceNumber);
-                        }}
-                        className="px-2.5 py-1 text-[11px] font-semibold text-[#0052CC] dark:text-[#579DFF] hover:bg-[#DEEBFF] dark:hover:bg-[#1C2331] rounded transition"
-                      >
-                        {inv.status === "Paid" ? "Inspect" : "Review & Pay"}
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                invoices.map((inv) => {
+                  const bal = inv.balanceDue !== undefined ? inv.balanceDue : (inv.status === "Paid" ? 0 : inv.grandTotal);
+                  const collected = inv.amountPaid || (inv.status === "Paid" ? inv.grandTotal : 0);
+                  return (
+                    <tr
+                      key={inv._id}
+                      onClick={() => handleOpenPreview(inv.invoiceNumber)}
+                      className="hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331]/50 transition-colors cursor-pointer group"
+                    >
+                      <td className="px-4 py-3">
+                        <span className="font-mono text-[10px] text-[#0747A6] dark:text-[#579DFF] font-semibold bg-[#DEEBFF] dark:bg-[#1C2331] px-1.5 py-0.5 rounded border border-[#B3D4FF] dark:border-[#263042]">
+                          {inv.invoiceNumber}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-semibold text-[#172B4D] dark:text-white">
+                        <div>{inv.vendorName}</div>
+                        <div className="font-mono text-[10px] text-[#6B778C] dark:text-[#94A3B8]">
+                          {inv.vendorId}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-[#172B4D] dark:text-neutral-200">
+                        <div>{inv.clientName}</div>
+                        <div className="text-[10px] text-[#6B778C] dark:text-[#94A3B8]">
+                          {inv.clientId}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="font-mono text-[10px] text-[#0747A6] dark:text-[#579DFF] font-semibold bg-[#DEEBFF] dark:bg-[#1C2331] px-1.5 py-0.5 rounded border border-[#B3D4FF] dark:border-[#263042]">
+                          {inv.poNumber}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-xs">
+                        {inv.billingPeriod?.month} {inv.billingPeriod?.year}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono font-bold text-[#172B4D] dark:text-white">
+                        Rs {inv.grandTotal?.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                        Rs {collected?.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono font-bold">
+                        {bal === 0 ? (
+                          <span className="text-[#00875A]">Nil (Settled)</span>
+                        ) : (
+                          <span className="text-[#DE350B]">Rs {bal?.toLocaleString()}</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <StatusLozenge status={inv.status} size="sm" />
+                      </td>
+                      <td className="px-4 py-3 text-right space-x-1">
+                        {inv.status !== "Paid" && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedInvoiceForPayment(inv);
+                              setPaymentModalOpen(true);
+                            }}
+                            className="px-2 py-1 text-[11px] font-semibold bg-[#00875A] text-white hover:bg-[#006644] rounded transition shadow-2xs"
+                          >
+                            Collect
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenPreview(inv.invoiceNumber);
+                          }}
+                          className="px-2 py-1 text-[11px] font-semibold text-[#0052CC] dark:text-[#579DFF] hover:bg-[#DEEBFF] dark:hover:bg-[#1C2331] rounded transition"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -284,6 +308,16 @@ function VendorInvoices() {
         invoiceId={selectedInvoiceId}
         isOpen={previewModalOpen}
         onClose={() => setPreviewModalOpen(false)}
+        onSuccess={loadInvoices}
+      />
+
+      <RecordPaymentModal
+        invoice={selectedInvoiceForPayment}
+        isOpen={paymentModalOpen}
+        onClose={() => {
+          setPaymentModalOpen(false);
+          setSelectedInvoiceForPayment(null);
+        }}
         onSuccess={loadInvoices}
       />
     </div>

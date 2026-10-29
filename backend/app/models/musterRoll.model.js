@@ -24,6 +24,16 @@ const musterRollSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    vendorId: {
+      type: String,
+      default: "",
+      trim: true,
+      index: true,
+    },
+    vendorName: {
+      type: String,
+      default: "",
+    },
     clientId: {
       type: String,
       required: true,

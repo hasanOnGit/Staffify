@@ -7,15 +7,17 @@ const Vendor = require("../models/vendor.model");
 const Client = require("../models/client.model");
 const Contract = require("../models/contract.model");
 
-// GET /api/vendor-invoices - List with filters
+// GET /api/vendor-invoices - List with filters & tenant scoping
 router.get("/", async (req, res) => {
   try {
-    const { vendorId, clientId, status, month, year, search } = req.query;
+    const vendorId = req.headers["x-vendor-id"] || req.query.vendorId;
+    const { clientId, status, month, year, search, invoiceType } = req.query;
     const filter = {};
 
     if (vendorId && vendorId !== "All") filter.vendorId = vendorId;
     if (clientId && clientId !== "All") filter.clientId = clientId;
     if (status && status !== "All") filter.status = status;
+    if (invoiceType && invoiceType !== "All") filter.invoiceType = invoiceType;
     if (month && month !== "All") filter["billingPeriod.month"] = month;
     if (year && year !== "All") filter["billingPeriod.year"] = Number(year);
     if (search) {
@@ -31,10 +33,11 @@ router.get("/", async (req, res) => {
 
     const totalInvoiced = invoices.reduce((acc, inv) => acc + (inv.grandTotal || 0), 0);
     const totalGst = invoices.reduce((acc, inv) => acc + (inv.gstAmount || 0), 0);
-    const paidAmount = invoices
-      .filter((inv) => inv.status === "Paid")
-      .reduce((acc, inv) => acc + (inv.grandTotal || 0), 0);
-    const pendingPayout = totalInvoiced - paidAmount;
+    const totalCollected = invoices.reduce(
+      (acc, inv) => acc + (inv.amountPaid || (inv.status === "Paid" ? inv.grandTotal : 0)),
+      0
+    );
+    const pendingReceivables = Math.max(0, totalInvoiced - totalCollected);
 
     res.json({
       success: true,
@@ -43,8 +46,8 @@ router.get("/", async (req, res) => {
         totalInvoices: invoices.length,
         totalInvoiced,
         totalGst,
-        paidAmount,
-        pendingPayout,
+        totalCollected,
+        pendingReceivables,
       },
     });
   } catch (err) {
@@ -241,6 +244,73 @@ router.patch("/:id/status", async (req, res) => {
     });
   } catch (err) {
     console.error("Error updating invoice status:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST /api/vendor-invoices/:id/payments - Record client collection with partial amount & TDS
+router.post("/:id/payments", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount, tdsDeducted, paymentReference, paymentMode, notes } = req.body;
+
+    if (!amount || Number(amount) <= 0) {
+      return res.status(400).json({ success: false, message: "Valid payment amount is required." });
+    }
+
+    const invoice = await VendorInvoice.findOne({
+      $or: [{ invoiceNumber: id }, { _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null }],
+    });
+
+    if (!invoice) {
+      return res.status(404).json({ success: false, message: "Invoice not found." });
+    }
+
+    const payAmt = Number(amount);
+    const tdsAmt = Number(tdsDeducted) || 0;
+    const newAmountPaid = (invoice.amountPaid || 0) + payAmt;
+    const newTds = (invoice.tdsDeducted || 0) + tdsAmt;
+    const totalSettled = newAmountPaid + newTds;
+    const balanceDue = Math.max(0, invoice.grandTotal - totalSettled);
+
+    invoice.amountPaid = newAmountPaid;
+    invoice.tdsDeducted = newTds;
+    invoice.balanceDue = balanceDue;
+    invoice.status = balanceDue === 0 ? "Paid" : "Partially Paid";
+    invoice.paymentDate = new Date();
+    if (paymentReference) invoice.paymentReference = paymentReference;
+
+    invoice.paymentHistory = invoice.paymentHistory || [];
+    invoice.paymentHistory.push({
+      amount: payAmt,
+      tdsDeducted: tdsAmt,
+      date: new Date(),
+      paymentReference: paymentReference || `UTR-${Date.now().toString().slice(-8)}`,
+      paymentMode: paymentMode || "NEFT/RTGS",
+      notes: notes || "",
+    });
+
+    await invoice.save();
+
+    // Write down associated Purchase Order
+    if (invoice.poNumber) {
+      const po = await PurchaseOrder.findOne({ poNumber: invoice.poNumber });
+      if (po) {
+        po.utilizedAmount = (po.utilizedAmount || 0) + payAmt;
+        if (po.utilizedAmount >= po.poValue) {
+          po.status = "Exhausted";
+        }
+        await po.save();
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Payment of Rs ${payAmt.toLocaleString()} recorded. Remaining balance: Rs ${balanceDue.toLocaleString()}`,
+      data: invoice,
+    });
+  } catch (err) {
+    console.error("Error recording invoice payment:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 });

@@ -8,6 +8,17 @@ const workerSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    vendorId: {
+      type: String,
+      default: "",
+      trim: true,
+      index: true,
+    },
+    vendorName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     fullName: {
       type: String,
       required: true,

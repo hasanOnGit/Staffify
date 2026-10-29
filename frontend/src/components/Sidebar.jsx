@@ -14,6 +14,7 @@ import {
   ChevronRight,
   CalendarCheck,
   UserCheck,
+  Banknote,
 } from "lucide-react";
 import { seedApi } from "../services/api";
 import toast from "react-hot-toast";
@@ -82,6 +83,11 @@ const navSections = [
   {
     title: "Billing & Compliance",
     links: [
+      {
+        path: "/payroll",
+        label: "Payroll & Salary Processing",
+        icon: Banknote,
+      },
       {
         path: "/vendor-invoices",
         label: "Vendor Invoicing & Payouts",

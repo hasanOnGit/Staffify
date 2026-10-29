@@ -78,9 +78,40 @@ const vendorInvoiceSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    invoiceType: {
+      type: String,
+      enum: ["ClientBilling", "PlatformPayout"],
+      default: "ClientBilling",
+    },
+    amountPaid: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    tdsDeducted: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    balanceDue: {
+      type: Number,
+      default: function () {
+        return this.grandTotal || 0;
+      },
+    },
+    paymentHistory: [
+      {
+        amount: { type: Number, required: true },
+        tdsDeducted: { type: Number, default: 0 },
+        date: { type: Date, default: Date.now },
+        paymentReference: { type: String, default: "" },
+        paymentMode: { type: String, default: "NEFT/RTGS" },
+        notes: { type: String, default: "" },
+      },
+    ],
     status: {
       type: String,
-      enum: ["Draft", "Submitted", "Approved", "Paid", "Cancelled"],
+      enum: ["Draft", "Submitted", "Approved", "Partially Paid", "Paid", "Cancelled"],
       default: "Draft",
     },
     issueDate: {

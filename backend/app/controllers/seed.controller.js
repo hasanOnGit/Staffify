@@ -8,6 +8,7 @@ const Deployment = require("../models/deployment.model");
 const VendorInvoice = require("../models/vendorInvoice.model");
 const Worker = require("../models/worker.model");
 const MusterRoll = require("../models/musterRoll.model");
+const Payroll = require("../models/payroll.model");
 
 const seedData = async (req, res) => {
   try {
@@ -20,6 +21,7 @@ const seedData = async (req, res) => {
     await VendorInvoice.deleteMany({});
     await Worker.deleteMany({});
     await MusterRoll.deleteMany({});
+    await Payroll.deleteMany({});
 
     // 1. Create Vendors
     const vendors = await Vendor.insertMany([
@@ -883,6 +885,91 @@ const seedData = async (req, res) => {
       },
     ]);
 
+    // 9. Create Sample Payroll Run for Titanium Tech E-City Campus
+    const payrolls = await Payroll.insertMany([
+      {
+        payrollId: "PAY-2026-0001",
+        vendorId: "VND-1002",
+        vendorName: "Infiniti TechStaffing Services LLP",
+        clientId: "CLI-1001",
+        clientName: "Titanium Tech Hub Enterprises",
+        siteId: "CLI-1001-SITE-01",
+        siteName: "E-City Campus Alpha",
+        musterRollId: "MR-2026-0001",
+        month: "March",
+        year: 2026,
+        records: [
+          {
+            workerId: "WRK-8001",
+            workerName: "Abhishek Rao",
+            designation: "Full Stack Engineer",
+            payableDays: 26,
+            normalDailyRate: 5538,
+            overtimeHours: 12,
+            otHourlyRate: 1038,
+            basePay: 143988,
+            overtimePay: 12456,
+            grossSalary: 156444,
+            statutoryDeductions: {
+              employeePf: 17279,
+              esic: 0, // gross > 21000
+              professionalTax: 200,
+              tds: 0,
+              totalDeductions: 17479,
+            },
+            employerContributions: {
+              employerPf: 17279,
+              employerEsic: 0,
+            },
+            netSalary: 138965,
+            bankDetails: {
+              accountNumber: "029100192837",
+              ifscCode: "HDFC0000123",
+              bankName: "HDFC Bank",
+            },
+            status: "Pending",
+          },
+          {
+            workerId: "WRK-8002",
+            workerName: "Sneha Mukherjee",
+            designation: "DevOps Specialist",
+            payableDays: 25.5,
+            normalDailyRate: 6354,
+            overtimeHours: 8,
+            otHourlyRate: 1191,
+            basePay: 162027,
+            overtimePay: 9528,
+            grossSalary: 171555,
+            statutoryDeductions: {
+              employeePf: 19443,
+              esic: 0,
+              professionalTax: 200,
+              tds: 0,
+              totalDeductions: 19643,
+            },
+            employerContributions: {
+              employerPf: 19443,
+              employerEsic: 0,
+            },
+            netSalary: 151912,
+            bankDetails: {
+              accountNumber: "501002938471",
+              ifscCode: "ICIC0000002",
+              bankName: "ICICI Bank",
+            },
+            status: "Pending",
+          },
+        ],
+        totalHeadcount: 2,
+        totalGrossPay: 327999,
+        totalDeductions: 37122,
+        totalNetPayable: 290877,
+        status: "Approved",
+        approvedBy: "Priyanka Narang (Agency Finance Lead)",
+        approvedAt: new Date("2026-04-02"),
+      },
+    ]);
+
     if (res) {
       return res.json({
         success: true,
@@ -896,6 +983,7 @@ const seedData = async (req, res) => {
           invoices: invoices.length,
           workers: workers.length,
           musterRolls: musterRolls.length,
+          payrolls: payrolls.length,
         },
       });
     }

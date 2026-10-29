@@ -17,17 +17,39 @@ import {
   LogOut,
   ShieldCheck,
   CheckCircle2,
+  ChevronDown,
 } from "lucide-react";
 import StaffifyLogo from "./StaffifyLogo";
 import { useTheme } from "../context/ThemeContext";
+import { useWorkspace } from "../context/WorkspaceContext";
+import { vendorsApi } from "../services/api";
 import toast from "react-hot-toast";
 
 function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onQuickCreate, onSearchClick }) {
   const { toggleTheme, isDark } = useTheme();
+  const { workspace, isPlatformAdmin, activeVendorName, switchToPlatform, switchToAgency } = useWorkspace();
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
+  const [showWorkspaceMenu, setShowWorkspaceMenu] = useState(false);
+  const [vendorsList, setVendorsList] = useState([]);
   const [unreadCount, setUnreadCount] = useState(3);
+
+  const fetchVendorsForWorkspace = async () => {
+    try {
+      const res = await vendorsApi.getAll();
+      setVendorsList(res.data.data || []);
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  const handleToggleWorkspaceMenu = () => {
+    if (!showWorkspaceMenu && vendorsList.length === 0) {
+      fetchVendorsForWorkspace();
+    }
+    setShowWorkspaceMenu(!showWorkspaceMenu);
+  };
 
   const handleNotificationClick = () => {
     setShowNotifMenu(!showNotifMenu);
@@ -81,6 +103,96 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onQuickCreate, onSearchC
 
         {/* Right Side Controls */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          {/* Workspace Switcher (Platform Admin vs Agency Workspace) */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={handleToggleWorkspaceMenu}
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-md border border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] text-[#172B4D] dark:text-white hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] transition cursor-pointer"
+              title="Switch Workspace Scope"
+            >
+              {isPlatformAdmin ? (
+                <span className="flex items-center gap-1 text-[#0052CC] dark:text-[#579DFF]">
+                  <ShieldCheck size={14} />
+                  <span className="max-w-[120px] truncate hidden sm:inline">Platform Admin</span>
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                  <Building2 size={14} />
+                  <span className="max-w-[120px] truncate hidden sm:inline">{activeVendorName}</span>
+                </span>
+              )}
+              <ChevronDown size={12} className="text-[#6B778C]" />
+            </button>
+
+            {showWorkspaceMenu && (
+              <div className="absolute right-0 mt-2 w-72 rounded-lg bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] shadow-xl p-2 z-50 text-xs space-y-1.5 animate-page-enter">
+                <div className="px-2 py-1 text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
+                  Select Operating Workspace
+                </div>
+
+                {/* Platform Admin Option */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    switchToPlatform();
+                    setShowWorkspaceMenu(false);
+                    toast.success("Switched to Enterprise Platform Admin (Global)");
+                  }}
+                  className={`w-full text-left p-2 rounded flex items-center justify-between transition cursor-pointer ${
+                    isPlatformAdmin
+                      ? "bg-[#DEEBFF] dark:bg-[#1C2331] text-[#0052CC] dark:text-[#579DFF] font-semibold"
+                      : "hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331] text-[#172B4D] dark:text-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck size={14} className="text-[#0052CC] dark:text-[#579DFF]" />
+                    <div>
+                      <div className="font-semibold text-xs leading-tight">Enterprise Platform Admin</div>
+                      <div className="text-[10px] text-[#6B778C] dark:text-neutral-400">Global oversight & all agencies</div>
+                    </div>
+                  </div>
+                  {isPlatformAdmin && <CheckCircle2 size={14} className="text-[#0052CC] dark:text-[#579DFF]" />}
+                </button>
+
+                <div className="pt-1 border-t border-[#DFE1E6] dark:border-[#263042] px-2 text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
+                  Private Agency Workspaces
+                </div>
+
+                {/* Agency Options */}
+                <div className="max-h-48 overflow-y-auto space-y-0.5">
+                  {vendorsList.map((v) => {
+                    const isSelected = workspace.vendorId === v.vendorId;
+                    return (
+                      <button
+                        key={v.vendorId}
+                        type="button"
+                        onClick={() => {
+                          switchToAgency(v);
+                          setShowWorkspaceMenu(false);
+                          toast.success(`Switched to ${v.legalName} private workspace`);
+                        }}
+                        className={`w-full text-left p-2 rounded flex items-center justify-between transition cursor-pointer ${
+                          isSelected
+                            ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold"
+                            : "hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331] text-[#172B4D] dark:text-white"
+                        }`}
+                      >
+                        <div className="min-w-0 pr-2">
+                          <div className="font-semibold text-xs truncate leading-tight">{v.legalName}</div>
+                          <div className="text-[10px] text-[#6B778C] dark:text-neutral-400">
+                            {v.vendorId} &bull; {v.category}
+                          </div>
+                        </div>
+                        {isSelected && <CheckCircle2 size={14} className="text-emerald-600 dark:text-emerald-400 shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Quick "+ Create" Action Button */}
           <button
             type="button"

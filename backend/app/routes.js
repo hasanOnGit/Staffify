@@ -5,6 +5,7 @@ const deploymentRoutes = require("./controllers/deployment.controller");
 const vendorInvoiceRoutes = require("./controllers/vendorInvoice.controller");
 const workerRoutes = require("./controllers/worker.controller");
 const musterRollRoutes = require("./controllers/musterRoll.controller");
+const payrollRoutes = require("./controllers/payroll.controller");
 const dashboardRoutes = require("./controllers/dashboard.controller");
 const { router: seedRoutes } = require("./controllers/seed.controller");
 
@@ -17,5 +18,6 @@ module.exports = function (app) {
   app.use("/api/vendor-invoices", vendorInvoiceRoutes);
   app.use("/api/workers", workerRoutes);
   app.use("/api/muster-rolls", musterRollRoutes);
+  app.use("/api/payroll", payrollRoutes);
   app.use("/api/seed", seedRoutes);
 };

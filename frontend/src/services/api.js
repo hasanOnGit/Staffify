@@ -8,6 +8,22 @@ const API = axios.create({
   },
 });
 
+// Interceptor to inject active Agency Workspace tenant header
+API.interceptors.request.use((config) => {
+  try {
+    const ws = localStorage.getItem("staffify_workspace");
+    if (ws) {
+      const parsed = JSON.parse(ws);
+      if (parsed.mode === "agency" && parsed.vendorId) {
+        config.headers["x-vendor-id"] = parsed.vendorId;
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+  return config;
+});
+
 // Interceptor for centralized error notifications
 API.interceptors.response.use(
   (response) => response,
@@ -57,6 +73,14 @@ export const invoicesApi = {
   getById: (id) => API.get(`/vendor-invoices/${id}`),
   generate: (data) => API.post("/vendor-invoices/generate", data),
   updateStatus: (id, data) => API.patch(`/vendor-invoices/${id}/status`, data),
+  recordPayment: (id, data) => API.post(`/vendor-invoices/${id}/payments`, data),
+};
+
+export const payrollApi = {
+  getAll: (params) => API.get("/payroll", { params }),
+  getById: (id) => API.get(`/payroll/${id}`),
+  runPayroll: (data) => API.post("/payroll/run", data),
+  approve: (id) => API.patch(`/payroll/${id}/approve`),
 };
 
 export const workersApi = {
