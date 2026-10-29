@@ -3,10 +3,15 @@
  *
  * Parses natural language input, resolves conversational follow-ups and pronouns,
  * determines operational intent, validates permissions, and generates structured
- * query and action execution plans.
+ * query, module navigation, and action execution plans.
  */
 
-const { resolveCapability, CAPABILITY_REGISTRY } = require("./capabilityRegistry");
+const {
+  resolveCapability,
+  CAPABILITY_REGISTRY,
+  findModuleByTask,
+  getModulesDirectory,
+} = require("./capabilityRegistry");
 
 /**
  * Extract date or period hints from text
@@ -102,7 +107,7 @@ function detectAndNormalizeLanguage(rawText = "") {
     detectedLanguage = "hi";
     if (lower.includes("namaste") || lower.includes("pranam")) normalized = "hello";
     else if (lower.includes("kitne employees") || lower.includes("employees kitne") || lower.includes("staff kitna")) normalized = "department wise employee count";
-    else if (lower.includes("chutti apply") || lower.includes("leave apply") || lower.includes("chutti chahiye")) normalized = "apply for leave tomorrow";
+    else if (lower.includes("chutti apply") || lower.includes("leave apply") || lower.includes("chutti chahiye")) normalized = "where can I apply for leave?";
     else if (lower.includes("leave balance") || lower.includes("chutti bachi")) normalized = "what is my current leave balance?";
     else if (lower.includes("payroll") || lower.includes("kharcha") || lower.includes("salary")) normalized = "what is the total monthly payroll cost?";
     else if (lower.includes("attendance") || lower.includes("kaun present")) normalized = "who checked in today?";
@@ -213,7 +218,76 @@ function planQuery(messageText = "", previousContext = {}, userRole = "Employee"
     };
   }
 
-  // 2. Check for Open-Source Knowledge Base & Statutory Policy Inquiries
+  // 2. Check for Broad Module Directory / System Catalog Inquiries
+  const isBroadModuleCatalog =
+    lower.includes("what modules are available") ||
+    lower.includes("tell me about the modules") ||
+    lower.includes("tell me about modules") ||
+    lower.includes("what are the modules") ||
+    lower.includes("list all modules") ||
+    lower.includes("list modules") ||
+    lower.includes("show all modules") ||
+    lower.includes("show modules") ||
+    lower.includes("available modules") ||
+    lower.includes("system modules") ||
+    lower.includes("what can i do here") ||
+    lower.includes("explore modules") ||
+    lower.includes("module directory") ||
+    lower.includes("overview of modules") ||
+    lower.includes("all modules available") ||
+    cleanText === "modules" ||
+    cleanText === "module list";
+
+  if (isBroadModuleCatalog) {
+    return {
+      type: "MODULE_NAVIGATION",
+      isCatalogRequest: true,
+      userRole,
+      queryText: text,
+      module: "navigation",
+    };
+  }
+
+  // 3. Check for Task-to-Module Navigation Inquiries ("Where can I do X?", "How do I do Y?", "Which module...")
+  const isNavigationQuestion =
+    lower.startsWith("where ") ||
+    lower.startsWith("from where ") ||
+    lower.startsWith("how do i ") ||
+    lower.startsWith("how can i ") ||
+    lower.startsWith("how to ") ||
+    lower.startsWith("where to ") ||
+    lower.startsWith("which module ") ||
+    lower.startsWith("which page ") ||
+    lower.startsWith("which section ") ||
+    lower.startsWith("take me to ") ||
+    lower.startsWith("navigate to ") ||
+    lower.startsWith("open ") ||
+    lower.startsWith("go to ") ||
+    lower.includes("where can i ") ||
+    lower.includes("from where can i ") ||
+    lower.includes("from where do i ") ||
+    lower.includes("how do i ") ||
+    lower.includes("which module handles ") ||
+    lower.includes("which module does ");
+
+  if (isNavigationQuestion) {
+    const matched = findModuleByTask(text, userRole);
+    if (matched) {
+      return {
+        type: "MODULE_NAVIGATION",
+        isCatalogRequest: false,
+        matchedModule: matched.module,
+        matchedTask: matched.matchedTask,
+        isAuthorized: matched.isAuthorized,
+        steps: matched.steps,
+        userRole,
+        queryText: text,
+        module: matched.module.id,
+      };
+    }
+  }
+
+  // 4. Check for Open-Source Knowledge Base & Statutory Policy Inquiries
   const policyKeywords = [
     "what is sandwich leave",
     "sandwich leave policy",
@@ -260,7 +334,7 @@ function planQuery(messageText = "", previousContext = {}, userRole = "Employee"
     };
   }
 
-  // 3. Check if user is asking for an actionable workflow
+  // 5. Check if user is asking for an actionable workflow (Direct Action Command)
   if (
     lower.startsWith("apply for leave") ||
     lower.startsWith("request leave") ||
@@ -289,7 +363,14 @@ function planQuery(messageText = "", previousContext = {}, userRole = "Employee"
     };
   }
 
-  if (lower.includes("clock in") || lower.includes("punch in") || lower.includes("check in")) {
+  if (
+    cleanText === "clock in" ||
+    cleanText === "punch in" ||
+    cleanText === "check in" ||
+    lower.startsWith("clock in") ||
+    lower.startsWith("punch in") ||
+    lower.startsWith("check in")
+  ) {
     return {
       type: "ACTION_DRAFT",
       action: "punch_attendance",
@@ -304,7 +385,14 @@ function planQuery(messageText = "", previousContext = {}, userRole = "Employee"
     };
   }
 
-  if (lower.includes("clock out") || lower.includes("punch out") || lower.includes("check out")) {
+  if (
+    cleanText === "clock out" ||
+    cleanText === "punch out" ||
+    cleanText === "check out" ||
+    lower.startsWith("clock out") ||
+    lower.startsWith("punch out") ||
+    lower.startsWith("check out")
+  ) {
     return {
       type: "ACTION_DRAFT",
       action: "punch_attendance",
@@ -354,7 +442,7 @@ function planQuery(messageText = "", previousContext = {}, userRole = "Employee"
     };
   }
 
-  // 2. Check for Follow-up references: "them", "those", "only Noida", "exclude cancelled", "compare with last month"
+  // 6. Check for Follow-up references: "them", "those", "only Noida", "exclude cancelled", "compare with last month"
   const isFollowUp =
     lower.includes("only ") ||
     lower.includes("exclude ") ||
@@ -375,7 +463,7 @@ function planQuery(messageText = "", previousContext = {}, userRole = "Employee"
     filters = {}; // reset filters for new subject
   }
 
-  // 3. Extract and refine filters
+  // 7. Extract and refine filters
   const period = extractPeriod(text);
   if (period.month) filters.month = period.month;
   if (period.year) filters.year = period.year;

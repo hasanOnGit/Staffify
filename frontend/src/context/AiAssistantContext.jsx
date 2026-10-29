@@ -145,6 +145,8 @@ export function AiAssistantProvider({ children }) {
             columns: res.columns || [],
             kpis: res.kpis || [],
             actionDraft: res.actionDraft || null,
+            navigationCard: res.navigationCard || null,
+            moduleDirectory: res.moduleDirectory || null,
             citations: res.citations || [],
             context: res.context || {},
           },

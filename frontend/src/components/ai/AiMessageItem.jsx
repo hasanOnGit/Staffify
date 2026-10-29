@@ -18,6 +18,7 @@ import AiKpiCards from "./AiKpiCards";
 import AiDataTable from "./AiDataTable";
 import AiDataChart from "./AiDataChart";
 import AiActionCard from "./AiActionCard";
+import AiModuleNavCard from "./AiModuleNavCard";
 import { useAiAssistant } from "../../context/AiAssistantContext";
 import aiService from "../../services/ai.service";
 import toast from "react-hot-toast";
@@ -198,6 +199,14 @@ export default function AiMessageItem({ message }) {
 
             {/* Action Draft Confirmation Card */}
             {message.actionDraft && <AiActionCard draft={message.actionDraft} />}
+
+            {/* Module Navigation & Directory Card */}
+            {(message.navigationCard || message.moduleDirectory) && (
+              <AiModuleNavCard
+                navCard={message.navigationCard}
+                moduleDirectory={message.moduleDirectory}
+              />
+            )}
 
             {/* 6. INTERACTIVE CLICKABLE SUGGESTED FOLLOW-UPS */}
             {followUps.length > 0 && (

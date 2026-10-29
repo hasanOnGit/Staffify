@@ -8,6 +8,7 @@
 
 const { executeQueryPlan } = require("./dataAccessLayer");
 const { planQuery } = require("./queryPlanner");
+const { getModulesDirectory } = require("./capabilityRegistry");
 
 async function generateGroundedResponse(userMessage, conversationHistory = [], userContext = {}, previousContext = {}) {
   // 1. Generate query or action plan
@@ -215,6 +216,136 @@ Feel free to ask another query or click one of the quick suggestions below.`,
         },
       };
     }
+  }
+
+  // If user requested module navigation or system catalog discovery
+  if (plan.type === "MODULE_NAVIGATION") {
+    const role = userContext.role || "Employee";
+    const name = userContext.name || "there";
+
+    if (plan.isCatalogRequest) {
+      const directory = getModulesDirectory(role);
+      let totalCount = 0;
+      Object.values(directory).forEach((sec) => (totalCount += sec.length));
+
+      let descLines = [];
+      Object.entries(directory).forEach(([secName, mods]) => {
+        if (mods.length === 0) return;
+        descLines.push(`### ${secName}`);
+        mods.forEach((m) => {
+          descLines.push(`- **${m.title}** (\`${m.route}\`): ${m.description}`);
+        });
+      });
+
+      const followUps =
+        role === "Admin"
+          ? [
+              "Where do I add a new employee?",
+              "Where can I run monthly payroll?",
+              "Where do I view executive analytics?",
+              "Where can I apply for leave?",
+            ]
+          : role === "Manager"
+          ? [
+              "Where can I manage team squads?",
+              "Where can I post job openings?",
+              "Where can I check employee attendance?",
+              "Where can I apply for leave?",
+            ]
+          : [
+              "Where can I apply for leave?",
+              "How do I download my payslip?",
+              "Where can I clock in today?",
+              "Where can I see the org tree?",
+            ];
+
+      return {
+        intentType: "MODULE_DIRECTORY",
+        message: `Staffify provides **${totalCount} enterprise modules** available for your **${role}** role. Click any module below to jump directly to it.`,
+        summary: `Staffify provides **${totalCount} enterprise modules** configured for your **${role}** session. You can click any module card below to open it immediately.`,
+        description: descLines.join("\n"),
+        moduleDirectory: directory,
+        navigationCard: null,
+        suggestedFollowUps: followUps,
+        records: [],
+        columns: [],
+        kpis: [
+          { label: "Available Modules", value: `${totalCount} Modules`, change: "Configured", changeType: "positive" },
+          { label: "Active Role", value: role, change: "RBAC Enforced", changeType: "neutral" },
+          { label: "Navigation Support", value: "1-Click Direct Links", change: "Active", changeType: "positive" },
+        ],
+        totalCount,
+        citations: [{ source: "Staffify Enterprise Architecture", timestamp: new Date() }],
+        context: {
+          module: "navigation",
+          lastQueryText: userMessage,
+        },
+      };
+    }
+
+    // Specific Task to Module Navigation
+    const mod = plan.matchedModule;
+    const isAuthorized = plan.isAuthorized;
+    const targetRoute = mod.actionRoute || mod.route;
+
+    let summaryText = "";
+    let descText = "";
+
+    if (isAuthorized) {
+      summaryText = `You can do that in the **${mod.displayName}** module at \`${targetRoute}\`.`;
+
+      let stepsMarkdown = "";
+      if (mod.steps && mod.steps.length > 0) {
+        stepsMarkdown = `### Step-by-Step Instructions\n` + mod.steps.map((step, idx) => `${idx + 1}. ${step}`).join("\n");
+      }
+
+      descText = `${stepsMarkdown}\n\n### Module Details\n- **Module**: **${mod.displayName}**\n- **Section**: ${mod.section || "Workforce Operations"}\n- **Direct Link**: \`${targetRoute}\`\n- **Permitted Roles**: ${mod.allowedRoles.join(", ")}`;
+    } else {
+      summaryText = `The **${mod.displayName}** module is restricted to **${mod.allowedRoles.join(" & ")}** roles. Your current role is **${role}**.`;
+      descText = `### Role Authorization Required\n- **Target Module**: **${mod.displayName}** (\`${mod.route}\`)\n- **Required Permission**: ${mod.allowedRoles.join(", ")}\n- **Your Current Role**: ${role}\n\nIf you need access to this administrative operation, please contact your Organization Administrator or submit an IT Helpdesk access ticket.`;
+    }
+
+    const followUps = [
+      `What other modules are available?`,
+      mod.id !== "leaves" ? "Where can I apply for leave?" : "Where can I download my payslip?",
+      mod.id !== "attendance" ? "Where can I clock in today?" : "Where is the org tree?",
+    ];
+
+    return {
+      intentType: "MODULE_NAVIGATION",
+      message: summaryText,
+      summary: summaryText,
+      description: descText,
+      navigationCard: {
+        moduleId: mod.id,
+        title: mod.displayName,
+        section: mod.section,
+        route: mod.route,
+        actionRoute: targetRoute,
+        description: mod.description,
+        buttonText: `Open ${mod.displayName.split("&")[0].split("/")[0].trim()}`,
+        icon: mod.icon,
+        allowedRoles: mod.allowedRoles,
+        isAuthorized,
+        actionLabel: mod.actionLabel || `Navigate to ${mod.displayName}`,
+        steps: mod.steps || [],
+      },
+      moduleDirectory: null,
+      suggestedFollowUps: followUps,
+      records: [],
+      columns: [],
+      kpis: [
+        { label: "Target Module", value: mod.displayName.slice(0, 18), change: mod.section?.split(" ")[0] || "ESS", changeType: "neutral" },
+        { label: "Permission", value: isAuthorized ? "Granted" : "Restricted", change: isAuthorized ? "Authorized" : "Denied", changeType: isAuthorized ? "positive" : "negative" },
+        { label: "Destination", value: targetRoute, change: "Direct Route", changeType: "neutral" },
+      ],
+      totalCount: 1,
+      citations: [{ source: `Staffify Module Directory: ${mod.displayName}`, timestamp: new Date() }],
+      context: {
+        module: mod.id,
+        lastQueryText: userMessage,
+      },
+    };
   }
 
   // If user requested an action draft

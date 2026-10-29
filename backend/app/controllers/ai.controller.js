@@ -90,6 +90,8 @@ module.exports = function (app) {
         chartConfig: aiResult.chartConfig || null,
         detectedLanguage: aiResult.detectedLanguage || "en",
         actionDraft: aiResult.actionDraft || null,
+        navigationCard: aiResult.navigationCard || null,
+        moduleDirectory: aiResult.moduleDirectory || null,
         citations: aiResult.citations || [],
         error: aiResult.error || null,
       });
@@ -117,7 +119,11 @@ module.exports = function (app) {
         queryText: message.trim(),
         intentType:
           aiResult.intentType ||
-          (aiResult.actionDraft
+          (aiResult.navigationCard
+            ? "MODULE_NAVIGATION"
+            : aiResult.moduleDirectory
+            ? "MODULE_DIRECTORY"
+            : aiResult.actionDraft
             ? "ACTION_DRAFT"
             : aiResult.context?.module === "knowledge_base"
             ? "KNOWLEDGE_BASE"
@@ -157,6 +163,8 @@ module.exports = function (app) {
         kpis: aiResult.kpis || [],
         totalCount: aiResult.totalCount || 0,
         actionDraft: aiResult.actionDraft || null,
+        navigationCard: aiResult.navigationCard || null,
+        moduleDirectory: aiResult.moduleDirectory || null,
         citations: aiResult.citations || [],
         context: conversation.lastContext,
         executionTimeMs,
