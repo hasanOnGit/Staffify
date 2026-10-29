@@ -5,12 +5,15 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const User = require("../models/user.model");
 const authMiddleware = require("../middleware/auth.middleware");
+const { authRateLimiter } = require("../middleware/rateLimiter.middleware");
 
 const otpStore = new Map();
 
-module.exports = function(app){
-  
-  apiRoutes.post("/register", async (req, res) => {
+module.exports = function (app) {
+  /* ==========================================================
+     REGISTER USER (PROTECTED BY AUTH RATE LIMITER)
+     ========================================================== */
+  apiRoutes.post("/register", authRateLimiter, async (req, res) => {
     const { name, email, password, role } = req.body;
     try {
       if (!email || !password || !name) {
@@ -41,6 +44,7 @@ module.exports = function(app){
         {
           id: newUser._id,
           userId: newUser.userId,
+          employeeId: newUser.userId,
           name: newUser.name,
           email: newUser.email,
           role: newUser.role,
@@ -66,7 +70,10 @@ module.exports = function(app){
     }
   });
 
-  apiRoutes.post("/login", async (req, res) => {
+  /* ==========================================================
+     LOGIN USER (PROTECTED BY AUTH RATE LIMITER)
+     ========================================================== */
+  apiRoutes.post("/login", authRateLimiter, async (req, res) => {
     const { email, password } = req.body;
     const normalizedEmail = email?.trim().toLowerCase();
     try {
@@ -101,6 +108,7 @@ module.exports = function(app){
         {
           id: user._id,
           userId: user.userId,
+          employeeId: user.userId,
           name: user.name,
           email: user.email,
           role: userRole,
@@ -143,9 +151,9 @@ module.exports = function(app){
   });
 
   /* ==========================================================
-     GET PROFILE BY USER ID
+     GET PROFILE BY USER ID (PROTECTED BY AUTH)
      ========================================================== */
-  apiRoutes.get("/getProfile/:userId", async (req, res) => {
+  apiRoutes.get("/getProfile/:userId", authMiddleware, async (req, res) => {
     try {
       const { userId } = req.params;
       const user = await User.findOne({ userId }).select("-password");
@@ -159,21 +167,64 @@ module.exports = function(app){
   });
 
   /* ==========================================================
-     UPDATE PROFILE BY USER ID
+     UPDATE PROFILE BY USER ID (PROTECTED: ANTI-IDOR & ANTI-ELEVATION)
      ========================================================== */
-  apiRoutes.post("/updateProfile/:userId", async (req, res) => {
+  apiRoutes.post("/updateProfile/:userId", authMiddleware, async (req, res) => {
     try {
       const { userId } = req.params;
       const { name, phone, address, profilePicture, role } = req.body;
+
+      const isSelf = req.user.userId === userId || req.user.id === userId;
+      const isAdmin = req.user.role === "Admin";
+
+      // 1. Authorization: Only the user themselves or an Admin can update
+      if (!isSelf && !isAdmin) {
+        return res.status(403).json({
+          error: "Access denied. You can only update your own user profile.",
+          message: "Access denied. You can only update your own user profile.",
+        });
+      }
 
       const user = await User.findOne({ userId });
       if (!user) {
         return res.status(404).json({ message: "User not found." });
       }
 
+      // 2. Privilege Escalation Prevention: Only Admin can update role
+      if (role && role !== user.role) {
+        if (!isAdmin) {
+          return res.status(403).json({
+            error: "Privilege escalation denied: Only administrators can modify user roles.",
+            message: "Privilege escalation denied: Only administrators can modify user roles.",
+          });
+        }
+        
+        const oldRole = user.role;
+        user.role = role;
+
+        // Log sensitive role alteration to AuditLog
+        const recordAuditLog = app.get("recordAuditLog");
+        if (recordAuditLog) {
+          recordAuditLog({
+            action: "USER_ROLE_ELEVATED",
+            category: "Access & Security",
+            actorId: req.user.userId || req.user.employeeId,
+            actorName: req.user.name || "Admin",
+            actorRole: req.user.role,
+            targetEntity: "User",
+            targetId: user.userId,
+            targetName: user.name,
+            ipAddress: req.ip || "127.0.0.1",
+            status: "SUCCESS",
+            details: { previousRole: oldRole, updatedRole: role },
+          }).catch(() => {});
+        }
+      }
+
       if (name) user.name = name;
+      if (phone) user.phone = phone;
+      if (address) user.address = address;
       if (profilePicture) user.profilePicture = profilePicture;
-      if (role) user.role = role;
 
       await user.save();
 
@@ -193,9 +244,9 @@ module.exports = function(app){
   });
 
   /* ==========================================================
-     FORGET PASSWORD & OTP
+     FORGET PASSWORD & OTP (PROTECTED BY AUTH RATE LIMITER)
      ========================================================== */
-  apiRoutes.post("/forget-password", async (req, res) => {
+  apiRoutes.post("/forget-password", authRateLimiter, async (req, res) => {
     const { email } = req.body;
     try {
       const user = await User.findOne({ email });
@@ -218,7 +269,7 @@ module.exports = function(app){
     }
   });
 
-  apiRoutes.post("/verify-otp", async (req, res) => {
+  apiRoutes.post("/verify-otp", authRateLimiter, async (req, res) => {
     const { email, otp, newPassword } = req.body;
     try {
       const stored = otpStore.get(email);

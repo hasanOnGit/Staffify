@@ -9,6 +9,7 @@
   "scripts": {
     "start": "node index.js",
     "seed": "node app/seeds/masterDatabaseSeeder.js",
+    "test:security": "node scripts/securityVerificationTest.js",
     "test:e2e": "node scripts/e2eRoleFlowTest.js",
     "test": "node scripts/e2eRoleFlowTest.js"
   },
@@ -18,6 +19,8 @@
     "cors": "^2.8.6",
     "dotenv": "^18.0.8",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1"
   }

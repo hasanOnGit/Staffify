@@ -7,6 +7,8 @@ const ExpenseClaim = require("../models/expenseClaim.model");
 const Attendance = require("../models/attendance.model");
 const Employees = require("../models/employees.model");
 const Offboarding = require("../models/offboarding.model");
+const authMiddleware = require("../middleware/auth.middleware");
+const roleMiddleware = require("../middleware/role.middleware");
 
 // Seed default configs if none exist
 async function seedDefaultConfigs() {
@@ -329,10 +331,10 @@ module.exports = function (app) {
   seedDefaultConfigs();
 
   /**
-   * GET /api/webhooks/configs
+   * GET /api/webhooks/configs (ADMIN & MANAGER)
    * List all configured webhook integrations
    */
-  apiRoutes.get("/configs", async (req, res) => {
+  apiRoutes.get("/configs", authMiddleware, roleMiddleware("Admin", "Manager"), async (req, res) => {
     try {
       const configs = await WebhookConfig.find().sort({ createdAt: -1 });
       return res.status(200).json({ success: true, count: configs.length, data: configs });
@@ -342,10 +344,10 @@ module.exports = function (app) {
   });
 
   /**
-   * POST /api/webhooks/configs
+   * POST /api/webhooks/configs (ADMIN ONLY)
    * Create a new webhook integration
    */
-  apiRoutes.post("/configs", async (req, res) => {
+  apiRoutes.post("/configs", authMiddleware, roleMiddleware("Admin"), async (req, res) => {
     try {
       const { name, platform, webhookUrl, channelName, environment, subscribedEvents, description } = req.body;
 
@@ -374,10 +376,10 @@ module.exports = function (app) {
   });
 
   /**
-   * PUT /api/webhooks/configs/:id
+   * PUT /api/webhooks/configs/:id (ADMIN ONLY)
    * Update webhook config
    */
-  apiRoutes.put("/configs/:id", async (req, res) => {
+  apiRoutes.put("/configs/:id", authMiddleware, roleMiddleware("Admin"), async (req, res) => {
     try {
       const config = await WebhookConfig.findOne({
         $or: [{ configId: req.params.id }, { _id: req.params.id }],
@@ -412,10 +414,10 @@ module.exports = function (app) {
   });
 
   /**
-   * DELETE /api/webhooks/configs/:id
+   * DELETE /api/webhooks/configs/:id (ADMIN ONLY)
    * Delete a webhook config
    */
-  apiRoutes.delete("/configs/:id", async (req, res) => {
+  apiRoutes.delete("/configs/:id", authMiddleware, roleMiddleware("Admin"), async (req, res) => {
     try {
       const config = await WebhookConfig.findOneAndDelete({
         $or: [{ configId: req.params.id }, { _id: req.params.id }],
@@ -432,10 +434,10 @@ module.exports = function (app) {
   });
 
   /**
-   * POST /api/webhooks/test-dispatch
+   * POST /api/webhooks/test-dispatch (ADMIN & MANAGER)
    * Dispatch a test card or live notification to configured webhook
    */
-  apiRoutes.post("/test-dispatch", async (req, res) => {
+  apiRoutes.post("/test-dispatch", authMiddleware, roleMiddleware("Admin", "Manager"), async (req, res) => {
     try {
       const { configId, eventType = "LEAVE_REQUEST", customData } = req.body;
 
@@ -557,10 +559,10 @@ module.exports = function (app) {
   });
 
   /**
-   * GET /api/webhooks/logs
+   * GET /api/webhooks/logs (ADMIN & MANAGER)
    * View webhook audit logs with filtering and search
    */
-  apiRoutes.get("/logs", async (req, res) => {
+  apiRoutes.get("/logs", authMiddleware, roleMiddleware("Admin", "Manager"), async (req, res) => {
     try {
       const { platform, eventType, deliveryStatus, isResolved, search, limit = 50 } = req.query;
       const query = {};

@@ -1,4 +1,6 @@
 const AuditLog = require("../models/auditLog.model");
+const authMiddleware = require("../middleware/auth.middleware");
+const roleMiddleware = require("../middleware/role.middleware");
 
 // In-memory fallback if Mongo connection is absent or buffering
 let inMemoryLogs = [];
@@ -143,8 +145,8 @@ module.exports = function (app) {
   // Attach to app for internal controller access
   app.set("recordAuditLog", recordAuditLog);
 
-  // GET /api/audit-logs
-  app.get("/api/audit-logs", async (req, res) => {
+  // GET /api/audit-logs (ADMIN & MANAGER ONLY)
+  app.get("/api/audit-logs", authMiddleware, roleMiddleware("Admin", "Manager"), async (req, res) => {
     try {
       const { category, action, search, limit = 50 } = req.query;
       let filter = {};
@@ -188,12 +190,15 @@ module.exports = function (app) {
     }
   });
 
-  // POST /api/audit-logs
-  app.post("/api/audit-logs", async (req, res) => {
+  // POST /api/audit-logs (ADMIN ONLY)
+  app.post("/api/audit-logs", authMiddleware, roleMiddleware("Admin"), async (req, res) => {
     try {
       const clientIp = req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "127.0.0.1";
       const saved = await recordAuditLog({
         ...req.body,
+        actorId: req.user?.userId || req.user?.employeeId || req.body.actorId,
+        actorName: req.user?.name || req.body.actorName,
+        actorRole: req.user?.role || req.body.actorRole,
         ipAddress: req.body.ipAddress || clientIp,
       });
       res.status(201).json({ success: true, data: saved });

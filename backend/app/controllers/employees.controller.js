@@ -2,12 +2,14 @@ const express = require("express");
 const apiRoutes = express.Router();
 const newEmployee = require("../models/employees.model");
 const User = require("../models/user.model");
+const authMiddleware = require("../middleware/auth.middleware");
+const roleMiddleware = require("../middleware/role.middleware");
 
 module.exports = function (app) {
   /* ==========================================================
-     CREATE NEW EMPLOYEE (360 PROFILE)
+     CREATE NEW EMPLOYEE (ADMIN & MANAGER ONLY)
      ========================================================== */
-  apiRoutes.post("/createEmployee", async (req, res) => {
+  apiRoutes.post("/createEmployee", authMiddleware, roleMiddleware("Admin", "Manager"), async (req, res) => {
     try {
       const {
         name,
@@ -83,6 +85,24 @@ module.exports = function (app) {
         isActive: isActive !== undefined ? Boolean(isActive) : true,
       });
 
+      // Audit Logging
+      const recordAuditLog = app.get("recordAuditLog");
+      if (recordAuditLog) {
+        recordAuditLog({
+          action: "EMPLOYEE_ONBOARDED",
+          category: "Human Resources",
+          actorId: req.user?.userId || req.user?.employeeId,
+          actorName: req.user?.name || "HR Admin",
+          actorRole: req.user?.role || "Admin",
+          targetEntity: "Employee",
+          targetId: employeeId,
+          targetName: name,
+          ipAddress: req.ip || "127.0.0.1",
+          status: "SUCCESS",
+          details: { department: data.department, designation: data.designation },
+        }).catch(() => {});
+      }
+
       return res.status(201).json({
         message: "New employee profile created successfully",
         data,
@@ -94,9 +114,9 @@ module.exports = function (app) {
   });
 
   /* ==========================================================
-     GET ALL EMPLOYEES (WITH OPTIONAL FILTER & SEARCH)
+     GET ALL EMPLOYEES (AUTHENTICATED SESSIONS)
      ========================================================== */
-  apiRoutes.get("/getEmployee", async (req, res) => {
+  apiRoutes.get("/getEmployee", authMiddleware, async (req, res) => {
     try {
       const { department, status, search } = req.query;
       const query = {};
@@ -142,14 +162,14 @@ module.exports = function (app) {
     }
   };
 
-  apiRoutes.get("/getEmployeeById/:employeeId", handleGetById);
-  apiRoutes.get("/getEmployeeById", handleGetById);
-  apiRoutes.post("/getEmployeeById", handleGetById);
+  apiRoutes.get("/getEmployeeById/:employeeId", authMiddleware, handleGetById);
+  apiRoutes.get("/getEmployeeById", authMiddleware, handleGetById);
+  apiRoutes.post("/getEmployeeById", authMiddleware, handleGetById);
 
   /* ==========================================================
      GET EMPLOYEE BY USER ID (FOR SELF-SERVICE PROFILE)
      ========================================================== */
-  apiRoutes.get("/getEmployeeByUserId/:userId", async (req, res) => {
+  apiRoutes.get("/getEmployeeByUserId/:userId", authMiddleware, async (req, res) => {
     try {
       const { userId } = req.params;
       let employee = await newEmployee.findOne({
@@ -194,9 +214,9 @@ module.exports = function (app) {
   });
 
   /* ==========================================================
-     UPDATE EMPLOYEE (360 ATTRIBUTES)
+     UPDATE EMPLOYEE (ADMIN & MANAGER ONLY)
      ========================================================== */
-  apiRoutes.post("/updateEmployee", async (req, res) => {
+  apiRoutes.post("/updateEmployee", authMiddleware, roleMiddleware("Admin", "Manager"), async (req, res) => {
     try {
       const { employeeId, ...updates } = req.body;
 
@@ -235,6 +255,24 @@ module.exports = function (app) {
 
       await employee.save();
 
+      // Audit Logging
+      const recordAuditLog = app.get("recordAuditLog");
+      if (recordAuditLog) {
+        recordAuditLog({
+          action: "EMPLOYEE_UPDATED",
+          category: "Human Resources",
+          actorId: req.user?.userId || req.user?.employeeId,
+          actorName: req.user?.name || "HR Admin",
+          actorRole: req.user?.role || "Admin",
+          targetEntity: "Employee",
+          targetId: employeeId,
+          targetName: employee.name,
+          ipAddress: req.ip || "127.0.0.1",
+          status: "SUCCESS",
+          details: { updatedFields: Object.keys(updates) },
+        }).catch(() => {});
+      }
+
       return res.status(200).json({
         message: "Employee 360 profile updated successfully",
         data: employee,
@@ -245,15 +283,37 @@ module.exports = function (app) {
   });
 
   /* ==========================================================
-     DELETE EMPLOYEE
+     DELETE EMPLOYEE (STRICT ADMIN ONLY)
      ========================================================== */
-  apiRoutes.post("/deleteEmployee", async (req, res) => {
+  apiRoutes.post("/deleteEmployee", authMiddleware, roleMiddleware("Admin"), async (req, res) => {
     try {
       const { employeeId } = req.body;
+
+      if (!employeeId) {
+        return res.status(400).json({ message: "employeeId is required" });
+      }
 
       const employee = await newEmployee.findOneAndDelete({ employeeId });
       if (!employee) {
         return res.status(404).json({ message: "Employee not found" });
+      }
+
+      // Audit Logging
+      const recordAuditLog = app.get("recordAuditLog");
+      if (recordAuditLog) {
+        recordAuditLog({
+          action: "EMPLOYEE_DELETED",
+          category: "Human Resources",
+          actorId: req.user?.userId || req.user?.employeeId,
+          actorName: req.user?.name || "Admin",
+          actorRole: req.user?.role || "Admin",
+          targetEntity: "Employee",
+          targetId: employeeId,
+          targetName: employee.name,
+          ipAddress: req.ip || "127.0.0.1",
+          status: "SUCCESS",
+          details: { department: employee.department },
+        }).catch(() => {});
       }
 
       return res.status(200).json({
@@ -350,8 +410,8 @@ module.exports = function (app) {
     }
   };
 
-  apiRoutes.get("/getOrgTree", getOrgTreeHandler);
-  apiRoutes.get("/api/employees/org-tree", getOrgTreeHandler);
+  apiRoutes.get("/getOrgTree", authMiddleware, getOrgTreeHandler);
+  apiRoutes.get("/api/employees/org-tree", authMiddleware, getOrgTreeHandler);
 
   app.use("/api/employees", apiRoutes);
   app.use("/api", apiRoutes);

@@ -6,6 +6,8 @@ const Payroll = require("../models/payroll.model");
 const Leaves = require("../models/leave.model");
 const Attendance = require("../models/attendance.model");
 const Loan = require("../models/loan.model");
+const authMiddleware = require("../middleware/auth.middleware");
+const roleMiddleware = require("../middleware/role.middleware");
 
 // Month names helper
 const MONTH_NAMES = [
@@ -128,9 +130,9 @@ async function getOrCreateSalaryStructure(employeeId, customCtc = 600000) {
 
 module.exports = function (app) {
   /* ==========================================================
-     GET ALL SALARY STRUCTURES
+     GET ALL SALARY STRUCTURES (ADMIN & MANAGER)
      ========================================================== */
-  apiRoutes.get("/salary-structures", async (req, res) => {
+  apiRoutes.get("/salary-structures", authMiddleware, roleMiddleware("Admin", "Manager"), async (req, res) => {
     try {
       const structures = await SalaryStructure.find().sort({ employeeId: 1 });
       return res.status(200).json({ success: true, count: structures.length, data: structures });
@@ -140,11 +142,14 @@ module.exports = function (app) {
   });
 
   /* ==========================================================
-     GET SALARY STRUCTURE FOR EMPLOYEE
+     GET SALARY STRUCTURE FOR EMPLOYEE (SELF OR ADMIN/MANAGER)
      ========================================================== */
-  apiRoutes.get("/salary-structure/:employeeId", async (req, res) => {
+  apiRoutes.get("/salary-structure/:employeeId", authMiddleware, async (req, res) => {
     try {
       const { employeeId } = req.params;
+      if (req.user.role === "Employee" && req.user.employeeId !== employeeId) {
+        return res.status(403).json({ success: false, error: "Access denied. You can only view your own salary structure." });
+      }
       const struct = await getOrCreateSalaryStructure(employeeId);
       return res.status(200).json({ success: true, data: struct });
     } catch (err) {
@@ -153,9 +158,9 @@ module.exports = function (app) {
   });
 
   /* ==========================================================
-     UPDATE OR CREATE SALARY STRUCTURE
+     UPDATE OR CREATE SALARY STRUCTURE (ADMIN ONLY)
      ========================================================== */
-  apiRoutes.post("/salary-structure", async (req, res) => {
+  apiRoutes.post("/salary-structure", authMiddleware, roleMiddleware("Admin"), async (req, res) => {
     try {
       const {
         employeeId,
@@ -215,9 +220,9 @@ module.exports = function (app) {
   });
 
   /* ==========================================================
-     RUN MONTHLY PAYROLL BATCH (PROCESS ALL ACTIVE EMPLOYEES)
+     RUN MONTHLY PAYROLL BATCH (ADMIN ONLY)
      ========================================================== */
-  apiRoutes.post("/run", async (req, res) => {
+  apiRoutes.post("/run", authMiddleware, roleMiddleware("Admin"), async (req, res) => {
     try {
       const { month, year, processedBy } = req.body;
       const m = parseInt(month, 10) || new Date().getMonth() + 1;
@@ -417,14 +422,20 @@ module.exports = function (app) {
   });
 
   /* ==========================================================
-     GET PAYSLIPS LIST
+     GET PAYSLIPS LIST (RBAC SCOPED)
      ========================================================== */
-  apiRoutes.get("/payslips", async (req, res) => {
+  apiRoutes.get("/payslips", authMiddleware, async (req, res) => {
     try {
       const { employeeId, month, year, status } = req.query;
       const query = {};
 
-      if (employeeId) query.employeeId = employeeId;
+      // If user is Employee, scope strictly to their own employeeId
+      if (req.user?.role === "Employee") {
+        query.employeeId = req.user.employeeId;
+      } else if (employeeId) {
+        query.employeeId = employeeId;
+      }
+
       if (month) query.month = parseInt(month, 10);
       if (year) query.year = parseInt(year, 10);
       if (status) query.status = status;
@@ -437,15 +448,21 @@ module.exports = function (app) {
   });
 
   /* ==========================================================
-     GET INDIVIDUAL PAYSLIP BY ID
+     GET INDIVIDUAL PAYSLIP BY ID (RBAC PROTECTED)
      ========================================================== */
-  apiRoutes.get("/payslips/:payslipId", async (req, res) => {
+  apiRoutes.get("/payslips/:payslipId", authMiddleware, async (req, res) => {
     try {
       const { payslipId } = req.params;
       const payslip = await Payroll.findOne({ payslipId });
       if (!payslip) {
         return res.status(404).json({ success: false, error: "Payslip not found." });
       }
+
+      // If user is Employee, ensure they can only view their own payslip
+      if (req.user?.role === "Employee" && payslip.employeeId !== req.user.employeeId) {
+        return res.status(403).json({ success: false, error: "Access denied. You can only view your own payslip." });
+      }
+
       return res.status(200).json({ success: true, data: payslip });
     } catch (err) {
       return res.status(500).json({ success: false, error: err.message });
@@ -453,9 +470,9 @@ module.exports = function (app) {
   });
 
   /* ==========================================================
-     UPDATE PAYSLIP STATUS (e.g. RELEASE / PAID)
+     UPDATE PAYSLIP STATUS (ADMIN & MANAGER ONLY)
      ========================================================== */
-  apiRoutes.patch("/payslips/:payslipId/status", async (req, res) => {
+  apiRoutes.patch("/payslips/:payslipId/status", authMiddleware, roleMiddleware("Admin", "Manager"), async (req, res) => {
     try {
       const { payslipId } = req.params;
       const { status } = req.body;
@@ -467,6 +484,25 @@ module.exports = function (app) {
       if (!payslip) {
         return res.status(404).json({ success: false, error: "Payslip not found." });
       }
+
+      // Audit Logging
+      const recordAuditLog = app.get("recordAuditLog");
+      if (recordAuditLog) {
+        recordAuditLog({
+          action: "PAYSLIP_STATUS_UPDATED",
+          category: "Payroll & Statutory",
+          actorId: req.user?.userId || req.user?.employeeId,
+          actorName: req.user?.name || "Payroll Officer",
+          actorRole: req.user?.role || "Admin",
+          targetEntity: "Payslip",
+          targetId: payslipId,
+          targetName: payslip.employeeName,
+          ipAddress: req.ip || "127.0.0.1",
+          status: "SUCCESS",
+          details: { updatedStatus: status },
+        }).catch(() => {});
+      }
+
       return res.status(200).json({ success: true, data: payslip });
     } catch (err) {
       return res.status(500).json({ success: false, error: err.message });
@@ -474,9 +510,9 @@ module.exports = function (app) {
   });
 
   /* ==========================================================
-     GET PAYROLL SUMMARY METRICS FOR GIVEN MONTH & YEAR
+     GET PAYROLL SUMMARY METRICS (ADMIN & MANAGER ONLY)
      ========================================================== */
-  apiRoutes.get("/summary", async (req, res) => {
+  apiRoutes.get("/summary", authMiddleware, roleMiddleware("Admin", "Manager"), async (req, res) => {
     try {
       const m = parseInt(req.query.month, 10) || new Date().getMonth() + 1;
       const y = parseInt(req.query.year, 10) || new Date().getFullYear();
