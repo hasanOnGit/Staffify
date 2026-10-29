@@ -56,13 +56,13 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
       <div className="space-y-0.5">
         <div className="px-3 pb-1">
           <p className="text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
-            Self Service (ESS)
+            Self Service
           </p>
         </div>
 
         <NavLink to="/dashboard" className={getNavLinkClass} onClick={onCloseMobile}>
           <LayoutDashboard size={15} />
-          <span>For you (Dashboard)</span>
+          <span>Dashboard</span>
         </NavLink>
 
         <NavLink to="/copilot" className={getNavLinkClass} onClick={onCloseMobile}>
@@ -77,12 +77,12 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
 
         <NavLink to="/attendance" className={getNavLinkClass} onClick={onCloseMobile}>
           <Clock size={15} />
-          <span>Attendance & Swipes</span>
+          <span>Attendance & Clock In</span>
         </NavLink>
 
         <NavLink to="/leaves" className={getNavLinkClass} onClick={onCloseMobile}>
           <CalendarCheck size={15} />
-          <span>Leave & Balances</span>
+          <span>Leaves & Time Off</span>
         </NavLink>
 
         <NavLink to="/profile" className={getNavLinkClass} onClick={onCloseMobile}>
@@ -97,27 +97,27 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
 
         <NavLink to="/performance" className={getNavLinkClass} onClick={onCloseMobile}>
           <Target size={15} />
-          <span>Performance & OKRs</span>
+          <span>Performance & Goals</span>
         </NavLink>
 
         <NavLink to="/roster" className={getNavLinkClass} onClick={onCloseMobile}>
           <Calendar size={15} />
-          <span>Shift Roster Planner</span>
+          <span>Shift Schedule</span>
         </NavLink>
 
         <NavLink to="/helpdesk" className={getNavLinkClass} onClick={onCloseMobile}>
           <LifeBuoy size={15} />
-          <span>Helpdesk & Assets</span>
+          <span>Helpdesk & Support</span>
         </NavLink>
 
         <NavLink to="/org-chart" className={getNavLinkClass} onClick={onCloseMobile}>
           <Network size={15} />
-          <span>Organization Tree</span>
+          <span>Organization Chart</span>
         </NavLink>
 
         <NavLink to="/expenses" className={getNavLinkClass} onClick={onCloseMobile}>
           <Receipt size={15} />
-          <span>Expenses & Claims</span>
+          <span>Expenses & Reimbursements</span>
         </NavLink>
 
         <NavLink to="/timesheets" className={getNavLinkClass} onClick={onCloseMobile}>
@@ -127,11 +127,12 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
       </div>
 
       {/* MSS - Manager Self Service */}
+      {/* Manager Tools */}
       {isManager && !isAdmin && (
         <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6] dark:border-[#263042]">
           <div className="flex items-center justify-between px-3 pb-1">
             <p className="text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
-              Manager Services
+              Manager Tools
             </p>
             <span className="text-[9px] font-semibold text-[#0747A6] dark:text-[#579DFF] bg-[#DEEBFF] dark:bg-[#1C2331] px-1.5 py-0.2 rounded border border-[#B3D4FF] dark:border-[#263042]">
               Manager
@@ -140,37 +141,37 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
 
           <NavLink to="/teams" className={getNavLinkClass} onClick={onCloseMobile}>
             <Users2 size={15} />
-            <span>Squads & Rosters</span>
+            <span>Team Management</span>
           </NavLink>
 
           <NavLink to="/recruitment" className={getNavLinkClass} onClick={onCloseMobile}>
             <Briefcase size={15} />
-            <span>Recruitment & ATS</span>
+            <span>Recruitment & Hiring</span>
           </NavLink>
 
           <NavLink to="/analytics" className={getNavLinkClass} onClick={onCloseMobile}>
             <BarChart3 size={15} />
-            <span>Executive Analytics</span>
+            <span>Workforce Analytics</span>
           </NavLink>
 
           <NavLink to="/offboarding" className={getNavLinkClass} onClick={onCloseMobile}>
             <UserMinus size={15} />
-            <span>Exit Operations</span>
+            <span>Offboarding & Exits</span>
           </NavLink>
 
           <NavLink to="/webhook-bridge" className={getNavLinkClass} onClick={onCloseMobile}>
             <Webhook size={15} />
-            <span>Webhook Bridge</span>
+            <span>Webhooks & Integrations</span>
           </NavLink>
         </div>
       )}
 
-      {/* HR & System Administration */}
+      {/* Administration */}
       {isAdmin && (
         <div className="space-y-0.5 pt-3 border-t border-[#DFE1E6] dark:border-[#263042]">
           <div className="flex items-center justify-between px-3 pb-1">
             <p className="text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
-              HR & Administration
+              Administration
             </p>
             <span className="text-[9px] font-semibold text-[#403294] dark:text-purple-300 bg-[#EAE6FF] dark:bg-purple-950/40 px-1.5 py-0.2 rounded border border-[#C0B6F2] dark:border-purple-800">
               Admin
@@ -184,37 +185,37 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
 
           <NavLink to="/analytics" className={getNavLinkClass} onClick={onCloseMobile}>
             <BarChart3 size={15} />
-            <span>Executive Analytics</span>
+            <span>Workforce Analytics</span>
           </NavLink>
 
           <NavLink to="/webhook-bridge" className={getNavLinkClass} onClick={onCloseMobile}>
             <Webhook size={15} />
-            <span>Webhook Bridge</span>
+            <span>Webhooks & Integrations</span>
           </NavLink>
 
           <NavLink to="/payroll" className={getNavLinkClass} onClick={onCloseMobile}>
             <CreditCard size={15} />
-            <span>Payroll Processing</span>
+            <span>Payroll Management</span>
           </NavLink>
 
           <NavLink to="/recruitment" className={getNavLinkClass} onClick={onCloseMobile}>
             <Briefcase size={15} />
-            <span>Recruitment & ATS</span>
+            <span>Recruitment & Hiring</span>
           </NavLink>
 
           <NavLink to="/teams" className={getNavLinkClass} onClick={onCloseMobile}>
             <FolderKanban size={15} />
-            <span>Teams & Structure</span>
+            <span>Team Management</span>
           </NavLink>
 
           <NavLink to="/offboarding" className={getNavLinkClass} onClick={onCloseMobile}>
             <UserMinus size={15} />
-            <span>Exit Operations</span>
+            <span>Offboarding & Exits</span>
           </NavLink>
 
           <NavLink to="/audit-logs" className={getNavLinkClass} onClick={onCloseMobile}>
             <ShieldCheck size={15} />
-            <span>Audit & Governance</span>
+            <span>Audit Logs</span>
           </NavLink>
         </div>
       )}

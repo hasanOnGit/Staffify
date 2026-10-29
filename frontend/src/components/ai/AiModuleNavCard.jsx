@@ -145,7 +145,7 @@ export default function AiModuleNavCard({ navCard, moduleDirectory }) {
                   {hasDeepLink && (
                     <span className="flex items-center gap-1 text-[9px] font-semibold text-[#0052CC] dark:text-[#579DFF] bg-[#DEEBFF] dark:bg-blue-950/40 px-1.5 py-0.2 rounded border border-[#B3D4FF] dark:border-blue-800">
                       <Zap size={9} />
-                      <span>Action Deep Link</span>
+                      <span>Direct Action</span>
                     </span>
                   )}
                 </div>
@@ -161,7 +161,7 @@ export default function AiModuleNavCard({ navCard, moduleDirectory }) {
                         : "bg-[#FFEBE6] dark:bg-rose-950/40 text-[#DE350B] dark:text-rose-300 border border-[#FFBDAD] dark:border-rose-900"
                     }`}
                   >
-                    {navCard.isAuthorized ? "Authorized Access" : "Role Restricted"}
+                    {navCard.isAuthorized ? "Access Granted" : (navCard.allowedRoles?.[0] ? `${navCard.allowedRoles[0]} Required` : "Restricted")}
                   </span>
                   {shortcutHint && (
                     <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#FAFBFC] dark:bg-[#151B26] text-[#6B778C] dark:text-neutral-400 border border-[#DFE1E6] dark:border-[#263042] flex items-center gap-1">
@@ -189,10 +189,10 @@ export default function AiModuleNavCard({ navCard, moduleDirectory }) {
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[#6B778C] dark:text-neutral-400 flex items-center gap-1.5">
                   <CheckCircle2 size={12} className="text-[#00875A] dark:text-emerald-400" />
-                  <span>Interactive Workflow Guide:</span>
+                  <span>How to do this:</span>
                 </p>
                 <span className="text-[9px] font-semibold text-[#6B778C] dark:text-neutral-500">
-                  {navCard.steps.length} steps
+                  {navCard.steps.length} {navCard.steps.length === 1 ? "step" : "steps"}
                 </span>
               </div>
 
@@ -215,7 +215,7 @@ export default function AiModuleNavCard({ navCard, moduleDirectory }) {
           {/* Action Footer */}
           <div className="pt-2.5 border-t border-[#DFE1E6] dark:border-[#263042] flex items-center justify-between gap-2">
             <span className="text-[10px] text-[#6B778C] dark:text-neutral-400">
-              Role Access: {navCard.allowedRoles?.join(", ")}
+              Available for: {navCard.allowedRoles?.join(", ")}
             </span>
 
             {navCard.isAuthorized ? (
@@ -230,7 +230,7 @@ export default function AiModuleNavCard({ navCard, moduleDirectory }) {
             ) : (
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#DE350B] dark:text-rose-400 bg-[#FFEBE6] dark:bg-rose-950/40 px-2.5 py-1 rounded border border-[#FFBDAD] dark:border-rose-900">
                 <Lock size={12} />
-                <span>Requires Administrator Access</span>
+                <span>Requires {navCard.allowedRoles?.join(" or ") || "Administrator"} Access</span>
               </div>
             )}
           </div>
@@ -251,7 +251,7 @@ export default function AiModuleNavCard({ navCard, moduleDirectory }) {
               />
               <input
                 type="text"
-                placeholder="Search modules by title, task, or feature..."
+                placeholder="Search features or modules..."
                 value={dirSearch}
                 onChange={(e) => setDirSearch(e.target.value)}
                 className="w-full pl-8 pr-3 py-1.5 text-xs rounded-md bg-[#FAFBFC] dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] text-[#172B4D] dark:text-neutral-100 placeholder:text-[#6B778C] dark:placeholder:text-neutral-500 focus:outline-none focus:border-[#0052CC] dark:focus:border-[#579DFF]"
@@ -260,18 +260,18 @@ export default function AiModuleNavCard({ navCard, moduleDirectory }) {
 
             {/* Section Filter Pills */}
             <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5">
-              {["All", "Self Service (ESS)", "Manager Services", "HR & Administration"].map((sec) => (
+              {["All", "Self Service", "Manager Tools", "Administration"].map((sec) => (
                 <button
                   key={sec}
                   type="button"
                   onClick={() => setSelectedSection(sec)}
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold transition cursor-pointer shrink-0 ${
+                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold transition cursor-pointer shrink-0 ${
                     selectedSection === sec
                       ? "bg-[#0052CC] text-white"
                       : "bg-[#F4F5F7] dark:bg-[#151B26] text-[#42526E] dark:text-neutral-300 hover:bg-[#EBECF0] dark:hover:bg-[#263042]"
                   }`}
                 >
-                  {sec === "All" ? "All Sections" : sec.replace(/\s*\(.*?\)/, "")}
+                  {sec === "All" ? "All Sections" : sec}
                 </button>
               ))}
             </div>

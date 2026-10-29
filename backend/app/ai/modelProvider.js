@@ -261,8 +261,8 @@ Feel free to ask another query or click one of the quick suggestions below.`,
 
       return {
         intentType: "MODULE_DIRECTORY",
-        message: `Staffify provides **${totalCount} enterprise modules** available for your **${role}** role. Click any module below to jump directly to it.`,
-        summary: `Staffify provides **${totalCount} enterprise modules** configured for your **${role}** session. You can click any module card below to open it immediately.`,
+        message: `Staffify has **${totalCount} modules** available for your **${role}** account. Click any module below to open it directly.`,
+        summary: `Staffify has **${totalCount} modules** configured for your **${role}** account. Click any module below to open it directly.`,
         description: descLines.join("\n"),
         moduleDirectory: directory,
         navigationCard: null,
@@ -292,17 +292,17 @@ Feel free to ask another query or click one of the quick suggestions below.`,
     let descText = "";
 
     if (isAuthorized) {
-      summaryText = `You can do that in the **${mod.displayName}** module at \`${targetRoute}\`.`;
+      summaryText = `You can do this in **${mod.displayName}** (\`${targetRoute}\`).`;
 
       let stepsMarkdown = "";
       if (mod.steps && mod.steps.length > 0) {
-        stepsMarkdown = `### Step-by-Step Instructions\n` + mod.steps.map((step, idx) => `${idx + 1}. ${step}`).join("\n");
+        stepsMarkdown = `### How to do this\n` + mod.steps.map((step, idx) => `${idx + 1}. ${step}`).join("\n");
       }
 
-      descText = `${stepsMarkdown}\n\n### Module Details\n- **Module**: **${mod.displayName}**\n- **Section**: ${mod.section || "Workforce Operations"}\n- **Direct Link**: \`${targetRoute}\`\n- **Permitted Roles**: ${mod.allowedRoles.join(", ")}`;
+      descText = `${stepsMarkdown}\n\n### Module Information\n- **Module**: **${mod.displayName}**\n- **Section**: ${mod.section || "Self Service"}\n- **Direct Link**: \`${targetRoute}\`\n- **Available For**: ${mod.allowedRoles.join(", ")}`;
     } else {
-      summaryText = `The **${mod.displayName}** module is restricted to **${mod.allowedRoles.join(" & ")}** roles. Your current role is **${role}**.`;
-      descText = `### Role Authorization Required\n- **Target Module**: **${mod.displayName}** (\`${mod.route}\`)\n- **Required Permission**: ${mod.allowedRoles.join(", ")}\n- **Your Current Role**: ${role}\n\nIf you need access to this administrative operation, please contact your Organization Administrator or submit an IT Helpdesk access ticket.`;
+      summaryText = `The **${mod.displayName}** module is restricted to **${mod.allowedRoles.join(" & ")}** accounts. Your current role is **${role}**.`;
+      descText = `### Access Required\n- **Module**: **${mod.displayName}** (\`${mod.route}\`)\n- **Required Role**: ${mod.allowedRoles.join(", ")}\n- **Your Current Role**: ${role}\n\nIf you need access to this feature, please contact your Organization Administrator or raise a request with IT Helpdesk.`;
     }
 
     const followUps = [
@@ -310,6 +310,9 @@ Feel free to ask another query or click one of the quick suggestions below.`,
       mod.id !== "leaves" ? "Where can I apply for leave?" : "Where can I download my payslip?",
       mod.id !== "attendance" ? "Where can I clock in today?" : "Where is the org tree?",
     ];
+
+    const cleanTitle = mod.displayName.replace(/&.*/, '').trim();
+    const buttonLabel = mod.buttonText || `Open ${cleanTitle}`;
 
     return {
       intentType: "MODULE_NAVIGATION",
@@ -323,11 +326,11 @@ Feel free to ask another query or click one of the quick suggestions below.`,
         route: mod.route,
         actionRoute: targetRoute,
         description: mod.description,
-        buttonText: `Open ${mod.displayName.split("&")[0].split("/")[0].trim()}`,
+        buttonText: buttonLabel,
         icon: mod.icon,
         allowedRoles: mod.allowedRoles,
         isAuthorized,
-        actionLabel: mod.actionLabel || `Navigate to ${mod.displayName}`,
+        actionLabel: mod.actionLabel || `Open ${mod.displayName}`,
         steps: mod.steps || [],
       },
       moduleDirectory: null,
@@ -335,8 +338,8 @@ Feel free to ask another query or click one of the quick suggestions below.`,
       records: [],
       columns: [],
       kpis: [
-        { label: "Target Module", value: mod.displayName.slice(0, 18), change: mod.section?.split(" ")[0] || "ESS", changeType: "neutral" },
-        { label: "Permission", value: isAuthorized ? "Granted" : "Restricted", change: isAuthorized ? "Authorized" : "Denied", changeType: isAuthorized ? "positive" : "negative" },
+        { label: "Module", value: mod.displayName.slice(0, 18), change: mod.section || "Self Service", changeType: "neutral" },
+        { label: "Access", value: isAuthorized ? "Granted" : "Restricted", change: isAuthorized ? "Authorized" : "Denied", changeType: isAuthorized ? "positive" : "negative" },
         { label: "Destination", value: targetRoute, change: "Direct Route", changeType: "neutral" },
       ],
       totalCount: 1,

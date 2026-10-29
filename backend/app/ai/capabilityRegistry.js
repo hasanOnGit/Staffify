@@ -8,14 +8,14 @@
 
 const CAPABILITY_REGISTRY = {
   // ==========================================
-  // SELF SERVICE (ESS) MODULES
+  // SELF SERVICE MODULES
   // ==========================================
 
   dashboard: {
     id: "dashboard",
-    displayName: "Personal Overview & Activity",
+    displayName: "Dashboard",
     description: "Personal workplace summary, daily check-in status, quick action shortcuts, announcements, and key metrics.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/dashboard",
     actionRoute: "/dashboard",
     icon: "LayoutDashboard",
@@ -45,9 +45,9 @@ const CAPABILITY_REGISTRY = {
 
   copilot: {
     id: "copilot",
-    displayName: "AI Copilot Hub",
+    displayName: "AI Copilot",
     description: "Enterprise conversational workforce copilot grounded in verified MongoDB records with zero hallucinations.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/copilot",
     actionRoute: "/copilot",
     icon: "Sparkles",
@@ -75,16 +75,16 @@ const CAPABILITY_REGISTRY = {
 
   attendance: {
     id: "attendance",
-    displayName: "Attendance, Swipes & Biometrics",
+    displayName: "Attendance & Clock In",
     description: "Daily punches, swipe logs, check-ins, check-outs, work hours, regularization, geofences, and biometrics.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/attendance",
     actionRoute: "/attendance",
     icon: "Clock",
     allowedRoles: ["Admin", "Manager", "Employee"],
     modelName: "Attendance",
     primaryKey: "attendanceId",
-    actionLabel: "Clock In / Check Out",
+    actionLabel: "Clock In / Out",
     entities: ["attendance", "swipe", "punch", "check in", "check out", "work hours", "biometric", "regularization", "late", "clock in", "clock out", "geofence"],
     tasks: [
       "punch in",
@@ -131,9 +131,9 @@ const CAPABILITY_REGISTRY = {
 
   leaves: {
     id: "leaves",
-    displayName: "Leave Management & Balances",
+    displayName: "Leaves & Time Off",
     description: "Leave quotas, applications, manager approvals, sandwich policy inspection, and holiday calendar.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/leaves",
     actionRoute: "/leaves?apply=true",
     icon: "CalendarCheck",
@@ -187,9 +187,9 @@ const CAPABILITY_REGISTRY = {
 
   profile: {
     id: "profile",
-    displayName: "My Profile & Personal Dossier",
+    displayName: "My Profile",
     description: "Employee profile details, contact numbers, emergency contacts, bank accounts, and statutory identifiers.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/profile",
     actionRoute: "/profile",
     icon: "User",
@@ -223,9 +223,9 @@ const CAPABILITY_REGISTRY = {
 
   payslips: {
     id: "payslips",
-    displayName: "Payslips & Salary Slips",
+    displayName: "Payslips & Salary",
     description: "Monthly salary slips, gross earnings, statutory deductions (EPF, ESIC, PT, TDS), and downloadable PDF payslips.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/payslips",
     actionRoute: "/payslips",
     icon: "FileText",
@@ -263,16 +263,16 @@ const CAPABILITY_REGISTRY = {
 
   performance: {
     id: "performance",
-    displayName: "Performance Management & OKRs",
+    displayName: "Performance & Goals",
     description: "Quarterly OKRs, employee goals, annual appraisals, 1-on-1 meeting notes, ratings, and milestone reviews.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/performance",
     actionRoute: "/performance",
     icon: "Target",
     allowedRoles: ["Admin", "Manager", "Employee"],
     modelName: "Goal",
     primaryKey: "goalId",
-    actionLabel: "Update OKR Goals",
+    actionLabel: "Update Goals",
     entities: ["performance", "goal", "okr", "appraisal", "rating", "review", "one on one", "1-on-1", "kpi", "milestone", "self appraisal"],
     tasks: [
       "performance review",
@@ -312,16 +312,16 @@ const CAPABILITY_REGISTRY = {
 
   roster: {
     id: "roster",
-    displayName: "Shift Planning & Roster Schedules",
+    displayName: "Shift Schedule",
     description: "Weekly squad shifts (Morning, General, Evening, Night), roster matrix, and peer-to-peer shift swap requests.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/roster",
     actionRoute: "/roster",
     icon: "Calendar",
     allowedRoles: ["Admin", "Manager", "Employee"],
     modelName: "Shift",
     primaryKey: "shiftId",
-    actionLabel: "View Roster / Request Swap",
+    actionLabel: "View Shift Schedule",
     entities: ["roster", "shift", "schedule", "timetable", "night shift", "shift swap", "timing", "swap request", "work hours schedule"],
     tasks: [
       "shift schedule",
@@ -358,16 +358,16 @@ const CAPABILITY_REGISTRY = {
 
   helpdesk: {
     id: "helpdesk",
-    displayName: "IT Helpdesk & Asset Inventory",
+    displayName: "Helpdesk & Support",
     description: "Support tickets, incident queues, SLA response times, and company hardware asset allocation.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/helpdesk",
     actionRoute: "/helpdesk?ticket=true",
     icon: "LifeBuoy",
     allowedRoles: ["Admin", "Manager", "Employee"],
     modelName: "Ticket",
     primaryKey: "ticketId",
-    actionLabel: "Raise Support Ticket",
+    actionLabel: "Raise Ticket",
     entities: ["helpdesk", "ticket", "issue", "support", "incident", "asset", "laptop", "hardware", "macbook", "it request", "service desk", "equipment"],
     tasks: [
       "raise ticket",
@@ -410,14 +410,14 @@ const CAPABILITY_REGISTRY = {
 
   orgChart: {
     id: "org-chart",
-    displayName: "Organization Tree & Hierarchy",
+    displayName: "Organization Chart",
     description: "Interactive visual organizational tree, manager-employee reporting chains, squad leads, and department structures.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/org-chart",
     actionRoute: "/org-chart",
     icon: "Network",
     allowedRoles: ["Admin", "Manager", "Employee"],
-    actionLabel: "Explore Org Hierarchy",
+    actionLabel: "Explore Org Chart",
     entities: ["org chart", "org tree", "organization", "hierarchy", "reporting", "manager", "chain of command", "tree", "subordinates", "department tree"],
     tasks: [
       "org tree",
@@ -445,9 +445,9 @@ const CAPABILITY_REGISTRY = {
 
   expenses: {
     id: "expenses",
-    displayName: "Expense Claims & Reimbursements",
+    displayName: "Expenses & Reimbursements",
     description: "Employee business expense claims, merchant receipt attachments, travel per diems, and finance approvals.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/expenses",
     actionRoute: "/expenses?claim=true",
     icon: "Receipt",
@@ -494,9 +494,9 @@ const CAPABILITY_REGISTRY = {
 
   timesheets: {
     id: "timesheets",
-    displayName: "Project Timesheets & Client Hours",
+    displayName: "Project Timesheets",
     description: "Weekly project timesheets, task-level time logs, billable vs non-billable hours, and client billing.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/timesheets",
     actionRoute: "/timesheets",
     icon: "Clock",
@@ -540,9 +540,9 @@ const CAPABILITY_REGISTRY = {
 
   loans: {
     id: "loans",
-    displayName: "Salary Advances & Employee Loans",
+    displayName: "Salary Advance & Loans",
     description: "Salary advance disbursements, monthly EMI deduction amortization, interest rates, and loan balances.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/payslips",
     actionRoute: "/payslips?loan=true",
     icon: "CreditCard",
@@ -586,19 +586,19 @@ const CAPABILITY_REGISTRY = {
   },
 
   // ==========================================
-  // MANAGER SERVICES (MSS) MODULES
+  // MANAGER TOOLS MODULES
   // ==========================================
 
   teams: {
     id: "teams",
-    displayName: "Squads & Team Rosters",
+    displayName: "Team Management",
     description: "Squad management, cross-functional team structures, team lead assignments, and department rosters.",
-    section: "Manager Services",
+    section: "Manager Tools",
     route: "/teams",
     actionRoute: "/teams",
     icon: "Users2",
     allowedRoles: ["Admin", "Manager"],
-    actionLabel: "Manage Squads & Teams",
+    actionLabel: "Manage Teams",
     entities: ["team", "squad", "structure", "team members", "lead", "squads", "rosters", "group"],
     tasks: [
       "manage team",
@@ -612,8 +612,8 @@ const CAPABILITY_REGISTRY = {
       "view my squad",
     ],
     steps: [
-      "Navigate to 'Squads & Rosters' under Manager Services in the sidebar.",
-      "Click into any squad to inspect active rosters, assigned members, and squad leads.",
+      "Navigate to 'Team Management' under Manager Tools in the sidebar.",
+      "Click into any team to inspect active rosters, assigned members, and team leads.",
       "Assign or reassign team members and configure squad shift defaults.",
     ],
     samplePrompts: [
@@ -624,16 +624,16 @@ const CAPABILITY_REGISTRY = {
 
   recruitment: {
     id: "recruitment",
-    displayName: "Recruitment ATS & Candidate Pipeline",
+    displayName: "Recruitment & Hiring",
     description: "Job requisitions, candidate pipeline Kanban, interview rounds, offers, and hiring velocity.",
-    section: "Manager Services",
+    section: "Manager Tools",
     route: "/recruitment",
     actionRoute: "/recruitment",
     icon: "Briefcase",
     allowedRoles: ["Admin", "Manager"],
     modelName: "JobOpening",
     primaryKey: "jobId",
-    actionLabel: "Open Candidate Pipeline",
+    actionLabel: "View Candidates",
     entities: ["recruitment", "job", "candidate", "applicant", "pipeline", "ats", "interview", "hired", "offer", "requisition", "resumes"],
     tasks: [
       "post job",
@@ -649,8 +649,8 @@ const CAPABILITY_REGISTRY = {
       "view applicants",
     ],
     steps: [
-      "Navigate to 'Recruitment & ATS' under Manager Services.",
-      "Review the Kanban pipeline across Applied, Screened, Interview, Offered, and Hired stages.",
+      "Navigate to 'Recruitment & Hiring' under Manager Tools in the sidebar.",
+      "Review the candidate pipeline across Applied, Screened, Interview, Offered, and Hired stages.",
       "Click '+ Create Job' to post a new opening or drag candidate cards through interview rounds.",
     ],
     displayColumns: [
@@ -672,14 +672,14 @@ const CAPABILITY_REGISTRY = {
 
   analytics: {
     id: "analytics",
-    displayName: "Executive Workforce Analytics",
+    displayName: "Workforce Analytics",
     description: "High-level headcount charts, attendance turnout trends, attrition rates, and executive workforce metrics.",
-    section: "Manager Services",
+    section: "Manager Tools",
     route: "/analytics",
     actionRoute: "/analytics",
     icon: "BarChart3",
     allowedRoles: ["Admin", "Manager"],
-    actionLabel: "View Analytics Hub",
+    actionLabel: "View Analytics",
     entities: ["analytics", "charts", "metrics", "headcount", "attrition", "turnout", "workforce analytics", "trends", "kpi report"],
     tasks: [
       "workforce analytics",
@@ -693,7 +693,7 @@ const CAPABILITY_REGISTRY = {
       "view company charts",
     ],
     steps: [
-      "Navigate to 'Executive Analytics' under Manager Services in the sidebar.",
+      "Navigate to 'Workforce Analytics' under Manager Tools in the sidebar.",
       "Inspect interactive charts covering Headcount Growth, Turnout Ratios, Leave Utilization, and Attrition.",
       "Filter by department or time range to generate executive summary insights.",
     ],
@@ -706,9 +706,9 @@ const CAPABILITY_REGISTRY = {
 
   offboarding: {
     id: "offboarding",
-    displayName: "Exit Operations & Offboarding",
+    displayName: "Offboarding & Exits",
     description: "Resignation notices, exit clearance checklist, KT handover, and full & final (FnF) settlements.",
-    section: "Manager Services",
+    section: "Manager Tools",
     route: "/offboarding",
     actionRoute: "/offboarding",
     icon: "UserMinus",
@@ -731,7 +731,7 @@ const CAPABILITY_REGISTRY = {
       "process exit",
     ],
     steps: [
-      "Navigate to 'Exit Operations' under Manager Services in the sidebar.",
+      "Navigate to 'Offboarding & Exits' under Manager Tools in the sidebar.",
       "Review active resignations, notice periods, and clearance checklists (IT, Finance, HR).",
       "Complete departmental clearance sign-offs and initiate Full & Final calculation.",
     ],
@@ -754,9 +754,9 @@ const CAPABILITY_REGISTRY = {
 
   webhookBridge: {
     id: "webhook-bridge",
-    displayName: "Webhook Bridge & Event Subscriptions",
+    displayName: "Webhooks & Integrations",
     description: "Outbound HTTP webhook notifications for Slack, Microsoft Teams, and custom ERP integration endpoints.",
-    section: "Manager Services",
+    section: "Manager Tools",
     route: "/webhook-bridge",
     actionRoute: "/webhook-bridge",
     icon: "Webhook",
@@ -775,7 +775,7 @@ const CAPABILITY_REGISTRY = {
       "connect slack",
     ],
     steps: [
-      "Navigate to 'Webhook Bridge' under Manager Services.",
+      "Navigate to 'Webhooks & Integrations' under Manager Tools in the sidebar.",
       "Add your target webhook URL (Slack Incoming Webhook, Teams, or custom API).",
       "Select triggering event types (Leave Applied, Punch Recorded, Ticket Created) and test the payload delivery.",
     ],
@@ -786,14 +786,14 @@ const CAPABILITY_REGISTRY = {
   },
 
   // ==========================================
-  // HR & SYSTEM ADMINISTRATION MODULES
+  // ADMINISTRATION MODULES
   // ==========================================
 
   employees: {
     id: "employees",
-    displayName: "Employee Directory & Administration",
+    displayName: "Employee Directory",
     description: "Employee directory, profiles, departments, designations, onboarding wizard, and statutory records.",
-    section: "HR & Administration",
+    section: "Administration",
     route: "/employees",
     actionRoute: "/employees?create=true",
     icon: "Users",
@@ -816,7 +816,7 @@ const CAPABILITY_REGISTRY = {
       "register employee",
     ],
     steps: [
-      "Navigate to 'Employee Directory' under HR & Administration.",
+      "Navigate to 'Employee Directory' under Administration in the sidebar.",
       "Click '+ Add Employee' to open the enterprise onboarding modal.",
       "Enter personal details, department, designation, salary components, and statutory IDs.",
     ],
@@ -841,16 +841,16 @@ const CAPABILITY_REGISTRY = {
 
   payroll: {
     id: "payroll",
-    displayName: "Payroll Processing & Statutory",
+    displayName: "Payroll Management",
     description: "Salary structures, monthly payroll runs, EPF 12%, ESIC 0.75%, Professional Tax, TDS, and CTC calculations.",
-    section: "HR & Administration",
+    section: "Administration",
     route: "/payroll",
     actionRoute: "/payroll",
     icon: "CreditCard",
     allowedRoles: ["Admin"],
     modelName: "Payroll",
     primaryKey: "payrollId",
-    actionLabel: "Run Payroll Batch",
+    actionLabel: "Process Payroll",
     entities: ["payroll", "salary", "payslip", "ctc", "epf", "pf", "esi", "esic", "deductions", "net pay", "tax", "payroll run", "salary process"],
     tasks: [
       "run payroll",
@@ -866,7 +866,7 @@ const CAPABILITY_REGISTRY = {
       "calculate payroll",
     ],
     steps: [
-      "Navigate to 'Payroll Processing' under HR & Administration.",
+      "Navigate to 'Payroll Management' under Administration in the sidebar.",
       "Select the payroll cycle month, inspect attendance days and LOP deductions.",
       "Click 'Calculate & Run Payroll' to lock the batch and generate statutory remittance summaries.",
     ],
@@ -890,9 +890,9 @@ const CAPABILITY_REGISTRY = {
 
   auditLogs: {
     id: "audit-logs",
-    displayName: "Audit & Governance Trail",
+    displayName: "Audit Logs",
     description: "Immutable enterprise security log, tracking all user logins, HR actions, data exports, and permission alterations.",
-    section: "HR & Administration",
+    section: "Administration",
     route: "/audit-logs",
     actionRoute: "/audit-logs",
     icon: "ShieldCheck",
@@ -911,7 +911,7 @@ const CAPABILITY_REGISTRY = {
       "view audit trail",
     ],
     steps: [
-      "Navigate to 'Audit & Governance' under HR & Administration.",
+      "Navigate to 'Audit Logs' under Administration in the sidebar.",
       "Filter logs by event category (AUTH, CREATE, UPDATE, DELETE, HR_ACTION) or actor name.",
       "Click into any log entry to view exact IP, user agent, correlation ID, and record diff.",
     ],
@@ -923,9 +923,9 @@ const CAPABILITY_REGISTRY = {
 
   compliance: {
     id: "compliance",
-    displayName: "Statutory Compliance & Filings",
+    displayName: "Statutory Compliance",
     description: "Indian statutory compliance (EPF ECR, ESIC Return, PT Form 5, Form 24Q TDS), health audit.",
-    section: "HR & Administration",
+    section: "Administration",
     route: "/payroll",
     actionRoute: "/payroll",
     icon: "CreditCard",
@@ -944,7 +944,7 @@ const CAPABILITY_REGISTRY = {
       "statutory filings",
     ],
     steps: [
-      "Navigate to Payroll Processing under HR & Administration.",
+      "Navigate to 'Payroll Management' under Administration in the sidebar.",
       "Review the Statutory Compliance tab for EPF, ESIC, and PT liabilities.",
     ],
     displayColumns: [
@@ -964,9 +964,9 @@ const CAPABILITY_REGISTRY = {
 
   documents: {
     id: "documents",
-    displayName: "Official HR Letters & Document Templates",
+    displayName: "HR Documents & Letters",
     description: "Appointment letters, bonafide certificates, salary revisions, and exit experience letters.",
-    section: "HR & Administration",
+    section: "Administration",
     route: "/employees",
     actionRoute: "/employees",
     icon: "FileText",
@@ -1007,9 +1007,9 @@ const CAPABILITY_REGISTRY = {
 
   pulse: {
     id: "pulse",
-    displayName: "Pulse, Culture & Announcements",
+    displayName: "Company Announcements",
     description: "Company-wide broadcasts, peer-to-peer kudos recognitions, and work anniversary milestones.",
-    section: "Self Service (ESS)",
+    section: "Self Service",
     route: "/dashboard",
     actionRoute: "/dashboard",
     icon: "LayoutDashboard",
@@ -1134,13 +1134,13 @@ function getModulesDirectory(userRole = "Employee") {
   });
 
   const sections = {
-    "Self Service (ESS)": [],
-    "Manager Services": [],
-    "HR & Administration": [],
+    "Self Service": [],
+    "Manager Tools": [],
+    "Administration": [],
   };
 
   accessible.forEach((mod) => {
-    const sec = mod.section || "Self Service (ESS)";
+    const sec = mod.section || "Self Service";
     if (!sections[sec]) sections[sec] = [];
     sections[sec].push({
       id: mod.id,

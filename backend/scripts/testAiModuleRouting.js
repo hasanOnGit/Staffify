@@ -123,14 +123,14 @@ async function runTestSuite() {
   console.log('\n>>> SECTION 3: SYSTEM MODULE DIRECTORY CATALOG');
 
   const empDirectory = getModulesDirectory('Employee');
-  assert(empDirectory['Self Service (ESS)'].length >= 10, 'Employee sees all 10+ ESS modules');
-  assert(empDirectory['Manager Services'].length === 0, 'Employee does not see Manager Services');
-  assert(empDirectory['HR & Administration'].length === 0, 'Employee does not see Admin modules');
+  assert(empDirectory['Self Service'].length >= 10, 'Employee sees all 10+ Self Service modules');
+  assert(empDirectory['Manager Tools'].length === 0, 'Employee does not see Manager Tools');
+  assert(empDirectory['Administration'].length === 0, 'Employee does not see Admin modules');
 
   const adminDirectory = getModulesDirectory('Admin');
-  assert(adminDirectory['Self Service (ESS)'].length >= 10, 'Admin sees all ESS modules');
-  assert(adminDirectory['Manager Services'].length >= 4, 'Admin sees Manager Services modules');
-  assert(adminDirectory['HR & Administration'].length >= 2, 'Admin sees HR & Administration modules');
+  assert(adminDirectory['Self Service'].length >= 10, 'Admin sees all Self Service modules');
+  assert(adminDirectory['Manager Tools'].length >= 4, 'Admin sees Manager Tools modules');
+  assert(adminDirectory['Administration'].length >= 2, 'Admin sees Administration modules');
 
   // 4. Grounded Response Provider Tests
   console.log('\n>>> SECTION 4: GROUNDED RESPONSE GENERATION');
