@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Staffify Enterprise End-to-End System Guide</title>
+    <style>
+      @page {
+        size: A4 portrait;
+        margin: 20mm 15mm 22mm 15mm;
+      }
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 9.5pt;
+        line-height: 1.55;
+        color: #172B4D;
+        background: #FFFFFF;
+        margin: 0;
+        padding: 0;
+      }
+
+      h1 {
+        color: #0052CC;
+        font-size: 20pt;
+        font-weight: 800;
+        border-bottom: 2.5px solid #0052CC;
+        padding-bottom: 8px;
+        margin-top: 24pt;
+        margin-bottom: 14pt;
+        page-break-after: avoid;
+      }
+
+      h2 {
+        color: #0747A6;
+        font-size: 14pt;
+        font-weight: 700;
+        border-bottom: 1px solid #DFE1E6;
+        padding-bottom: 4px;
+        margin-top: 20pt;
+        margin-bottom: 10pt;
+        page-break-after: avoid;
+      }
+
+      h3 {
+        color: #172B4D;
+        font-size: 11pt;
+        font-weight: 700;
+        margin-top: 14pt;
+        margin-bottom: 6pt;
+        page-break-after: avoid;
+      }
+
+      p {
+        margin-top: 0;
+        margin-bottom: 8pt;
+      }
+
+      ul, ol {
+        margin-top: 0;
+        margin-bottom: 8pt;
+        padding-left: 18pt;
+      }
+
+      li {
+        margin-bottom: 3pt;
+      }
+
+      hr {
+        border: 0;
+        border-top: 1px solid #DFE1E6;
+        margin: 16pt 0;
+      }
+
+      code {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 8.5pt;
+        background: #F4F5F7;
+        border: 1px solid #DFE1E6;
+        padding: 1px 4px;
+        border-radius: 3px;
+        color: #0747A6;
+      }
+
+      pre {
+        background: #091E42;
+        color: #F4F5F7;
+        padding: 10pt 12pt;
+        border-radius: 5px;
+        font-size: 8.5pt;
+        line-height: 1.4;
+        overflow-x: hidden;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        margin: 10pt 0;
+        page-break-inside: avoid;
+      }
+
+      pre code {
+        background: transparent;
+        border: none;
+        color: #F4F5F7;
+        padding: 0;
+      }
+
+      .table-container {
+        margin: 10pt 0;
+        page-break-inside: avoid;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 8.5pt;
+      }
+
+      th {
+        background: #0052CC;
+        color: #FFFFFF;
+        text-align: left;
+        padding: 6pt 8pt;
+        font-weight: 700;
+        border: 1px solid #0052CC;
+      }
+
+      td {
+        padding: 5pt 8pt;
+        border: 1px solid #DFE1E6;
+        vertical-align: top;
+      }
+
+      tr:nth-child(even) td {
+        background: #FAFBFC;
+      }
+
+      .screenshot-figure {
+        margin: 14pt 0;
+        text-align: center;
+        page-break-inside: avoid;
+      }
+
+      .screenshot-figure img {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        border: 1px solid #DFE1E6;
+        box-shadow: 0 1px 3px rgba(9, 30, 66, 0.08);
+      }
+
+      figcaption {
+        font-size: 8pt;
+        font-weight: 600;
+        color: #6B778C;
+        margin-top: 4pt;
+        text-align: center;
+      }
+
+      a {
+        color: #0052CC;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Staffify Enterprise End-to-End System Guide & Operational Reference Manual</h1>
+
+<hr />
+
+<h2>Document Control & Executive Summary</h2>
+<ul><li><strong>Platform Name</strong>: Staffify & StaffifyGo Enterprise HRMS Suite</li><li><strong>Release Version</strong>: 2.4.0-Enterprise (Production Edition)</li><li><strong>Architecture</strong>: Distributed Single Page Application (React 19 + Tailwind CSS) with Node.js/Express.js RESTful API, MongoDB Object Modeling (39 Mongoose Schemas), and Google Gemini Multimodal Grounded Intelligence.</li><li><strong>Audience</strong>: System Administrators, HR Directors, Department Managers, Operations Supervisors, and General Employees.</li><li><strong>Design System</strong>: Atlassian Enterprise Design System (ADG) compliant with primary <code>#0052CC</code>, neutral lozenges, and zero Unicode emojis.</li></ul>
+<hr />
+
+<h2>Table of Contents</h2>
+1. <a href="#1-platform-architecture--security-foundations">Platform Architecture & Security Foundations</a>
+2. <a href="#2-role-based-access-control-rbac-matrix">Role-Based Access Control (RBAC) Matrix</a>
+3. <a href="#3-authentication--session-lifecycle">Authentication & Session Lifecycle</a>
+4. <a href="#module-01-workforce-command-center--executive-dashboard">Module 01: Workforce Command Center & Executive Dashboard</a>
+5. <a href="#module-02-attendance-management-geofencing--biometric-logs">Module 02: Attendance Management, Geofencing & Biometric Logs</a>
+6. <a href="#module-03-leave-management--statutory-sandwich-rule-enforcement">Module 03: Leave Management & Statutory Sandwich Rule Enforcement</a>
+7. <a href="#module-04-employee-directory--360-degree-personnel-dossiers">Module 04: Employee Directory & 360-Degree Personnel Dossiers</a>
+8. <a href="#module-05-payroll-execution--statutory-compliance-epf-esic-pt-tds">Module 05: Payroll Execution & Statutory Compliance (EPF, ESIC, PT, TDS)</a>
+9. <a href="#module-06-employee-self-service-payslips--salary-statements">Module 06: Employee Self-Service Payslips & Salary Statements</a>
+10. <a href="#module-07-performance-management-okrs--ai-smart-refiner">Module 07: Performance Management, OKRs & AI SMART Refiner</a>
+11. <a href="#module-08-recruitment-ats-job-requisitions--ai-interview-kits">Module 08: Recruitment ATS, Job Requisitions & AI Interview Kits</a>
+12. <a href="#module-09-expense-claims-policy-compliance-guard--reimbursements">Module 09: Expense Claims, Policy Compliance Guard & Reimbursements</a>
+13. <a href="#module-10-squad-shift-rostering--swap-request-workflows">Module 10: Squad Shift Rostering & Swap Request Workflows</a>
+14. <a href="#module-11-helpdesk-service-tickets--it-asset-management">Module 11: Helpdesk Service Tickets & IT Asset Management</a>
+15. <a href="#module-12-client-timesheets--project-hours-tracking">Module 12: Client Timesheets & Project Hours Tracking</a>
+16. <a href="#module-13-interactive-organization-hierarchy-tree">Module 13: Interactive Organization Hierarchy Tree</a>
+17. <a href="#module-14-executive-workforce-analytics--retention-reporting">Module 14: Executive Workforce Analytics & Retention Reporting</a>
+18. <a href="#module-15-employee-offboarding--full-and-final-ff-settlement">Module 15: Employee Offboarding & Full-and-Final (F&F) Settlement</a>
+19. <a href="#module-16-staffify-ai-copilot--multimodal-document-studio">Module 16: Staffify AI Copilot & Multimodal Document Studio</a>
+20. <a href="#module-17-tamper-evident-system-audit-trail-logs">Module 17: Tamper-Evident System Audit Trail Logs</a>
+21. <a href="#module-18-webhook-bridge--outbound-event-integrations">Module 18: Webhook Bridge & Outbound Event Integrations</a>
+22. <a href="#22-universal-zero-popup-print--vector-pdf-engine">Universal Zero-Popup Print & Vector PDF Engine</a>
+23. <a href="#23-platform-administration--maintenance-runbook">Platform Administration & Maintenance Runbook</a>
+
+<hr />
+
+<h2>1. Platform Architecture & Security Foundations</h2>
+
+<p>Staffify is architected for enterprise-scale human capital management, ensuring high availability, sub-second query performance, and strict regulatory compliance.</p>
+
+<h3>Technical Stack</h3>
+<ul><li><strong>Frontend Layer</strong>: React 19 SPA bundled via Vite, styled using Tailwind CSS and the Atlassian Design System palette (<code>#0052CC</code>, <code>#0747A6</code>, <code>#090D14</code>, <code>#172B4D</code>). Icons are rendered via Lucide React.</li><li><strong>Backend API Layer</strong>: Node.js and Express.js REST application operating under strict JSON contracts, rate limiting, Helmet HTTP security headers, and correlation trace IDs (<code>X-Request-Id</code>).</li><li><strong>Data Persistence Layer</strong>: MongoDB Atlas with 39 specialized Mongoose schemas featuring secondary indexes on <code>employeeId</code>, <code>date</code>, <code>jobId</code>, <code>candidateId</code>, and <code>status</code>.</li><li><strong>Artificial Intelligence Engine</strong>: Hybrid dual-tier intelligence consisting of:</li></ul>  1. <em>Deterministic Semantic Query Engine (DSQE)</em>: Zero-hallucination parameterized MongoDB aggregator running locally with 100% data privacy.
+  2. <em>Google Gemini Multimodal Copilot</em>: Document vision, resume ATS parsing, and receipt OCR running on <code>gemini-3.1-flash-lite</code>.
+
+<h3>Security Hardening Standards</h3>
+<ul><li><strong>Zero Server Fingerprinting</strong>: <code>X-Powered-By</code> header suppressed across all endpoints.</li><li><strong>Content Security & Framing</strong>: <code>X-Content-Type-Options: nosniff</code> and strict frame ancestry policies blocking clickjacking attacks.</li><li><strong>NoSQL Injection Defense</strong>: Sanitization middleware automatically strips recursive <code>$</code> and <code>.</code> operators from URL parameters and request payloads.</li><li><strong>IDOR Protection</strong>: All record mutations verify authorization context to prevent cross-tenant and horizontal privilege escalations.</li></ul>
+<hr />
+
+<h2>2. Role-Based Access Control (RBAC) Matrix</h2>
+
+<p>Staffify categorizes system capabilities across three standardized operational tiers:</p>
+
+<div class="table-container"><table><thead><tr><th>Module / Capability</th><th>Employee (ESS)</th><th>Manager (MSS)</th><th>Administrator (HR)</th></tr></thead><tbody><tr><td>Self-Service Dashboard & Clock-In</td><td>Allowed</td><td>Allowed</td><td>Allowed</td></tr><tr><td>Personal Attendance & Regularization</td><td>Allowed</td><td>Allowed</td><td>Allowed</td></tr><tr><td>Team Attendance Oversight & Approval</td><td>Restricted</td><td>Allowed</td><td>Allowed</td></tr><tr><td>Leave Balance & Leave Application</td><td>Allowed</td><td>Allowed</td><td>Allowed</td></tr><tr><td>Subordinate Leave Approval Tray</td><td>Restricted</td><td>Allowed</td><td>Allowed</td></tr><tr><td>Employee Master Directory (360 Dossiers)</td><td>Read-Only</td><td>Read-Only (Team)</td><td>Full Control</td></tr><tr><td>Payroll Processing & Statutory Lock</td><td>Restricted</td><td>Restricted</td><td>Full Control</td></tr><tr><td>Self-Service Payslip View & Print</td><td>Allowed</td><td>Allowed</td><td>Allowed</td></tr><tr><td>Goal Setting, OKRs & SMART Refiner</td><td>Allowed</td><td>Allowed</td><td>Allowed</td></tr><tr><td>Performance Appraisals & 1-on-1s</td><td>Self Review</td><td>Calibrate & Grade</td><td>System Config</td></tr><tr><td>Recruitment Pipeline & Candidate ATS</td><td>Restricted</td><td>Interviewer Mode</td><td>Full Pipeline Control</td></tr><tr><td>Expense Claims Submission & OCR</td><td>Allowed</td><td>Allowed</td><td>Allowed</td></tr><tr><td>Expense Reimbursement Approval Tray</td><td>Restricted</td><td>Allowed</td><td>Allowed</td></tr><tr><td>Shift Schedule & Shift Swapping</td><td>Allowed</td><td>Team Roster Matrix</td><td>Global Config</td></tr><tr><td>IT Service Desk Tickets & Assets</td><td>Allowed</td><td>Triage Support</td><td>Inventory Control</td></tr><tr><td>Project Timesheets Logging</td><td>Allowed</td><td>Review & Approve</td><td>Financial Audit</td></tr><tr><td>Executive Headcount Analytics</td><td>Restricted</td><td>Department Scope</td><td>Organization Scope</td></tr><tr><td>Resignation & Offboarding Clearances</td><td>Self Resign</td><td>Department Clearance</td><td>Full & Final Payout</td></tr><tr><td>AI Copilot & Multimodal Studio</td><td>Role-Scoped</td><td>Role-Scoped</td><td>Full System Access</td></tr><tr><td>Tamper-Evident Audit Trail Logs</td><td>Restricted</td><td>Read-Only</td><td>Audit Export</td></tr><tr><td>Outbound Webhook Bridge Gateway</td><td>Restricted</td><td>Restricted</td><td>Configure & Dispatch</td></tr></tbody></table></div>
+<hr />
+
+<h2>3. Authentication & Session Lifecycle</h2>
+
+<p>The authentication gateway provides single-credential login with instant role preview presets for rapid enterprise testing and deployment.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/01_login_screen.png" alt="Staffify Unified Enterprise Login Gateway" />
+        <figcaption>Figure: Staffify Unified Enterprise Login Gateway</figcaption>
+      </figure>
+
+<h3>Key Features</h3>
+<ul><li><strong>JSON Web Token (JWT) Security</strong>: Issues cryptographically signed 24-hour access tokens containing user identifiers, employee IDs, and verified system roles.</li><li><strong>BCrypt Password Hashing</strong>: Passwords stored using 10 salt rounds with adaptive computational work factor.</li><li><strong>Demo Role One-Click Switchers</strong>: Immediate access to verified demo accounts:</li></ul>  - Administrator: <code>admin@staffify.com</code> / <code>Admin@123</code>
+  - Manager: <code>manager@staffify.com</code> / <code>Manager@123</code>
+  - Employee: <code>employee@staffify.com</code> / <code>Employee@123</code>
+
+<hr />
+
+<h2>Module 01: Workforce Command Center & Executive Dashboard</h2>
+
+<p>The central landing command center synthesizes workforce KPIs, daily attendance widgets, real-time announcements, and pending action items.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/02_dashboard_overview.png" alt="Workforce Command Center &amp; Dashboard" />
+        <figcaption>Figure: Workforce Command Center &amp; Dashboard</figcaption>
+      </figure>
+
+<h3>Key Functional Capabilities</h3>
+1. <strong>Real-Time Attendance Clock-In Widget</strong>:
+   - Single-click <strong>Clock In</strong> and <strong>Clock Out</strong> action dispatcher with live time tracking.
+   - Automatically registers current IP address, GPS coordinate perimeters, and biometric device bindings.
+2. <strong>Executive Metric Tiles</strong>:
+   - Displays Total Headcount, Today's Present Workforce, Pending Leave Applications, and Active Support Tickets.
+3. <strong>Interactive Quick Actions Toolbar</strong>:
+   - Deep-linked shortcuts to Apply for Leave, Submit Reimbursement Claims, Log IT Tickets, or Launch AI Copilot.
+4. <strong>Broadcast & Announcement Feed</strong>:
+   - Organization-wide notices published by HR leadership with priority banners and delivery timestamps.
+
+<hr />
+
+<h2>Module 02: Attendance Management, Geofencing & Biometric Logs</h2>
+
+<p>Comprehensive daily timekeeping and physical workplace tracking combining mobile GPS geofencing, IP whitelisting, and eSSL/ZKTeco push biometric terminals.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/03_attendance_and_geofencing.png" alt="Attendance Register &amp; Geofencing Monitor" />
+        <figcaption>Figure: Attendance Register &amp; Geofencing Monitor</figcaption>
+      </figure>
+
+<h3>Daily Work Hours & Status Rules</h3>
+<ul><li><strong>Present</strong>: First clock-in on or before 09:30 AM with at least 8.0 logged working hours.</li><li><strong>Late Check-In</strong>: First clock-in after 09:30 AM (marked with warning status lozenge).</li><li><strong>Half Day</strong>: Total daily logged duration between 4.0 and 8.0 hours.</li><li><strong>Absent</strong>: Under 4.0 hours recorded with no approved leave or regularization.</li></ul>
+<h3>Geofence Enforcement & Mobile Validation</h3>
+<ul><li>Automatically measures Euclidean and Haversine distance between mobile clock-in GPS coordinates and corporate office coordinates (e.g. Bangalore HQ: <code>12.9716, 77.5946</code> within a 150-meter radius).</li><li>Outside-perimeter punches flag an <code>Unverified Location</code> anomaly for supervisor review.</li></ul>
+<h3>Embedded AI Regularization Reason Drafter</h3>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/04_attendance_regularization_modal.png" alt="AI Attendance Regularization Modal" />
+        <figcaption>Figure: AI Attendance Regularization Modal</figcaption>
+      </figure>
+
+<p>When an employee experiences turnstile delays or remote client travel:<br />1. Click <strong>Regularize</strong> on the disputed attendance row.<br />2. Click <strong>AI Draft Reason</strong> to automatically synthesize a legally sound explanation.<br />3. Or select quick corporate preset pills:<br />   - <em>GPS geofence radius deviation due to mobile network carrier latency.</em><br />   - <em>Biometric terminal hardware synchronization delay at entrance turnstile.</em><br />   - <em>Official duty client travel with reporting manager pre-authorization.</em><br />4. Submit the request directly to the manager's approval tray.</p>
+
+<hr />
+
+<h2>Module 03: Leave Management & Statutory Sandwich Rule Enforcement</h2>
+
+<p>Unified annual, casual, sick, and compensatory off management adhering strictly to statutory labour frameworks and corporate leave policies.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/05_leave_management.png" alt="Leave Quotas &amp; Approval Management" />
+        <figcaption>Figure: Leave Quotas &amp; Approval Management</figcaption>
+      </figure>
+
+<h3>The Statutory Sandwich Rule</h3>
+Under Staffify's automated sandwich rule engine:
+<ul><li>If an employee takes leave on Friday and Monday (bridging a weekend), Saturday and Sunday are automatically counted as leave days if the company's sandwich policy is enabled.</li><li>Prevents uncoordinated long-weekend absenteeism while maintaining mathematical balance tracking.</li></ul>
+<h3>Embedded AI Leave Reason Drafter</h3>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/06_apply_leave_modal.png" alt="Apply Leave Modal with AI Reason Drafter" />
+        <figcaption>Figure: Apply Leave Modal with AI Reason Drafter</figcaption>
+      </figure>
+
+<ul><li><strong>One-Click Professional Drafter</strong>: Formulates courteous, unambiguous reasons for planned absences.</li><li><strong>Contextual Scenario Pills</strong>:</li></ul>  - <em>Personal family commitment requiring planned absence; reachable via phone if urgent.</em>
+  - <em>Scheduled medical check-up and restorative wellness rest.</em>
+  - <em>Out-of-town domestic and municipal documentation work.</em>
+<ul><li><strong>Live Balance Projection</strong>: Dynamically computes remaining balance for Casual (CL), Sick (SL), and Earned (EL) leave quotas prior to submission.</li></ul>
+<hr />
+
+<h2>Module 04: Employee Directory & 360-Degree Personnel Dossiers</h2>
+
+<p>The authoritative employee record system storing personal, emergency, statutory, bank, and organizational hierarchy attributes.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/07_employee_directory.png" alt="Employee Master Directory" />
+        <figcaption>Figure: Employee Master Directory</figcaption>
+      </figure>
+
+<h3>Key Capabilities</h3>
+<ul><li><strong>Multi-Filter Search</strong>: Search across employee names, designations, departments, and active statuses with instantaneous debounced filtering.</li><li><strong>Direct Dossier Print Action</strong>: Print a standardized vector personnel dossier PDF directly from the table row via the printer icon.</li><li><strong>Bulk Action Toolbar</strong>: Select multiple employees for department reassignment, status updates, or bulk data export to CSV.</li></ul>
+<h3>The 360-Degree Employee Dossier Modal</h3>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/08_employee_dossier_modal.png" alt="Employee 360-Degree Personnel Dossier Modal" />
+        <figcaption>Figure: Employee 360-Degree Personnel Dossier Modal</figcaption>
+      </figure>
+
+<ul><li>Tabbed executive inspection of <strong>Personal</strong>, <strong>Emergency Contacts</strong>, <strong>Bank Account</strong>, <strong>Statutory (PAN/Aadhaar/UAN/PF)</strong>, and <strong>Reporting Structure</strong>.</li><li>Features an executive <strong>Print Dossier</strong> action that triggers the zero-popup vector print engine to generate an official 3-page personnel record file.</li></ul>
+<hr />
+
+<h2>Module 05: Payroll Execution & Statutory Compliance (EPF, ESIC, PT, TDS)</h2>
+
+<p>A mathematically validated Indian payroll processing engine incorporating statutory rules and one-click salary disbursement lock.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/09_payroll_and_compliance.png" alt="Payroll Processing &amp; Statutory Compliance Monitor" />
+        <figcaption>Figure: Payroll Processing &amp; Statutory Compliance Monitor</figcaption>
+      </figure>
+
+<h3>Formulaic Salary Breakdown</h3>
+<ul><li><strong>Basic Salary</strong>: 50% of Total Fixed CTC.</li><li><strong>House Rent Allowance (HRA)</strong>: 50% of Basic Salary (for metro locations).</li><li><strong>Special Allowance</strong>: Balancing component (<code>CTC - Basic - HRA</code>).</li><li><strong>Employee Provident Fund (EPF)</strong>: 12% of Basic Salary (statutory cap applicable).</li><li><strong>Employee State Insurance (ESIC)</strong>: 0.75% of Gross Pay (for employees earning up to INR 21,000/month).</li><li><strong>Professional Tax (PT)</strong>: INR 200/month (statutory state slab).</li><li><strong>TDS / Income Tax</strong>: Dynamically calculated based on Old vs New regime tax declarations.</li></ul>
+<h3>Administrative Controls</h3>
+<ul><li><strong>Run Monthly Payroll</strong>: Automatically aggregates working days, unpaid leaves (LWP), and approved loan EMI deductions to produce finalized payroll drafts.</li><li><strong>Statutory Returns Export</strong>: 1-click download of EPFO Electronic Challan cum Return (ECR) text files, ESIC contribution statements, and NEFT/RTGS bank disbursement sheets.</li></ul>
+<hr />
+
+<h2>Module 06: Employee Self-Service Payslips & Salary Statements</h2>
+
+<p>Secure portal for employees to review historical monthly compensation, statutory deductions, tax withholdings, and download authentic salary statements.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/10_payslips_statement.png" alt="Employee Payslip Self-Service Portal" />
+        <figcaption>Figure: Employee Payslip Self-Service Portal</figcaption>
+      </figure>
+
+<h3>Features</h3>
+<ul><li><strong>Visual Breakdown</strong>: Interactive cards showing Net Pay, Gross Earnings, and Total Deductions for every historical cycle.</li><li><strong>Zero-Popup Vector Print</strong>: Launches browser print dialog to print or "Save as PDF" with pristine vector fonts, letterhead styling, and net pay in words (e.g. <em>INR One Lakh Forty-Three Thousand Only</em>).</li></ul>
+<hr />
+
+<h2>Module 07: Performance Management, OKRs & AI SMART Refiner</h2>
+
+<p>Continuous performance management aligning individual key results with organizational Objectives and Key Results (OKRs).</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/11_performance_and_okrs.png" alt="Performance Objectives &amp; OKRs" />
+        <figcaption>Figure: Performance Objectives &amp; OKRs</figcaption>
+      </figure>
+
+<h3>Key Capabilities</h3>
+<ul><li><strong>OKR Progress Sliders</strong>: Drag-and-drop progress percentage tracking with visual completion statuses (Not Started, In Progress, On Track, At Risk, Completed).</li><li><strong>Quarterly Appraisals</strong>: Multi-tier review workflow supporting self-appraisal submissions, manager evaluations, and normalized final ratings.</li><li><strong>Continuous 1-on-1 Logs</strong>: Action item tracker for manager-employee coaching syncs.</li></ul>
+<h3>Embedded AI SMART Goal Refiner</h3>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/12_goal_modal_smart_refiner.png" alt="AI SMART Goal Refiner Modal" />
+        <figcaption>Figure: AI SMART Goal Refiner Modal</figcaption>
+      </figure>
+
+<p>Transform vague, non-actionable goals into structured OKRs:<br />1. Type a rough idea (e.g. <em>Speed up app</em> or <em>Learn cloud</em>).<br />2. Click <strong>AI SMART Refiner</strong>.<br />3. The engine automatically formulates:<br />   - A crisp, inspiring <strong>Objective Title</strong> (e.g. <em>Accelerate Platform Query Execution & Attain Sub-200ms API Response Benchmark</em>).<br />   - Three <strong>Measurable Key Milestones</strong> (e.g. <em>Index high-traffic MongoDB collections</em>, <em>Implement in-memory caching tier</em>, <em>Reduce bundle transfer payload by 35%</em>).<br />   - Appropriate <strong>Category</strong> and <strong>Focus Level Weightage</strong>.</p>
+
+<hr />
+
+<h2>Module 08: Recruitment ATS, Job Requisitions & AI Interview Kits</h2>
+
+<p>End-to-end Applicant Tracking System (ATS) managing job postings, resume parsing, candidate stages, and interview scorecards.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/13_recruitment_ats.png" alt="Recruitment ATS &amp; Candidate Pipeline" />
+        <figcaption>Figure: Recruitment ATS &amp; Candidate Pipeline</figcaption>
+      </figure>
+
+<h3>Visual Hiring Pipeline Stages</h3>
+Candidates progress smoothly through seven structured stages:
+<code>Applied</code> $\rightarrow$ <code>Screening</code> $\rightarrow$ <code>Technical Round</code> $\rightarrow$ <code>HR Interview</code> $\rightarrow$ <code>Offered</code> $\rightarrow$ <code>Hired</code> $\rightarrow$ <code>Rejected</code>.
+
+<h3>Embedded AI Multimodal Resume Parser & Interview Kit</h3>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/14_candidate_modal_interview_kit.png" alt="Candidate Application Modal with AI Interview Kit" />
+        <figcaption>Figure: Candidate Application Modal with AI Interview Kit</figcaption>
+      </figure>
+
+<ul><li><strong>Multimodal Resume OCR</strong>: Upload a candidate PDF resume to auto-populate contact details, years of experience, current employer, and calculate an ATS match score.</li><li><strong>AI Interview Kit Generator</strong>: Synthesizes 3 customized technical and behavioral interview questions tailored to the requisition title and experience level.</li><li><strong>Scorecard Feedback Assistant</strong>: Inside the candidate dossier, interviewers can click <strong>AI Assessment Drafter</strong> to quickly synthesize balanced, structured interview notes.</li></ul>
+<hr />
+
+<h2>Module 09: Expense Claims, Policy Compliance Guard & Reimbursements</h2>
+
+<p>Automated corporate expense management covering travel, client entertainment, equipment, and office consumables.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/15_expense_management.png" alt="Expense Reimbursement Claims Tray" />
+        <figcaption>Figure: Expense Reimbursement Claims Tray</figcaption>
+      </figure>
+
+<h3>Embedded AI Policy Compliance Guard</h3>
+When an employee enters claim details in the submission modal:
+<ul><li>The system checks line-item amounts against corporate category thresholds (e.g. INR 2,500 for Food, INR 5,000 for Local Conveyance, INR 15,000 for Travel).</li><li>Displays real-time warnings if a claim exceeds policy limits or requires senior management override.</li></ul>
+<h3>Printable Reimbursement Vouchers</h3>
+<ul><li>Click <strong>Print Voucher PDF</strong> on any approved or pending claim.</li><li>Generates a formal A4 reimbursement voucher complete with tax breakdown, category codes, policy compliance seal, and employee/approver signature lines.</li></ul>
+<hr />
+
+<h2>Module 10: Squad Shift Rostering & Swap Request Workflows</h2>
+
+<p>24/7 squad scheduling system for engineering on-call, technical support, operations, and sales squads.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/16_shift_rosters.png" alt="Squad Shift Rostering Matrix" />
+        <figcaption>Figure: Squad Shift Rostering Matrix</figcaption>
+      </figure>
+
+<h3>Features</h3>
+<ul><li><strong>Shift Templates</strong>: Pre-configured shifts including General (09:00 - 18:00), Morning (06:00 - 15:00), Afternoon (14:00 - 23:00), and Night (22:00 - 07:00).</li><li><strong>Roster Matrix Grid</strong>: Weekly grid view mapping team members to daily shift assignments with conflict detection.</li><li><strong>Shift Swap Requests</strong>: Employees can request peer shift swaps with automatic manager approval routing.</li></ul>
+<hr />
+
+<h2>Module 11: Helpdesk Service Tickets & IT Asset Management</h2>
+
+<p>Internal IT and HR helpdesk ticketing system integrated directly with hardware inventory allocation.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/17_helpdesk_and_assets.png" alt="Helpdesk Tickets &amp; Asset Management" />
+        <figcaption>Figure: Helpdesk Tickets &amp; Asset Management</figcaption>
+      </figure>
+
+<h3>Key Capabilities</h3>
+<ul><li><strong>Priority-Based Ticketing</strong>: Log Low, Medium, High, or Critical tickets with SLA countdown timers.</li><li><strong>Hardware Asset Allocation</strong>: Tracks assigned laptops, monitors, access badges, and peripherals with serial numbers, warranty dates, and condition logs.</li><li><strong>Status Triage</strong>: Filter tickets by <code>Open</code>, <code>In Progress</code>, <code>Resolved</code>, and <code>Closed</code> with technician notes.</li></ul>
+<hr />
+
+<h2>Module 12: Client Timesheets & Project Hours Tracking</h2>
+
+<p>Weekly project time allocation tracker for client billing, internal R&D tracking, and productivity monitoring.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/18_timesheets.png" alt="Weekly Client Timesheets" />
+        <figcaption>Figure: Weekly Client Timesheets</figcaption>
+      </figure>
+
+<h3>Workflows</h3>
+<ul><li><strong>Day-Wise Hours Entry</strong>: Log Monday through Friday project hours against assigned client accounts.</li><li><strong>Weekly Approval Cycle</strong>: Employees submit completed timesheets at the end of each week for supervisor sign-off.</li><li><strong>Overtime Calculation</strong>: Identifies billable overtime hours exceeding 40 hours per week.</li></ul>
+<hr />
+
+<h2>Module 13: Interactive Organization Hierarchy Tree</h2>
+
+<p>Dynamic visual organization chart rendering company-wide reporting relationships and squad structures.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/19_org_hierarchy_tree.png" alt="Interactive Organization Hierarchy Tree" />
+        <figcaption>Figure: Interactive Organization Hierarchy Tree</figcaption>
+      </figure>
+
+<h3>Features</h3>
+<ul><li><strong>Expandable Node Hierarchy</strong>: Click on any executive or team lead to expand direct and indirect reporting trees.</li><li><strong>Node Profile Badges</strong>: Displays designations, departments, employee IDs, and quick contact cards.</li><li><strong>Zoom & Pan Canvas</strong>: Fluid navigation across small teams or large 500+ employee structures.</li></ul>
+<hr />
+
+<h2>Module 14: Executive Workforce Analytics & Retention Reporting</h2>
+
+<p>Strategic human capital analytics dashboard providing executive insights into workforce dynamics.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/20_workplace_analytics.png" alt="Executive Workforce Analytics" />
+        <figcaption>Figure: Executive Workforce Analytics</figcaption>
+      </figure>
+
+<h3>Metrics Covered</h3>
+<ul><li><strong>Headcount by Department</strong>: Interactive breakdown across Engineering, HR, Product, Sales, and Finance.</li><li><strong>Attrition & Retention Trends</strong>: 12-month rolling retention rates and voluntary departure patterns.</li><li><strong>Gender & Diversity Ratios</strong>: Organization-wide diversity tracking.</li><li><strong>Leave Utilization Rates</strong>: Identifies underutilized and overutilized leave categories across squads.</li></ul>
+<hr />
+
+<h2>Module 15: Employee Offboarding & Full-and-Final (F&F) Settlement</h2>
+
+<p>Structured employee departure lifecycle guaranteeing thorough departmental clearances and compliant payouts.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/21_offboarding_and_settlement.png" alt="Employee Offboarding &amp; F&amp;F Settlement" />
+        <figcaption>Figure: Employee Offboarding &amp; F&amp;F Settlement</figcaption>
+      </figure>
+
+<h3>Multi-Department Clearance Checklist</h3>
+Every resignation triggers an automated clearance workflow across:
+1. <strong>IT Department</strong>: Hardware asset recovery, account deactivation, and access revocation.
+2. <strong>Finance Department</strong>: Outstanding salary advances/loan recovery and travel expense reconciliation.
+3. <strong>Operations & Facilities</strong>: Desk handover, physical access keycard return.
+4. <strong>HR Department</strong>: Exit interview completion and final gratuity/leave encashment calculation.
+
+<h3>Full & Final Payout Execution</h3>
+<ul><li>Computes unencashed leave balances (EL encashment formula: <code>Basic / 30 <em> Unused Days</code>).</li><li>Calculates statutory gratuity for employees completing 5+ years of continuous service.</li><li>Generates official Relieving and Experience certificates.</li></ul>
+<hr />
+
+<h2>Module 16: Staffify AI Copilot & Multimodal Document Studio</h2>
+
+<p>Centralized enterprise AI workspace combining verified database intelligence with legal HR document generation.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/22_ai_copilot_workspace.png" alt="Staffify AI Copilot &amp; Document Studio" />
+        <figcaption>Figure: Staffify AI Copilot &amp; Document Studio</figcaption>
+      </figure>
+
+<h3>Dual-Tab Capabilities</h3>
+<ul><li><strong>Tab 1: AI Copilot Assistant</strong>:</li></ul>  - Conversational natural language queries backed by our Deterministic Semantic Query Engine (DSQE).
+  - Verifies database records in real time with zero hallucination.
+  - Suggests interactive module navigation cards and pre-drafted authorized actions.
+<ul><li><strong>Tab 2: Multimodal Document Studio</strong>:</li></ul>  - Auto-synthesizes standardized, legally grounded Appointment Letters, Relieving Letters, Bonafide Certificates, and Salary Revision Letters.
+  - Generates downloadable print-ready documents with official letterhead and authorized signatory seals.
+
+<hr />
+
+<h2>Module 17: Tamper-Evident System Audit Trail Logs</h2>
+
+<p>Enterprise compliance audit log capturing all security-sensitive actions across the platform.</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/23_audit_logs.png" alt="Tamper-Evident System Audit Trail Logs" />
+        <figcaption>Figure: Tamper-Evident System Audit Trail Logs</figcaption>
+      </figure>
+
+<h3>Recorded Event Metadata</h3>
+<ul><li><strong>Timestamp</strong>: Precise millisecond ISO timestamp.</li><li><strong>Actor Identity</strong>: User ID, name, and role initiating the event.</li><li><strong>Action Type</strong>: E.g. <code>LOGIN_SUCCESS</code>, <code>PAYROLL_LOCKED</code>, <code>EMPLOYEE_MUTATED</code>, <code>EXPENSE_APPROVED</code>.</li><li><strong>IP Address & User Agent</strong>: Client origin IP and browser signature.</li><li><strong>Target Record</strong>: Affected database collection and entity identifier.</li></ul>
+<hr />
+
+<h2>Module 18: Webhook Bridge & Outbound Event Integrations</h2>
+
+<p>Outbound integration gateway broadcasting platform lifecycle events to third-party endpoints (Slack, Microsoft Teams, Zapier).</p>
+
+<figure class="screenshot-figure">
+        <img src="assets/screenshots/24_webhook_bridge.png" alt="Webhook Bridge Integration Gateway" />
+        <figcaption>Figure: Webhook Bridge Integration Gateway</figcaption>
+      </figure>
+
+<h3>Event Triggers</h3>
+<ul><li><code>attendance.clock_in</code> / <code>attendance.clock_out</code></li><li><code>leave.applied</code> / <code>leave.approved</code></li><li><code>payroll.disbursed</code></li><li><code>candidate.hired</code></li><li><code>expense.approved</code></li><li><code>helpdesk.ticket_created</code></li></ul>
+<h3>Security Standards</h3>
+<ul><li>HMAC-SHA256 signature generated using a shared secret header (<code>X-Staffify-Signature</code>).</li><li>Exponential backoff retry queue for transient HTTP delivery failures.</li></ul>
+<hr />
+
+<h2>22. Universal Zero-Popup Print & Vector PDF Engine</h2>
+
+<p>Staffify implements a zero-popup print and vector PDF architecture, replacing popup-blocked <code>window.open</code> calls with a clean hidden <code><iframe></code> dispatcher.</p>
+
+<h3>Architectural Workflow</h3>
+<pre><code class="language-">[User Action: Click Print] 
+       │
+       ▼
+[Create Sandboxed Hidden &lt;iframe&gt; in DOM]
+       │
+       ▼
+[Inject BASE_PRINT_CSS &amp; Vector Document HTML]
+       │
+       ▼
+[Trigger iframe.contentWindow.print()]
+       │
+       ▼
+[Native Browser Print / Save as PDF Dialog Opens]
+       │
+       ▼
+[Cleanup &amp; Destroy &lt;iframe&gt; after 3.0 Seconds]</code></pre>
+
+<h3>Standard Documents Supported</h3>
+1. <strong>Payslips & Salary Statements</strong>: Clean A4 layout with letterhead, statutory deductions, and net pay in words.
+2. <strong>Monthly Attendance Registers</strong>: Timesheet breakdown with work hours, regularization states, and overtime totals.
+3. <strong>Expense Reimbursement Vouchers</strong>: Itemized receipts table, policy compliance seal, and approver signature line.
+4. <strong>Employee 360 Dossiers</strong>: Multi-page master record file containing complete employment, bank, and statutory history.
+5. <strong>Official HR Letters</strong>: Legally structured Appointment, Relieving, Bonafide, and Experience certificates.
+
+<hr />
+
+<h2>23. Platform Administration & Maintenance Runbook</h2>
+
+<h3>Starting & Stopping Services</h3>
+<pre><code class="language-bash"># 1. Start Backend API Server (Port 5000)
+cd backend
+npm start
+
+<h1>2. Start Frontend SPA Dev Server (Port 5173)</h1>
+cd frontend
+npm run dev
+
+<h1>3. Build Production Bundle</h1>
+cd frontend
+npm run build</code></pre>
+
+<h3>Database Seeding & Reset</h3>
+To reset and re-seed the full enterprise dataset (15 employees, 30 days attendance, payrolls, OKRs, candidates, assets):
+<pre><code class="language-bash">cd backend
+npm run seed</code></pre>
+
+<h3>Verification & Automated Testing</h3>
+<pre><code class="language-bash"># Run Security Verification Suite (17 checks)
+cd backend
+npm run test:security
+
+<h1>Run End-to-End Role Flow Verification Suite (33 checks)</h1>
+cd backend
+npm run test:e2e
+
+<h1>Run AI Module Routing &amp; Discovery Suite (39 checks)</h1>
+cd backend
+node scripts/testAiModuleRouting.js</code></pre>
+
+<hr />
+
+<p></em>Staffify Enterprise Platform Documentation — Maintained by hasanOnGit.*</p>
+  </body>
+</html>
