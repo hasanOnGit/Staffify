@@ -48,14 +48,14 @@ export default function MobileLogin() {
     setLoading(true);
     setError(null);
     let targetEmail = 'admin@staffify.com';
-    let targetPassword = 'password123';
+    let targetPassword = 'Admin@123';
 
     if (role === 'manager') {
       targetEmail = 'manager@staffify.com';
-      targetPassword = 'password123';
+      targetPassword = 'Manager@123';
     } else if (role === 'employee') {
       targetEmail = 'employee@staffify.com';
-      targetPassword = 'password123';
+      targetPassword = 'Employee@123';
     }
 
     setEmail(targetEmail);
