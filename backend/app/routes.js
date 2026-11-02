@@ -11,11 +11,13 @@ const complianceRoutes = require("./controllers/compliance.controller");
 const shiftRoutes = require("./controllers/shift.controller");
 const loanRoutes = require("./controllers/loan.controller");
 const settlementRoutes = require("./controllers/settlement.controller");
+const aiRoutes = require("./controllers/ai.controller");
 const dashboardRoutes = require("./controllers/dashboard.controller");
 const { router: seedRoutes } = require("./controllers/seed.controller");
 
 module.exports = function (app) {
   app.use("/api/dashboard", dashboardRoutes);
+  app.use("/api/ai", aiRoutes);
   app.use("/api/vendors", vendorRoutes);
   app.use("/api/clients", clientRoutes);
   app.use("/api/commercials", commercialRoutes);

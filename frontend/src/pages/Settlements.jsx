@@ -1128,7 +1128,7 @@ export default function Settlements() {
       {/* MODAL 4: Printable Payout Statement Voucher */}
       {statementModalOpen && activeSettlement && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#0F131C] rounded-lg shadow-2xl border border-[#DFE1E6] dark:border-[#263042] w-full max-w-2xl max-h-[95vh] overflow-y-auto">
+          <div className="printable-modal bg-white dark:bg-[#0F131C] rounded-lg shadow-2xl border border-[#DFE1E6] dark:border-[#263042] w-full max-w-2xl max-h-[95vh] overflow-y-auto">
             <div className="flex items-center justify-between p-4 border-b border-[#DFE1E6] dark:border-[#263042] print:hidden">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-[#0052CC]" />
@@ -1142,7 +1142,7 @@ export default function Settlements() {
                   className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded bg-[#0052CC] text-white hover:bg-[#0747A6] transition-colors"
                 >
                   <Printer className="w-3.5 h-3.5" />
-                  <span>Print Voucher</span>
+                  <span>Print / Download PDF</span>
                 </button>
                 <button
                   onClick={() => setStatementModalOpen(false)}
@@ -1154,7 +1154,7 @@ export default function Settlements() {
             </div>
 
             {/* Printable Voucher Paper */}
-            <div className="p-6 text-xs text-[#172B4D] dark:text-[#F1F5F9] space-y-5 bg-white dark:bg-[#0F131C]">
+            <div className="printable-content p-6 text-xs text-[#172B4D] dark:text-[#F1F5F9] space-y-5 bg-white dark:bg-[#0F131C]">
               {/* Header */}
               <div className="border-b border-[#DFE1E6] dark:border-[#263042] pb-4 flex justify-between items-start">
                 <div>

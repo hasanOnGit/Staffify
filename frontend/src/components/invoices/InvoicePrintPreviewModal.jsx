@@ -66,7 +66,7 @@ function InvoicePrintPreviewModal({ invoiceId, isOpen, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden my-auto animate-page-enter">
+      <div className="printable-modal bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden my-auto animate-page-enter">
         {/* Modal Toolbar (hidden in print) */}
         <div className="px-5 py-3.5 border-b border-[#DFE1E6] dark:border-[#263042] flex items-center justify-between bg-[#FAFBFC] dark:bg-[#0F131C] print:hidden">
           <div className="flex items-center gap-2">
@@ -83,7 +83,7 @@ function InvoicePrintPreviewModal({ invoiceId, isOpen, onClose, onSuccess }) {
               className="px-3 py-1.5 text-xs font-medium text-[#172B4D] dark:text-neutral-200 bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] hover:bg-[#EBECF0] dark:hover:bg-[#1C2331] rounded transition flex items-center gap-1.5 cursor-pointer"
             >
               <Printer size={13} />
-              <span>Print / PDF</span>
+              <span>Print / Download PDF</span>
             </button>
 
             {invoice?.status !== "Paid" && (
@@ -114,12 +114,12 @@ function InvoicePrintPreviewModal({ invoiceId, isOpen, onClose, onSuccess }) {
             Loading invoice details...
           </div>
         ) : invoice ? (
-          <div className="p-6 md:p-8 space-y-6 max-h-[80vh] overflow-y-auto text-[#172B4D] dark:text-[#F1F5F9] bg-white dark:bg-[#151B26]">
+          <div className="printable-content p-6 md:p-8 space-y-5 max-h-[80vh] overflow-y-auto text-[#172B4D] dark:text-[#F1F5F9] bg-white dark:bg-[#151B26]">
             {/* Invoice Top Branding */}
-            <div className="flex flex-col sm:flex-row justify-between gap-4 pb-6 border-b border-[#DFE1E6] dark:border-[#263042]">
+            <div className="flex flex-col sm:flex-row justify-between gap-4 pb-5 border-b-2 border-[#DFE1E6] dark:border-[#263042]">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#0052CC] dark:text-[#579DFF] block">
-                  Tax Invoice / Vendor Settlement
+                  Tax Invoice — Section 31 CGST Act | SAC 998519
                 </span>
                 <h1 className="text-xl font-bold tracking-tight mt-0.5">
                   {invoice.vendorName}
@@ -243,9 +243,15 @@ function InvoicePrintPreviewModal({ invoiceId, isOpen, onClose, onSuccess }) {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-[#6B778C] dark:text-neutral-400">
-                  <span>Statutory GST (18%):</span>
+                  <span>CGST (9.0%):</span>
                   <span className="font-mono font-semibold text-[#172B4D] dark:text-white">
-                    ₹{invoice.gstAmount.toLocaleString("en-IN")}
+                    ₹{Math.round(invoice.gstAmount / 2).toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[#6B778C] dark:text-neutral-400">
+                  <span>SGST (9.0%):</span>
+                  <span className="font-mono font-semibold text-[#172B4D] dark:text-white">
+                    ₹{Math.round(invoice.gstAmount / 2).toLocaleString("en-IN")}
                   </span>
                 </div>
                 <div className="pt-2 border-t border-[#DFE1E6] dark:border-[#263042] flex items-center justify-between text-sm font-bold text-[#172B4D] dark:text-white">
@@ -253,6 +259,27 @@ function InvoicePrintPreviewModal({ invoiceId, isOpen, onClose, onSuccess }) {
                   <span className="font-mono text-[#0052CC] dark:text-[#579DFF] text-base">
                     ₹{invoice.grandTotal.toLocaleString("en-IN")}
                   </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Tax Invoice Declarations & Signatures */}
+            <div className="pt-6 grid grid-cols-2 gap-8 text-xs border-t border-[#DFE1E6] dark:border-[#263042] print-avoid-break">
+              <div className="space-y-1 text-[11px] text-[#6B778C] dark:text-neutral-400">
+                <div className="font-semibold text-[#172B4D] dark:text-white">Statutory Declaration:</div>
+                <p>1. Supply of Manpower & Support Services under SAC Code 998519.</p>
+                <p>2. Whether tax is payable on reverse charge basis: <strong>No</strong>.</p>
+                <p>3. Certified that the particulars given above are true and correct.</p>
+              </div>
+
+              <div className="text-center flex flex-col justify-end">
+                <div className="border-t border-dashed border-[#DFE1E6] dark:border-[#263042] pt-2">
+                  <div className="font-bold text-[#172B4D] dark:text-white">
+                    For {invoice.vendorName}
+                  </div>
+                  <div className="text-[10px] text-[#6B778C] dark:text-neutral-400">
+                    Authorized Signatory & Accounts Department
+                  </div>
                 </div>
               </div>
             </div>

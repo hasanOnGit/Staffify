@@ -11,13 +11,13 @@ function PayslipModal({ isOpen, onClose, payroll, record }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-      <div className="bg-white dark:bg-[#0F131C] rounded-lg shadow-2xl border border-[#DFE1E6] dark:border-[#263042] w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div className="printable-modal bg-white dark:bg-[#0F131C] rounded-lg shadow-2xl border border-[#DFE1E6] dark:border-[#263042] w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26]">
+        <div className="print:hidden flex items-center justify-between px-5 py-3 border-b border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26]">
           <div className="flex items-center gap-2">
             <Banknote size={16} className="text-[#0052CC] dark:text-[#579DFF]" />
             <span className="text-xs font-bold text-[#172B4D] dark:text-white uppercase tracking-wider">
-              Salary Payslip
+              Contractor Salary Payslip — Form XIX
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -27,7 +27,7 @@ function PayslipModal({ isOpen, onClose, payroll, record }) {
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold bg-[#0052CC] text-white hover:bg-[#0747A6] transition"
             >
               <Printer size={13} />
-              <span>Print Payslip</span>
+              <span>Print / Download PDF</span>
             </button>
             <button
               type="button"
@@ -40,16 +40,19 @@ function PayslipModal({ isOpen, onClose, payroll, record }) {
         </div>
 
         {/* Payslip Document Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-white dark:bg-[#0F131C] text-xs">
+        <div className="printable-content flex-1 overflow-y-auto p-6 space-y-4 bg-white dark:bg-[#0F131C] text-xs">
           {/* Company Branding & Header */}
           <div className="flex justify-between items-start pb-4 border-b-2 border-[#DFE1E6] dark:border-[#263042]">
             <div>
               <StaffifyLogo size="md" />
               <div className="mt-1 font-semibold text-xs text-[#172B4D] dark:text-white">
-                {payroll?.vendorName || "Staffing Services Agency"}
+                {payroll?.vendorName || "Infiniti TechStaffing Services LLP"}
               </div>
               <div className="text-[11px] text-[#6B778C] dark:text-neutral-400">
-                Staffing Partner & Manpower Provider
+                Licensed Manpower Contractor | Form XIX [See Rule 78(1)(b)]
+              </div>
+              <div className="text-[10px] text-[#6B778C] dark:text-neutral-400">
+                GSTIN: 27AABCA1234F1Z5 | PAN: AABCA1234F
               </div>
             </div>
             <div className="text-right">
@@ -58,6 +61,9 @@ function PayslipModal({ isOpen, onClose, payroll, record }) {
               </span>
               <span className="text-[11px] font-mono text-[#6B778C] dark:text-neutral-400 block mt-0.5">
                 Ref: {payroll?.payrollId}
+              </span>
+              <span className="text-[10px] text-[#00875A] font-semibold block mt-0.5">
+                Status: {record.status || "Paid"} (Direct Bank Transfer)
               </span>
             </div>
           </div>
@@ -193,6 +199,27 @@ function PayslipModal({ isOpen, onClose, payroll, record }) {
             <div className="flex justify-between">
               <span>Employer PF Contribution (12%): Rs {record.employerContributions?.employerPf?.toLocaleString()}</span>
               <span>Employer ESIC Contribution (3.25%): Rs {record.employerContributions?.employerEsic?.toLocaleString()}</span>
+            </div>
+          </div>
+
+          {/* Form XIX Signatures */}
+          <div className="pt-6 grid grid-cols-2 gap-10 text-center text-xs print-avoid-break">
+            <div className="border-t border-dashed border-[#DFE1E6] dark:border-[#263042] pt-2">
+              <div className="font-medium text-[#172B4D] dark:text-white">
+                {record.workerName}
+              </div>
+              <div className="text-[10px] text-[#6B778C] dark:text-neutral-400">
+                Worker Signature / Thumb Impression
+              </div>
+            </div>
+
+            <div className="border-t border-dashed border-[#DFE1E6] dark:border-[#263042] pt-2">
+              <div className="font-medium text-[#172B4D] dark:text-white">
+                For {payroll?.vendorName || "Infiniti TechStaffing Services LLP"}
+              </div>
+              <div className="text-[10px] text-[#6B778C] dark:text-neutral-400">
+                Authorized HR & Payroll Officer
+              </div>
             </div>
           </div>
         </div>

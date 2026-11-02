@@ -11,8 +11,9 @@ import {
   Check,
   Users,
 } from "lucide-react";
-import { workersApi, requisitionsApi } from "../../services/api";
+import { workersApi, requisitionsApi, aiApi } from "../../services/api";
 import StatusLozenge from "../StatusLozenge";
+import { Sparkles, Zap } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function AllocateWorkersModal({ isOpen, onClose, onSuccess, requisition }) {
@@ -21,11 +22,14 @@ export default function AllocateWorkersModal({ isOpen, onClose, onSuccess, requi
   const [availableWorkers, setAvailableWorkers] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
+  const [isAiMatching, setIsAiMatching] = useState(false);
+  const [aiMatched, setAiMatched] = useState(false);
 
   useEffect(() => {
     if (isOpen && requisition) {
       setSelectedWorkerIds([]);
       setSearch("");
+      setAiMatched(false);
       loadAvailableWorkers();
     }
   }, [isOpen, requisition]);
@@ -40,6 +44,31 @@ export default function AllocateWorkersModal({ isOpen, onClose, onSuccess, requi
       toast.error("Failed to load available workers: " + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAiSmartMatch = async () => {
+    try {
+      setIsAiMatching(true);
+      const res = await aiApi.matchCandidates({
+        requisitionId: requisition.requisitionId || requisition._id,
+        tradeCategory: requisition.tradeCategory,
+        skillsRequired: requisition.skillsRequired,
+        experienceYears: requisition.experienceYears,
+      });
+
+      if (res.data?.success && res.data.data) {
+        setAvailableWorkers(res.data.data);
+        setAiMatched(true);
+        // Auto-select top matching workers up to remaining slots
+        const topMatches = res.data.data.slice(0, remainingSlots).map((w) => w.workerId);
+        setSelectedWorkerIds(topMatches);
+        toast.success(`AI matched ${res.data.matchedCount || res.data.data.length} candidates and auto-selected top ${topMatches.length}!`);
+      }
+    } catch (err) {
+      toast.error("AI Matching failed: " + (err.response?.data?.message || err.message));
+    } finally {
+      setIsAiMatching(false);
     }
   };
 
@@ -162,8 +191,8 @@ export default function AllocateWorkersModal({ isOpen, onClose, onSuccess, requi
         </div>
 
         {/* Search & Actions Bar */}
-        <div className="px-5 py-3 border-b border-[#EBECF0] dark:border-[#263042] flex items-center justify-between gap-3 bg-white dark:bg-[#0F131C]">
-          <div className="relative flex-1 max-w-sm">
+        <div className="px-5 py-3 border-b border-[#EBECF0] dark:border-[#263042] flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-[#0F131C]">
+          <div className="relative flex-1 min-w-[200px] max-w-sm">
             <Search
               size={13}
               className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6B778C] dark:text-[#94A3B8]"
@@ -178,6 +207,16 @@ export default function AllocateWorkersModal({ isOpen, onClose, onSuccess, requi
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleAiSmartMatch}
+              disabled={isAiMatching}
+              className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded bg-[#DEEBFF] dark:bg-[#1C2331] text-[#0052CC] dark:text-[#579DFF] hover:bg-[#B3D4FF] dark:hover:bg-[#263042] border border-[#B3D4FF] dark:border-[#263042] transition shadow-2xs"
+            >
+              <Sparkles size={13} className={isAiMatching ? "animate-spin" : ""} />
+              <span>{isAiMatching ? "Matching..." : "AI Match Candidates"}</span>
+            </button>
+            <span className="text-[#DFE1E6] dark:text-[#263042]">|</span>
             <button
               type="button"
               onClick={handleSelectAllFiltered}
@@ -217,10 +256,13 @@ export default function AllocateWorkersModal({ isOpen, onClose, onSuccess, requi
           ) : (
             filteredWorkers.map((worker) => {
               const isSelected = selectedWorkerIds.includes(worker.workerId);
-              const fullName = `${worker.firstName || ""} ${worker.lastName || ""}`.trim();
+              const fullName =
+                worker.fullName ||
+                `${worker.firstName || ""} ${worker.lastName || ""}`.trim() ||
+                worker.workerId;
               const isKycVerified =
-                worker.compliance?.aadhaarVerified &&
-                worker.compliance?.bankVerified;
+                worker.kycDetails?.policeVerificationStatus === "Verified" ||
+                (worker.compliance?.aadhaarVerified && worker.compliance?.bankVerified);
 
               return (
                 <div
@@ -252,6 +294,18 @@ export default function AllocateWorkersModal({ isOpen, onClose, onSuccess, requi
                         <span className="text-[10px] font-mono text-[#6B778C] dark:text-[#94A3B8]">
                           {worker.workerId}
                         </span>
+                        {worker.matchScore && (
+                          <span
+                            className={`inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.2 rounded ${
+                              worker.matchScore >= 75
+                                ? "bg-[#E3FCEF] text-[#00875A]"
+                                : "bg-[#DEEBFF] text-[#0052CC]"
+                            }`}
+                          >
+                            <Sparkles size={9} />
+                            <span>{worker.matchScore}% Match</span>
+                          </span>
+                        )}
                         {isKycVerified ? (
                           <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold text-[#00875A] bg-[#E3FCEF] dark:bg-[#00875A]/20 px-1.5 py-0.2 rounded">
                             <ShieldCheck size={10} />
@@ -267,10 +321,24 @@ export default function AllocateWorkersModal({ isOpen, onClose, onSuccess, requi
                       <div className="flex items-center gap-2 text-[11px] text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
                         <span>{worker.tradeCategory || "General"}</span>
                         <span>&bull;</span>
-                        <span>{worker.skillCategory || "Skilled"}</span>
+                        <span>{worker.primarySkill || worker.skillCategory || "Skilled"}</span>
                         <span>&bull;</span>
-                        <span>Expected Pay: INR {Number(worker.monthlyBasePay || 22000).toLocaleString("en-IN")}/mo</span>
+                        <span>{worker.experienceYears || 1}y Exp</span>
+                        <span>&bull;</span>
+                        <span>
+                          INR{" "}
+                          {Number(
+                            worker.wagePerDayOrMonth || worker.monthlyBasePay || 22000
+                          ).toLocaleString("en-IN")}
+                          /{worker.billingUnit || "mo"}
+                        </span>
                       </div>
+
+                      {worker.matchReasons && worker.matchReasons.length > 0 && (
+                        <div className="text-[10px] text-[#0052CC] dark:text-[#579DFF] mt-1 font-medium">
+                          Reasons: {worker.matchReasons.slice(0, 2).join(" &bull; ")}
+                        </div>
+                      )}
                     </div>
                   </div>
 

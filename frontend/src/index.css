@@ -169,3 +169,108 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* =========================================================
+   Standard Universal Print & PDF Engine (A4 Compliant)
+   ========================================================= */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 10mm 10mm 10mm;
+  }
+
+  /* Force light paper palette even if dark mode is active */
+  html, body, .dark, .dark body {
+    background-color: #FFFFFF !important;
+    color: #172B4D !important;
+    font-size: 10pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide app navigation chrome, sidebars, floating widgets */
+  nav,
+  aside,
+  header,
+  .print\:hidden,
+  button:not(.print-include),
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset main layouts and viewport scrolling for clean print output */
+  body {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    max-width: 100% !important;
+  }
+
+  /* Modal print elevation reset */
+  .fixed.inset-0 {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* Container taking full page without shadows or scrollbars */
+  .printable-content,
+  .printable-modal {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #FFFFFF !important;
+    color: #172B4D !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Table page break optimizations */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tr, .print-avoid-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Text & Border Color resets for crisp print contrast */
+  .dark .text-white,
+  .dark .text-\[\#F1F5F9\],
+  .dark .text-neutral-300 {
+    color: #172B4D !important;
+  }
+
+  .dark .text-\[\#6B778C\],
+  .dark .text-neutral-400 {
+    color: #42526E !important;
+  }
+
+  .dark .bg-\[\#151B26\],
+  .dark .bg-\[\#0F131C\],
+  .dark .bg-\[\#101520\] {
+    background-color: #FFFFFF !important;
+  }
+
+  .dark .border-\[\#263042\],
+  .dark .border-\[\#1C2433\] {
+    border-color: #DFE1E6 !important;
+  }
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+import AiCopilotFab from "../components/ai/AiCopilotFab";
 
 function DashboardLayout({ children }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -40,6 +41,9 @@ function DashboardLayout({ children }) {
           </div>
         </main>
       </div>
+
+      {/* Floating AI Copilot & Risk Watchdog */}
+      <AiCopilotFab />
     </div>
   );
 }

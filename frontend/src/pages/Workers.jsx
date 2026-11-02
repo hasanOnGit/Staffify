@@ -16,7 +16,9 @@ import KpiMetricCard from "../components/KpiMetricCard";
 import StatusLozenge from "../components/StatusLozenge";
 import OnboardWorkerModal from "../components/workers/OnboardWorkerModal";
 import WorkerDossierDrawer from "../components/workers/WorkerDossierDrawer";
+import WorkerIdCardModal from "../components/workers/WorkerIdCardModal";
 import { workersApi } from "../services/api";
+import { Printer } from "lucide-react";
 
 const TRADE_TABS = ["All", "Security", "IT", "Facilities", "Logistics", "General"];
 const STATUS_PILLS = ["All", "Available", "Deployed", "On Leave"];
@@ -35,6 +37,8 @@ function Workers() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedWorkerId, setSelectedWorkerId] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isIdCardOpen, setIsIdCardOpen] = useState(false);
+  const [selectedIdCardWorker, setSelectedIdCardWorker] = useState(null);
 
   useEffect(() => {
     fetchWorkers();
@@ -314,17 +318,33 @@ function Workers() {
 
                     {/* Action */}
                     <td className="px-4 py-3 text-right">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenDossier(w.workerId);
-                        }}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-[#0052CC] dark:text-[#579DFF] hover:bg-[#DEEBFF] dark:hover:bg-[#1C2331] rounded transition"
-                      >
-                        <span>View Profile</span>
-                        <ChevronRight size={13} />
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          title="Print Worker Gate Pass / ID Card"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedIdCardWorker(w);
+                            setIsIdCardOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-[#42526E] dark:text-[#94A3B8] hover:text-[#0052CC] dark:hover:text-[#579DFF] hover:bg-[#DEEBFF] dark:hover:bg-[#1C2331] rounded transition"
+                        >
+                          <Printer size={12} />
+                          <span>Gate Pass</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenDossier(w.workerId);
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-[#0052CC] dark:text-[#579DFF] hover:bg-[#DEEBFF] dark:hover:bg-[#1C2331] rounded transition"
+                        >
+                          <span>Profile</span>
+                          <ChevronRight size={13} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -349,6 +369,16 @@ function Workers() {
           setIsDrawerOpen(false);
           setSelectedWorkerId(null);
         }}
+      />
+
+      {/* Standard Worker Gate Pass & ID Card Printable Modal */}
+      <WorkerIdCardModal
+        isOpen={isIdCardOpen}
+        onClose={() => {
+          setIsIdCardOpen(false);
+          setSelectedIdCardWorker(null);
+        }}
+        worker={selectedIdCardWorker}
       />
     </div>
   );

@@ -143,6 +143,12 @@ export const settlementsApi = {
   disbursePayment: (id, data) => API.post(`/settlements/${id}/pay`, data),
 };
 
+export const aiApi = {
+  getAnomalies: (params) => API.get("/ai/anomalies", { params }),
+  matchCandidates: (data) => API.post("/ai/match-candidates", data),
+  chat: (message) => API.post("/ai/chat", { message }),
+};
+
 export const seedApi = {
   seedDatabase: () => API.post("/seed"),
   getStatus: () => API.get("/seed/status"),

@@ -263,7 +263,7 @@ export default function Compliance() {
       </div>
 
       {/* KPI Audit Scorecards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 print:hidden">
         <KpiMetricCard
           title="EPF Compliance"
           value={`${overview.epfCoverageRate}%`}
@@ -291,7 +291,7 @@ export default function Compliance() {
       </div>
 
       {/* Filter and Period Selector */}
-      <div className="bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] rounded-lg p-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs">
+      <div className="bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] rounded-lg p-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs print:hidden">
         {/* Navigation Tabs */}
         <div className="flex flex-wrap items-center gap-1.5 border-b sm:border-b-0 border-[#EBECF0] dark:border-[#263042] pb-2 sm:pb-0">
           <button
