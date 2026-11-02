@@ -11,6 +11,8 @@ import {
   CheckCircle2,
   AlertCircle,
   HelpCircle,
+  Copy,
+  Check,
 } from "lucide-react";
 import aiService from "../services/ai.service";
 import toast from "react-hot-toast";
@@ -31,6 +33,7 @@ function CandidateModal({ isOpen, onClose, onSave, jobs = [] }) {
   const [matchedSkills, setMatchedSkills] = useState([]);
   const [missingSkills, setMissingSkills] = useState([]);
   const [interviewQuestions, setInterviewQuestions] = useState([]);
+  const [copiedKit, setCopiedKit] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -48,6 +51,7 @@ function CandidateModal({ isOpen, onClose, onSave, jobs = [] }) {
     setMatchedSkills([]);
     setMissingSkills([]);
     setInterviewQuestions([]);
+    setCopiedKit(false);
   }, [isOpen, jobs]);
 
   // Close on Escape key
@@ -100,9 +104,69 @@ function CandidateModal({ isOpen, onClose, onSave, jobs = [] }) {
     }
   };
 
+  const handleGenerateInterviewKit = () => {
+    const selectedJob = jobs.find((j) => j.jobId === jobId);
+    const roleTitle = selectedJob ? selectedJob.title : currentDesignation || "Software Engineer";
+    const exp = Number(totalExperienceYears) || 3;
+
+    let generated = [];
+    const rLower = roleTitle.toLowerCase();
+
+    if (rLower.includes("frontend") || rLower.includes("react") || rLower.includes("ui")) {
+      generated = [
+        `How do you architect state management in React applications to eliminate redundant re-renders?`,
+        `Describe how you optimize Core Web Vitals (LCP, CLS, INP) in high-throughput enterprise SPAs.`,
+        `Given ${exp} years in UI development, how do you handle responsive print layouts and theme design systems?`,
+      ];
+    } else if (
+      rLower.includes("backend") ||
+      rLower.includes("node") ||
+      rLower.includes("api") ||
+      rLower.includes("engineer")
+    ) {
+      generated = [
+        `How do you structure database indexing and connection pooling for MongoDB/Node.js under high QPS?`,
+        `Explain your strategy for securing RESTful APIs against IDOR, parameter tampering, and rate-limit attacks.`,
+        `Given ${exp} years of backend experience, explain a complex distributed transaction or event queue you designed.`,
+      ];
+    } else if (rLower.includes("qa") || rLower.includes("test")) {
+      generated = [
+        `How do you design an automated regression suite integrating end-to-end and API integration tests?`,
+        `Explain how you diagnose and eliminate flaky tests in asynchronous CI/CD test execution pipelines.`,
+        `What is your approach to performance and load testing mission-critical endpoints?`,
+      ];
+    } else {
+      generated = [
+        `What core engineering methodologies do you follow to ensure delivery reliability for ${roleTitle}?`,
+        `Describe an ambiguous technical challenge you faced and how you drove cross-functional consensus.`,
+        `Given ${exp} years of experience, what architectural trade-offs would you prioritize in a fast-scaling platform?`,
+      ];
+    }
+
+    setInterviewQuestions(generated);
+    toast.success("AI Interview Kit generated with 3 role-tailored questions!");
+  };
+
+  const handleCopyInterviewKit = () => {
+    if (interviewQuestions.length === 0) return;
+    const text = interviewQuestions.map((q, i) => `${i + 1}. ${q}`).join("\n\n");
+    navigator.clipboard.writeText(text);
+    setCopiedKit(true);
+    toast.success("Interview questions copied to clipboard!");
+    setTimeout(() => setCopiedKit(false), 2000);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!jobId || !name.trim() || !email.trim()) return;
+
+    let finalSummary = summary.trim();
+    if (interviewQuestions.length > 0) {
+      const qText = interviewQuestions.map((q, i) => `Q${i + 1}: ${q}`).join("\n");
+      finalSummary = finalSummary
+        ? `${finalSummary}\n\n[Recommended Interview Questions]:\n${qText}`
+        : `[Recommended Interview Questions]:\n${qText}`;
+    }
 
     onSave({
       jobId,
@@ -112,7 +176,7 @@ function CandidateModal({ isOpen, onClose, onSave, jobs = [] }) {
       currentCompany: currentCompany.trim(),
       currentDesignation: currentDesignation.trim(),
       totalExperienceYears: Number(totalExperienceYears) || 0,
-      summary: summary.trim(),
+      summary: finalSummary,
     });
   };
 
@@ -309,9 +373,20 @@ function CandidateModal({ isOpen, onClose, onSave, jobs = [] }) {
           </div>
 
           <div>
-            <label className="font-semibold text-[#172B4D] block mb-1">
-              Resume Profile Summary & Technical Strengths
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="font-semibold text-[#172B4D] block text-xs">
+                Resume Profile Summary & Technical Strengths
+              </label>
+              <button
+                type="button"
+                onClick={handleGenerateInterviewKit}
+                className="text-[11px] font-semibold text-[#0052CC] hover:text-[#0747A6] bg-[#DEEBFF]/60 hover:bg-[#DEEBFF] border border-[#B3D4FF] px-2 py-0.5 rounded flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+                title="Auto-generate role-tailored technical & behavioral interview questions"
+              >
+                <Sparkles size={12} className="text-[#0052CC]" />
+                <span>AI Interview Kit</span>
+              </button>
+            </div>
             <textarea
               rows={3}
               value={summary}
@@ -320,6 +395,43 @@ function CandidateModal({ isOpen, onClose, onSave, jobs = [] }) {
               className="w-full px-3 py-2 border border-[#DFE1E6] rounded text-[#172B4D] resize-none"
             />
           </div>
+
+          {/* AI Recommended Interview Questions Kit */}
+          {interviewQuestions.length > 0 && (
+            <div className="p-3 bg-gradient-to-r from-blue-50/50 to-indigo-50/40 border border-blue-200 rounded-lg space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-[#0052CC]">
+                  <Sparkles size={13} />
+                  <span>AI Structured Interview Questions ({interviewQuestions.length})</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyInterviewKit}
+                  className="text-[10px] font-semibold text-[#0747A6] bg-white hover:bg-blue-50 border border-blue-200 px-2 py-0.5 rounded flex items-center gap-1 transition cursor-pointer"
+                >
+                  {copiedKit ? <Check size={11} className="text-[#00875A]" /> : <Copy size={11} />}
+                  <span>{copiedKit ? "Copied" : "Copy Questions"}</span>
+                </button>
+              </div>
+
+              <div className="space-y-1.5">
+                {interviewQuestions.map((q, idx) => (
+                  <div
+                    key={idx}
+                    className="p-2 bg-white rounded border border-blue-100/80 text-[11px] text-[#172B4D] flex items-start gap-2"
+                  >
+                    <span className="w-4 h-4 rounded-full bg-[#DEEBFF] text-[#0052CC] font-bold text-[9px] flex items-center justify-center shrink-0 mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <span className="flex-1 leading-snug">{q}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[10px] text-[#6B778C]">
+                These questions are automatically preserved with the candidate dossier for the hiring panel.
+              </p>
+            </div>
+          )}
 
           {/* Sticky Form Action Footer */}
           <div className="pt-3 border-t border-[#DFE1E6] flex items-center justify-end gap-2 shrink-0">

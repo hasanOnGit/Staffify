@@ -223,3 +223,52 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* =========================================================
+   Universal Enterprise @media print Stylesheet
+   Ensures pristine PDF & printer output across all modules
+   ========================================================= */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 15mm;
+  }
+
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  body {
+    background: #FFFFFF !important;
+    color: #172B4D !important;
+    font-size: 11px !important;
+  }
+
+  /* Hide app chrome, navigation, overlays, floating buttons & toasts */
+  nav,
+  aside,
+  header,
+  #ai-copilot-drawer,
+  #ai-copilot-fab,
+  .no-print,
+  [data-no-print="true"],
+  button:not(.allow-print),
+  .toaster,
+  .fixed.inset-0:not(.print-container) {
+    display: none !important;
+  }
+
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .card-smooth, .rounded-xl, .rounded-lg {
+    box-shadow: none !important;
+    border-color: #DFE1E6 !important;
+  }
+}

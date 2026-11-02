@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getEmployees } from "../services/employee";
 import { generateDocument, getDocumentTemplates } from "../services/hrDocument";
 import toast from "react-hot-toast";
+import { printHtmlDocument } from "../utils/printEngine";
 import {
   FileText,
   Printer,
@@ -90,29 +91,28 @@ function DocumentGeneratorModal({ isOpen, onClose, preselectedEmpId, onSuccess }
 
   const handlePrint = () => {
     if (!generatedDoc) return;
-    const printWindow = window.open("", "_blank");
-    printWindow.document.write(`
+    const title = `Staffify_${(generatedDoc.title || "HR_Letter").replace(/\s+/g, "_")}_${(generatedDoc.employeeName || "Staff").replace(/\s+/g, "_")}_${generatedDoc.refNo || Date.now()}`;
+    const styledHtml = `
+      <!DOCTYPE html>
       <html>
         <head>
-          <title>${generatedDoc.title} - ${generatedDoc.employeeName}</title>
+          <title>${title}</title>
           <style>
-            @page { size: A4; margin: 20mm; }
-            body { font-family: 'Segoe UI', Arial, sans-serif; color: #172B4D; margin: 0; padding: 10px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px; }
-            th, td { border: 1px solid #DFE1E6; padding: 8px 10px; font-size: 12px; }
-            th { background-color: #F4F5F7; text-align: left; }
+            @page { size: A4 portrait; margin: 18mm 20mm; }
+            * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #172B4D; margin: 0; padding: 0; font-size: 11.5px; line-height: 1.5; }
+            table { width: 100%; border-collapse: collapse; margin-top: 14px; margin-bottom: 14px; page-break-inside: avoid; }
+            th, td { border: 1px solid #DFE1E6; padding: 8px 12px; font-size: 11px; }
+            th { background-color: #F4F5F7; text-align: left; font-weight: 700; color: #172B4D; }
+            .avoid-break { page-break-inside: avoid; }
           </style>
         </head>
         <body>
           ${generatedDoc.contentHtml}
         </body>
       </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => {
-      printWindow.print();
-    }, 250);
+    `;
+    printHtmlDocument(styledHtml, title);
   };
 
   return (

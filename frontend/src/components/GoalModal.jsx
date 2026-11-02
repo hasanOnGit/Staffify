@@ -10,7 +10,9 @@ import {
   Sliders,
   Calendar,
   Sparkles,
+  Zap,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 function GoalModal({
   isOpen,
@@ -101,6 +103,93 @@ function GoalModal({
     }
   };
 
+  const handleAiSmartRefine = (presetTopic = null) => {
+    const rawGoal = (presetTopic || title).trim();
+    if (!rawGoal) {
+      toast.error("Please enter a rough objective title first, or pick a recommendation below!");
+      return;
+    }
+
+    const tLower = rawGoal.toLowerCase();
+    let smartTitle = rawGoal;
+    let smartKrs = [];
+    let detectedCategory = category;
+
+    if (tLower.includes("mobile") || tLower.includes("app")) {
+      smartTitle = "Deploy High-Performance Cross-Platform Mobile Experience with 99.9% Crash-Free Sessions";
+      smartKrs = [
+        "Finalize responsive UI workflows and achieve sub-1.5s cold app launch latency",
+        "Implement end-to-end biometrics & offline synchronization queue with 100% test pass",
+        "Complete beta deployment to 35 pilot staff users and resolve all P1 feedback within 48h",
+      ];
+      detectedCategory = "Core Deliverable";
+    } else if (
+      tLower.includes("security") ||
+      tLower.includes("audit") ||
+      tLower.includes("soc2") ||
+      tLower.includes("compliance")
+    ) {
+      smartTitle = "Fortify Enterprise Platform Security & Attain Zero High-Severity Vulnerabilities";
+      smartKrs = [
+        "Complete automated SAST/DAST pipeline integration with strict blocking gates",
+        "Enforce role-based access control audit across all 39 database models and APIs",
+        "Conduct comprehensive disaster recovery tabletop drill and document audit trail",
+      ];
+      detectedCategory = "Operational Excellence";
+    } else if (
+      tLower.includes("speed") ||
+      tLower.includes("perform") ||
+      tLower.includes("latency") ||
+      tLower.includes("optimi")
+    ) {
+      smartTitle = "Accelerate Platform Query Execution & Attain Sub-200ms API Response Benchmark";
+      smartKrs = [
+        "Index high-traffic MongoDB collections and eliminate all unindexed COLLSCANs",
+        "Implement in-memory caching tier for read-heavy workforce dashboards",
+        "Reduce bundle transfer payload by 35% via dynamic route code-splitting",
+      ];
+      detectedCategory = "Operational Excellence";
+    } else if (
+      tLower.includes("certif") ||
+      tLower.includes("learn") ||
+      tLower.includes("skill") ||
+      tLower.includes("course")
+    ) {
+      smartTitle = "Attain Advanced Cloud Architecture Certification & Up-skill Squad on Microservices";
+      smartKrs = [
+        "Complete 40 hours of hands-on cloud native labs and complete mock assessments",
+        "Pass official certification exam with score greater than 85%",
+        "Host 2 internal brown-bag workshops to train 10+ squad engineers on modern patterns",
+      ];
+      detectedCategory = "Skill Development";
+    } else if (
+      tLower.includes("hire") ||
+      tLower.includes("recruit") ||
+      tLower.includes("candidate")
+    ) {
+      smartTitle = "Streamline Engineering Talent Acquisition to Reduce Time-to-Offer to Under 14 Days";
+      smartKrs = [
+        "Formulate structured rubric-based question kits for all technical screening rounds",
+        "Achieve 85%+ candidate offer acceptance rate with transparent onboarding packages",
+        "Maintain zero open requisition backlog beyond 30 days for tier-1 squad roles",
+      ];
+      detectedCategory = "Leadership & Team Culture";
+    } else {
+      smartTitle =
+        rawGoal.length > 10 ? rawGoal : `Successfully Deliver ${rawGoal} with Measurable Quality`;
+      smartKrs = [
+        `Architect and finalize core specification and milestones for ${rawGoal}`,
+        `Execute test validation protocol reaching 95%+ pass benchmark with zero regressions`,
+        `Complete production rollout and publish comprehensive operational runbook`,
+      ];
+    }
+
+    setTitle(smartTitle);
+    setKeyResults(smartKrs);
+    setCategory(detectedCategory);
+    toast.success("AI SMART Refiner formulated objective & 3 measurable key results!");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
@@ -186,11 +275,22 @@ function GoalModal({
             </div>
           </div>
 
-          {/* 1. Objective Title */}
-          <div>
-            <label className="font-bold text-[#172B4D] block mb-1 text-xs">
-              1. What is your Objective? <span className="text-[#DE350B]">*</span>
-            </label>
+          {/* 1. Objective Title with AI SMART Refiner */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="font-bold text-[#172B4D] block text-xs">
+                1. What is your Objective? <span className="text-[#DE350B]">*</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => handleAiSmartRefine()}
+                className="text-[11px] font-semibold text-[#0052CC] hover:text-[#0747A6] bg-[#DEEBFF]/60 hover:bg-[#DEEBFF] border border-[#B3D4FF] px-2 py-0.5 rounded flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+                title="Convert title into SMART objective and generate 3 measurable milestones"
+              >
+                <Sparkles size={12} className="text-[#0052CC]" />
+                <span>AI SMART Refiner</span>
+              </button>
+            </div>
             <input
               type="text"
               required
@@ -199,9 +299,29 @@ function GoalModal({
               onChange={(e) => setTitle(e.target.value)}
               className="w-full border border-[#DFE1E6] rounded-md px-3 py-2 text-xs font-semibold text-[#172B4D] outline-none focus:border-[#0052CC] focus:ring-1 focus:ring-[#0052CC] bg-white placeholder:text-[#A5ADBA]"
             />
-            <p className="text-[10px] text-[#6B778C] mt-1">
-              Make it clear, ambitious, and focused on an actual business or skill outcome.
-            </p>
+            <div className="flex items-center justify-between gap-1 flex-wrap pt-0.5">
+              <span className="text-[10px] text-[#6B778C]">
+                Make it clear, ambitious, and focused on an actual business outcome.
+              </span>
+              <div className="flex items-center gap-1 flex-wrap">
+                <span className="text-[10px] font-semibold text-[#6B778C]">AI Ideas:</span>
+                {[
+                  "Mobile App Rollout",
+                  "SOC2 Security Audit",
+                  "Query Latency Optimization",
+                  "Cloud Certification",
+                ].map((idea) => (
+                  <button
+                    key={idea}
+                    type="button"
+                    onClick={() => handleAiSmartRefine(idea)}
+                    className="text-[10px] font-medium text-[#0747A6] bg-[#FAFBFC] hover:bg-[#DEEBFF] border border-[#DFE1E6] hover:border-[#B3D4FF] px-1.5 py-0.2 rounded transition cursor-pointer"
+                  >
+                    {idea}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* 2. Key Results (Measurable Steps) */}

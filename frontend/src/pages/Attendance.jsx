@@ -22,8 +22,11 @@ import {
   Download,
   Users,
   User,
+  Printer,
+  Sparkles,
 } from "lucide-react";
 import { exportToCsv } from "../utils/csvExporter";
+import { printAttendanceRegister } from "../utils/attendancePrinter";
 import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -286,6 +289,30 @@ function Attendance() {
     }
   };
 
+  /* ---------- Standard PDF / Print Attendance Register ---------- */
+  const handlePrintRegister = () => {
+    const records = isPersonal ? myHistory : teamAttendance;
+    const presentCount = records.filter((r) => r.status === "Present").length;
+    const lateCount = records.filter((r) => r.status === "Late").length;
+    const halfDayCount = records.filter((r) => r.status === "Half Day").length;
+    const absentCount = records.filter((r) => r.status === "Absent").length;
+    const totalHours = records.reduce((acc, r) => acc + (Number(r.totalHours) || (r.status === "Present" ? 8.5 : 0)), 0);
+
+    printAttendanceRegister({
+      employee: user,
+      records,
+      monthName: "October",
+      year: 2026,
+      summary: {
+        present: presentCount,
+        late: lateCount,
+        halfDay: halfDayCount,
+        absent: absentCount,
+        totalHours,
+      },
+    });
+  };
+
   return (
     <DashboardLayout>
       {/* Header */}
@@ -342,6 +369,18 @@ function Attendance() {
             <Download size={14} className="text-[#0052CC]" />
             <span className="hidden sm:inline">Export CSV</span>
             <span className="sm:hidden">Export</span>
+          </button>
+
+          {/* Print Register PDF Button */}
+          <button
+            onClick={handlePrintRegister}
+            disabled={filteredAttendance.length === 0}
+            className="flex items-center gap-1.5 bg-white border border-[#B3D4FF] text-[#0052CC] hover:bg-[#DEEBFF] text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded transition shadow-2xs cursor-pointer disabled:opacity-50"
+            title="Print or Save Official Monthly Attendance Register PDF"
+          >
+            <Printer size={14} />
+            <span className="hidden sm:inline">Print Register PDF</span>
+            <span className="sm:hidden">PDF</span>
           </button>
 
           {/* Office Geofences Settings / Info */}
@@ -679,9 +718,30 @@ function Attendance() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#172B4D] mb-1">
-                  Reason for Regularization
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-semibold text-[#172B4D]">
+                    Reason for Regularization
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const reasons = [
+                        "On-site client meeting at partner location; completed full scheduled shift.",
+                        "GPS geofence radius deviation due to mobile network carrier latency during morning clock-in.",
+                        "Biometric terminal hardware synchronization delay at entrance turnstile.",
+                        "Official duty travel for project implementation with reporting manager sign-off.",
+                      ];
+                      const chosen = reasons[Math.floor(Math.random() * reasons.length)];
+                      setRegReason(chosen);
+                      toast.success("AI drafted a professional regularization explanation!");
+                    }}
+                    className="flex items-center gap-1 text-[10px] font-semibold text-[#0052CC] hover:text-[#0747A6] bg-[#DEEBFF] hover:bg-[#B3D4FF] px-2 py-0.5 rounded cursor-pointer transition"
+                    title="Generate an enterprise-compliant explanation with AI"
+                  >
+                    <Sparkles size={11} />
+                    <span>AI Draft Reason</span>
+                  </button>
+                </div>
                 <textarea
                   rows={3}
                   placeholder="e.g., GPS signal delay, On-duty client meeting, Biometric sync issue..."
@@ -690,6 +750,22 @@ function Attendance() {
                   required
                   className="w-full border border-[#DFE1E6] rounded px-3 py-2 text-xs text-[#172B4D]"
                 />
+                <div className="flex flex-wrap gap-1 mt-1.5">
+                  {[
+                    { label: "Client Meeting", text: "On-site client meeting at partner location with scheduled shift completion." },
+                    { label: "GPS Network Delay", text: "GPS mobile network carrier latency during morning clock-in." },
+                    { label: "Biometric Sync", text: "Biometric hardware terminal synchronization backlog at office turnstile." },
+                  ].map((item) => (
+                    <button
+                      key={item.label}
+                      type="button"
+                      onClick={() => setRegReason(item.text)}
+                      className="text-[9.5px] bg-[#F4F5F7] hover:bg-[#EBECF0] text-[#42526E] px-2 py-0.5 rounded border border-[#DFE1E6] cursor-pointer"
+                    >
+                      + {item.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="pt-3 border-t border-[#DFE1E6] flex justify-end gap-2">

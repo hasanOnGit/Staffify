@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { X, Calendar, Clock, AlertCircle } from "lucide-react";
+import { X, Calendar, Clock, AlertCircle, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 
 function ApplyLeaveModal({
@@ -274,9 +274,30 @@ function ApplyLeaveModal({
 
           {/* Reason */}
           <div>
-            <label className="block text-xs font-semibold text-[#172B4D] mb-1">
-              Reason for Leave *
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-semibold text-[#172B4D]">
+                Reason for Leave *
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  const reasons = [
+                    "Personal family commitment requiring planned absence; reachable via phone if urgent.",
+                    "Scheduled medical check-up and restorative wellness rest.",
+                    "Out-of-town festival and family travel; emergency contacts provided.",
+                    "Urgent domestic repair and municipal documentation work.",
+                  ];
+                  const chosen = reasons[Math.floor(Math.random() * reasons.length)];
+                  setReason(chosen);
+                  toast.success("AI drafted a professional leave reason!");
+                }}
+                className="flex items-center gap-1 text-[10px] font-semibold text-[#0052CC] hover:text-[#0747A6] bg-[#DEEBFF] hover:bg-[#B3D4FF] px-2 py-0.5 rounded cursor-pointer transition"
+                title="Draft a polite, professional reason with AI"
+              >
+                <Sparkles size={11} />
+                <span>AI Draft Reason</span>
+              </button>
+            </div>
             <textarea
               rows={2}
               placeholder="e.g. Attending family function, medical appointment..."
@@ -285,6 +306,22 @@ function ApplyLeaveModal({
               required
               className="w-full border border-[#DFE1E6] rounded px-3 py-1.5 text-xs text-[#172B4D] focus:outline-none focus:border-[#0052CC]"
             />
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {[
+                { label: "Family Event", text: "Attending an important family event and social commitments." },
+                { label: "Medical Appointment", text: "Scheduled medical consultation and subsequent rest." },
+                { label: "Personal Emergency", text: "Urgent personal matter requiring immediate attention." },
+              ].map((item) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => setReason(item.text)}
+                  className="text-[9.5px] bg-[#F4F5F7] hover:bg-[#EBECF0] text-[#42526E] px-2 py-0.5 rounded border border-[#DFE1E6] cursor-pointer"
+                >
+                  + {item.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Emergency Contact */}

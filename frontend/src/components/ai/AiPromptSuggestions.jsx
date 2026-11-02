@@ -58,6 +58,46 @@ export default function AiPromptSuggestions() {
       ];
     }
 
+    if (path.includes("/expenses")) {
+      return [
+        "Show all pending expense reimbursement claims",
+        "List claims exceeding the corporate approval threshold",
+        "What is my total claimed expense amount this month?",
+      ];
+    }
+
+    if (path.includes("/employees")) {
+      return [
+        "Give me a department-wise employee count",
+        "Show recent joiners who joined in the last 60 days",
+        "List employees with missing statutory bank or PAN details",
+      ];
+    }
+
+    if (path.includes("/shifts") || path.includes("/roster")) {
+      return [
+        "Show squad shift schedule for this week",
+        "Who is assigned to the Night or Weekend shift today?",
+        "List all pending shift swap requests",
+      ];
+    }
+
+    if (path.includes("/advances") || path.includes("/loans")) {
+      return [
+        "Show active salary advances and remaining EMI amortization",
+        "What is our total outstanding employee advance balance?",
+        "List pending salary advance applications awaiting approval",
+      ];
+    }
+
+    if (path.includes("/pulse")) {
+      return [
+        "Show recent company announcements and broadcast updates",
+        "Who received peer recognition kudos this week?",
+        "Summarize workplace sentiment and pulse feedback",
+      ];
+    }
+
     // Default general prompts
     return [
       "Give me a department-wise employee count",

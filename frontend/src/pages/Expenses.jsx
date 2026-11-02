@@ -31,7 +31,10 @@ import {
   Search,
   Filter,
   Eye,
+  Printer,
+  Sparkles,
 } from "lucide-react";
+import { printExpenseVoucher } from "../utils/expenseVoucherPrinter";
 
 const POLICY_LIMITS = [
   {
@@ -471,23 +474,35 @@ function Expenses() {
                         </td>
 
                         <td className="px-4 py-3 text-[11px] text-[#6B778C]">
-                          {claim.financeApproval?.approvedBy ? (
+                          <div className="flex items-center justify-between gap-2">
                             <div>
-                              <span className="font-semibold text-[#006644]">Payroll Credit</span>
-                              <span className="block text-[10px]">by {claim.financeApproval.approvedBy}</span>
+                              {claim.financeApproval?.approvedBy ? (
+                                <div>
+                                  <span className="font-semibold text-[#006644]">Payroll Credit</span>
+                                  <span className="block text-[10px]">by {claim.financeApproval.approvedBy}</span>
+                                </div>
+                              ) : claim.managerApproval?.approvedBy ? (
+                                <div>
+                                  <span className="font-semibold text-[#0052CC]">Manager Verified</span>
+                                  <span className="block text-[10px]">by {claim.managerApproval.approvedBy}</span>
+                                </div>
+                              ) : claim.rejectionReason ? (
+                                <span className="text-[#DE350B] italic text-[10px]">
+                                  Reason: {claim.rejectionReason}
+                                </span>
+                              ) : (
+                                <span className="text-[#6B778C]">Awaiting manager signoff</span>
+                              )}
                             </div>
-                          ) : claim.managerApproval?.approvedBy ? (
-                            <div>
-                              <span className="font-semibold text-[#0052CC]">Manager Verified</span>
-                              <span className="block text-[10px]">by {claim.managerApproval.approvedBy}</span>
-                            </div>
-                          ) : claim.rejectionReason ? (
-                            <span className="text-[#DE350B] italic text-[10px]">
-                              Reason: {claim.rejectionReason}
-                            </span>
-                          ) : (
-                            <span className="text-[#6B778C]">Awaiting manager signoff</span>
-                          )}
+                            <button
+                              type="button"
+                              onClick={() => printExpenseVoucher(claim)}
+                              title="Print or Save Official Expense Reimbursement Voucher PDF"
+                              className="p-1.5 rounded hover:bg-[#DEEBFF] text-[#0052CC] border border-[#DFE1E6] hover:border-[#B3D4FF] transition cursor-pointer shrink-0"
+                            >
+                              <Printer size={13} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -601,6 +616,15 @@ function Expenses() {
                                 <span>Disburse (Payroll)</span>
                               </button>
                             )}
+
+                            <button
+                              type="button"
+                              onClick={() => printExpenseVoucher(claim)}
+                              title="Print Reimbursement Voucher PDF"
+                              className="p-1 rounded text-[#0052CC] hover:bg-[#DEEBFF] border border-[#DFE1E6] transition cursor-pointer"
+                            >
+                              <Printer size={12} />
+                            </button>
 
                             <button
                               type="button"

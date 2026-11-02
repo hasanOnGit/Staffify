@@ -3,6 +3,7 @@
  * Renders high-fidelity, printable, and downloadable salary statements.
  */
 import toast from "react-hot-toast";
+import { printHtmlDocument } from "./printEngine";
 
 export const formatCurrency = (val = 0) => {
   return new Intl.NumberFormat("en-IN", {
@@ -410,31 +411,16 @@ export const generatePayslipHtml = (payslip) => {
 };
 
 export const printPayslip = (payslip) => {
-  const html = generatePayslipHtml(payslip);
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) {
-    toast.error("Please allow popups in your browser to print/download payslips.");
+  if (!payslip) {
+    toast.error("No payslip data available for printing");
     return;
   }
-  printWindow.document.open();
-  printWindow.document.write(html);
-  printWindow.document.close();
-  printWindow.focus();
-  setTimeout(() => {
-    printWindow.print();
-  }, 250);
+  const title = `Staffify_Payslip_${payslip.employeeId || "EMP"}_${(payslip.periodString || "Salary_Statement").replace(/\s+/g, "_")}`;
+  const html = generatePayslipHtml(payslip);
+  return printHtmlDocument(html, title);
 };
 
 export const downloadPayslipFile = (payslip) => {
-  const html = generatePayslipHtml(payslip);
-  const blob = new Blob([html], { type: "text/html" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  const fileName = `Staffify_Payslip_${payslip.employeeId || "EMP"}_${(payslip.periodString || "Month").replace(/\s+/g, "_")}.html`;
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  // Triggers print dialog where user can immediately Save as PDF with exact vector fidelity
+  return printPayslip(payslip);
 };

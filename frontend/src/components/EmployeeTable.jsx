@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Eye, Edit, Trash2, User, RotateCcw } from "lucide-react";
+import { Eye, Edit, Trash2, User, RotateCcw, Printer } from "lucide-react";
 import EmployeeDossierModal from "./EmployeeDossierModal";
+import { printEmployeeDossier } from "../utils/dossierPrinter";
 
 function EmployeeTable({
   employees = [],
@@ -140,6 +141,15 @@ function EmployeeTable({
                         title="View Full 360 Dossier"
                       >
                         <Eye size={14} />
+                      </button>
+
+                      {/* Print Dossier PDF */}
+                      <button
+                        onClick={() => printEmployeeDossier(emp)}
+                        className="p-1 text-[#6B778C] hover:text-[#0052CC] hover:bg-[#DEEBFF] rounded transition cursor-pointer"
+                        title="Print Executive Personnel Dossier PDF"
+                      >
+                        <Printer size={14} />
                       </button>
 
                       {/* Edit */}

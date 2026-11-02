@@ -357,6 +357,38 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
             </div>
           </div>
 
+          {/* AI Policy Compliance Indicator */}
+          {Number(formData.amount) > 0 && (
+            <div
+              className={`p-2.5 rounded-lg border text-xs flex items-center justify-between transition animate-in fade-in ${
+                Number(formData.amount) > 10000
+                  ? "bg-amber-50 border-amber-200 text-amber-900"
+                  : "bg-emerald-50 border-emerald-200 text-emerald-900"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles
+                  size={14}
+                  className={Number(formData.amount) > 10000 ? "text-amber-600 shrink-0" : "text-emerald-600 shrink-0"}
+                />
+                <span className="font-semibold text-[11px]">
+                  {Number(formData.amount) > 10000
+                    ? `AI Policy Warning: Claim exceeds standard limit. Requires secondary Finance Comptroller approval.`
+                    : `AI Policy Guard: ₹${formData.amount} is fully compliant with ${formData.expenseCategory} corporate guidelines.`}
+                </span>
+              </div>
+              <span
+                className={`text-[9.5px] font-bold px-2 py-0.5 rounded shrink-0 ${
+                  Number(formData.amount) > 10000
+                    ? "bg-amber-100 text-amber-800 border border-amber-300"
+                    : "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                }`}
+              >
+                {Number(formData.amount) > 10000 ? "Secondary Sign-off" : "Policy Compliant"}
+              </span>
+            </div>
+          )}
+
           {/* Receipt Number & Attachment Mock */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>

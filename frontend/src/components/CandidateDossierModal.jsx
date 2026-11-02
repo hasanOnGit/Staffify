@@ -347,7 +347,22 @@ function CandidateDossierModal({
                 </div>
 
                 <div>
-                  <label className="text-[#6B778C] block mb-1">Interviewer Notes & Assessment</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-[#6B778C] block text-xs font-semibold">
+                      Interviewer Notes & Assessment
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const suggestions = `Evaluated candidate for ${candidate.jobTitle || "the role"}: Demonstrated strong domain understanding across core principles. Code structure and systematic reasoning align well with squad standards for ${candidate.totalExperienceYears || 3}+ years experience.`;
+                        setFeedbackNotes((prev) => (prev ? `${prev}\n\n${suggestions}` : suggestions));
+                      }}
+                      className="text-[10px] font-semibold text-[#0052CC] hover:text-[#0747A6] bg-[#DEEBFF]/60 hover:bg-[#DEEBFF] border border-[#B3D4FF] px-2 py-0.5 rounded flex items-center gap-1 transition cursor-pointer"
+                    >
+                      <Sparkles size={11} />
+                      <span>AI Assessment Drafter</span>
+                    </button>
+                  </div>
                   <textarea
                     rows={2}
                     value={feedbackNotes}
@@ -355,6 +370,27 @@ function CandidateDossierModal({
                     placeholder="Technical strengths, problem-solving depth, communication..."
                     className="w-full px-2.5 py-1.5 border border-[#DFE1E6] rounded text-[#172B4D] bg-white resize-none"
                   />
+                  <div className="flex items-center gap-1 flex-wrap mt-1">
+                    <span className="text-[10px] text-[#6B778C]">Quick Points:</span>
+                    {[
+                      "Strong System Architecture",
+                      "Clean Code & Modularity",
+                      "Excellent Communication",
+                      "Solid Problem Solving",
+                      "Needs Scalability Depth",
+                    ].map((note) => (
+                      <button
+                        key={note}
+                        type="button"
+                        onClick={() =>
+                          setFeedbackNotes((prev) => (prev ? `${prev}; ${note}` : note))
+                        }
+                        className="text-[10px] bg-white border border-[#DFE1E6] hover:bg-[#DEEBFF] text-[#42526E] hover:text-[#0052CC] px-1.5 py-0.2 rounded transition cursor-pointer"
+                      >
+                        + {note}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="flex justify-end gap-2">

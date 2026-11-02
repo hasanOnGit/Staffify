@@ -4,6 +4,7 @@
  * Zero Unicode emojis, strictly compliant enterprise layout.
  */
 import toast from "react-hot-toast";
+import { printHtmlDocument } from "./printEngine";
 
 const maskString = (str = "", visibleCount = 4) => {
   if (!str) return "Not Provided";
@@ -384,21 +385,7 @@ export const printEmployeeDossier = (employee) => {
     return;
   }
 
+  const title = `Staffify_Personnel_Dossier_${employee.employeeId || "STAFF"}_${(employee.name || "Employee").replace(/\s+/g, "_")}`;
   const html = generateDossierHtml(employee);
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) {
-    toast.error("Please allow popups to print the Executive Dossier");
-    return;
-  }
-
-  printWindow.document.open();
-  printWindow.document.write(html);
-  printWindow.document.close();
-
-  setTimeout(() => {
-    printWindow.focus();
-    printWindow.print();
-  }, 400);
-
-  toast.success("Executive Dossier prepared for printing!");
+  return printHtmlDocument(html, title);
 };
