@@ -226,16 +226,24 @@ export default function MobileLayout() {
 
       {/* 1-Tap Fast Role Switcher Modal */}
       {roleModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-3 sm:items-center animate-fade-in">
-          <div className="bg-white dark:bg-[#0F131C] w-full max-w-sm rounded-3xl p-5 border border-[#DFE1E6] dark:border-[#263042] shadow-2xl space-y-4">
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-3 sm:items-center animate-fade-in"
+          onClick={() => setRoleModalOpen(false)}
+        >
+          <div
+            className="bg-white dark:bg-[#0F131C] w-full max-w-sm rounded-3xl p-5 border border-[#DFE1E6] dark:border-[#263042] shadow-2xl space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-sm text-[#172B4D] dark:text-white">Active Testing Persona</h3>
                 <p className="text-[11px] text-[#6B778C] dark:text-slate-400">Instantly switch between enterprise roles</p>
               </div>
               <button
+                type="button"
                 onClick={() => setRoleModalOpen(false)}
-                className="p-1.5 rounded-xl text-[#6B778C] hover:bg-[#EBECF0] dark:hover:bg-[#151B26]"
+                aria-label="Close"
+                className="w-7 h-7 rounded-full bg-[#F4F5F7] dark:bg-[#263042] text-[#6B778C] dark:text-slate-300 hover:text-[#DE350B] dark:hover:text-[#DE350B] hover:bg-[#FFEBE6] dark:hover:bg-rose-950/40 flex items-center justify-center transition-all active:scale-90"
               >
                 <X className="w-4 h-4" />
               </button>

@@ -642,16 +642,24 @@ export default function MobileDashboard() {
 
       {/* Admin Broadcast Modal */}
       {broadcastModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-3 animate-fade-in">
-          <div className="bg-white dark:bg-[#0F131C] w-full max-w-sm rounded-3xl p-5 border border-[#DFE1E6] dark:border-[#263042] shadow-2xl space-y-4">
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-3 animate-fade-in"
+          onClick={() => setBroadcastModalOpen(false)}
+        >
+          <div
+            className="bg-white dark:bg-[#0F131C] w-full max-w-sm rounded-3xl p-5 border border-[#DFE1E6] dark:border-[#263042] shadow-2xl space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Radio className="w-5 h-5 text-[#0052CC]" />
                 <h3 className="font-bold text-sm text-[#172B4D] dark:text-white">Company Broadcast</h3>
               </div>
               <button
+                type="button"
                 onClick={() => setBroadcastModalOpen(false)}
-                className="p-1 rounded-lg text-[#6B778C] hover:bg-[#EBECF0]"
+                aria-label="Close"
+                className="w-7 h-7 rounded-full bg-[#F4F5F7] dark:bg-[#263042] text-[#6B778C] dark:text-slate-300 hover:text-[#DE350B] dark:hover:text-[#DE350B] hover:bg-[#FFEBE6] dark:hover:bg-rose-950/40 flex items-center justify-center transition-all active:scale-90"
               >
                 <X className="w-4 h-4" />
               </button>
