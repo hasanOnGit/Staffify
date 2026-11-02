@@ -18,19 +18,19 @@ import {
   Sparkles,
   ArrowUpRight,
   X,
-  Check,
   TrendingUp,
-  UserCheck,
-  Activity
+  Activity,
+  ShieldCheck,
+  Zap,
+  ArrowRight
 } from "lucide-react";
-import api from "../services/api";
 
 export default function MobileDashboard() {
-  const { user, isAdmin, isManager, isEmployee } = useAuth();
+  const { user, isAdmin, isManager } = useAuth();
   const navigate = useNavigate();
 
   // State
-  const [workHoursTicking, setWorkHoursTicking] = useState("05h 24m");
+  const [workHoursTicking, setWorkHoursTicking] = useState("05h 24m 18s");
   const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
   const [broadcastTitle, setBroadcastTitle] = useState("");
   const [broadcastMessage, setBroadcastMessage] = useState("");
@@ -49,9 +49,9 @@ export default function MobileDashboard() {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Good Morning";
-    if (hour < 17) return "Good Afternoon";
-    return "Good Evening";
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
   };
 
   const handleSendBroadcast = (e) => {
@@ -64,7 +64,6 @@ export default function MobileDashboard() {
     setTimeout(() => setBroadcastSuccess(null), 3500);
   };
 
-  // Mock Squad Data for Managers
   const squadAttendance = [
     { name: "Priya Sharma", role: "Frontend Dev", status: "Present", inTime: "09:14 AM" },
     { name: "Rahul Verma", role: "Backend Dev", status: "Late", inTime: "10:22 AM" },
@@ -73,28 +72,47 @@ export default function MobileDashboard() {
   ];
 
   return (
-    <div className="pb-8 space-y-4">
+    <div className="pb-8 space-y-4 animate-in fade-in duration-300">
       {/* Toast */}
       {broadcastSuccess && (
-        <div className="p-3.5 rounded-xl bg-[#E3FCEF] dark:bg-emerald-950/40 border border-[#00875A]/30 text-[#00875A] dark:text-emerald-400 text-xs font-semibold flex items-center gap-2">
+        <div className="p-3.5 rounded-2xl bg-[#E3FCEF] dark:bg-emerald-950/40 border border-[#00875A]/30 text-[#00875A] dark:text-emerald-400 text-xs font-semibold flex items-center gap-2 shadow-xs">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
           <span>{broadcastSuccess}</span>
         </div>
       )}
 
-      {/* Greeting Banner */}
-      <div className="bg-gradient-to-r from-[#0052CC] to-[#0747A6] rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
-        <div className="relative z-10 space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-[10px] font-bold uppercase tracking-wider">
-            <Sparkles className="w-3 h-3" />
-            <span>StaffifyMOB • {user?.role || "Employee"} Portal</span>
+      {/* Hero Executive Card */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0052CC] via-[#0747A6] to-[#00388B] text-white p-5 shadow-lg border border-white/15">
+        {/* Decorative Geometric Overlay */}
+        <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 opacity-10 pointer-events-none">
+          <Sparkles className="w-44 h-44" />
+        </div>
+
+        <div className="relative z-10 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-md text-[10px] font-bold tracking-wider uppercase border border-white/20">
+              <Zap className="w-3 h-3 text-cyan-300" />
+              <span>{user?.role || "Employee"} Workspace</span>
+            </div>
+            <span className="text-[11px] text-blue-200 font-medium">
+              {new Date().toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short" })}
+            </span>
           </div>
-          <h1 className="text-xl font-bold leading-tight">
-            {getGreeting()}, {user?.name?.split(" ")[0] || "Team Member"}!
-          </h1>
-          <p className="text-xs text-blue-100">
-            {new Date().toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
-          </p>
+
+          <div className="flex items-center gap-3.5 pt-1">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white font-black text-lg shadow-inner">
+              {user?.name ? user.name.slice(0, 2).toUpperCase() : "EM"}
+            </div>
+            <div>
+              <p className="text-xs text-blue-200 font-medium">{getGreeting()},</p>
+              <h1 className="text-xl font-extrabold tracking-tight leading-tight">
+                {user?.name || "Team Member"}
+              </h1>
+              <p className="text-[11px] text-blue-100/90 font-medium mt-0.5">
+                {user?.designation || "Enterprise Staff"} • {user?.department || "General"}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -104,99 +122,94 @@ export default function MobileDashboard() {
       {isAdmin && (
         <div className="space-y-4">
           {/* Executive Pulse KPI Grid */}
-          <div className="grid grid-cols-2 gap-2.5">
-            <div className="bg-white dark:bg-[#0F131C] p-3.5 rounded-xl border border-[#DFE1E6] dark:border-[#263042] space-y-1 shadow-xs">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white dark:bg-[#0F131C] p-4 rounded-2xl border border-[#DFE1E6]/80 dark:border-[#263042] space-y-1.5 shadow-xs hover:border-[#0052CC] transition-colors">
               <div className="flex items-center justify-between text-[#6B778C] dark:text-slate-400">
-                <span className="text-[11px] font-bold uppercase">Total Workforce</span>
-                <Users className="w-4 h-4 text-[#0052CC]" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Total Headcount</span>
+                <div className="p-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-[#0052CC]">
+                  <Users className="w-4 h-4" />
+                </div>
               </div>
-              <p className="text-2xl font-black text-[#172B4D] dark:text-white">42</p>
-              <p className="text-[10px] text-[#00875A] font-semibold flex items-center gap-0.5">
-                <TrendingUp className="w-3 h-3" /> 100% Active Directory
+              <p className="text-2xl font-black text-[#172B4D] dark:text-white tabular-nums">42</p>
+              <p className="text-[10px] text-[#00875A] font-semibold flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" /> 100% Active Workforce
               </p>
             </div>
 
-            <div className="bg-white dark:bg-[#0F131C] p-3.5 rounded-xl border border-[#DFE1E6] dark:border-[#263042] space-y-1 shadow-xs">
+            <div className="bg-white dark:bg-[#0F131C] p-4 rounded-2xl border border-[#DFE1E6]/80 dark:border-[#263042] space-y-1.5 shadow-xs hover:border-[#00875A] transition-colors">
               <div className="flex items-center justify-between text-[#6B778C] dark:text-slate-400">
-                <span className="text-[11px] font-bold uppercase">Attendance Today</span>
-                <Activity className="w-4 h-4 text-[#00875A]" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Attendance %</span>
+                <div className="p-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-[#00875A]">
+                  <Activity className="w-4 h-4" />
+                </div>
               </div>
-              <p className="text-2xl font-black text-[#00875A]">92.8%</p>
-              <p className="text-[10px] text-[#6B778C] dark:text-slate-400">38 Present • 3 Leaves • 1 Late</p>
+              <p className="text-2xl font-black text-[#00875A] tabular-nums">92.8%</p>
+              <p className="text-[10px] text-[#6B778C] dark:text-slate-400">38 In • 3 Leaves • 1 Late</p>
             </div>
 
-            <div className="bg-white dark:bg-[#0F131C] p-3.5 rounded-xl border border-[#DFE1E6] dark:border-[#263042] space-y-1 shadow-xs">
+            <div className="bg-white dark:bg-[#0F131C] p-4 rounded-2xl border border-[#DFE1E6]/80 dark:border-[#263042] space-y-1.5 shadow-xs hover:border-[#B9770E] transition-colors">
               <div className="flex items-center justify-between text-[#6B778C] dark:text-slate-400">
-                <span className="text-[11px] font-bold uppercase">Pending Actions</span>
-                <AlertCircle className="w-4 h-4 text-[#B9770E]" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Pending Deck</span>
+                <div className="p-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-[#B9770E]">
+                  <AlertCircle className="w-4 h-4" />
+                </div>
               </div>
-              <p className="text-2xl font-black text-[#B9770E]">4</p>
+              <p className="text-2xl font-black text-[#B9770E] tabular-nums">4</p>
               <button
                 onClick={() => navigate("/approvals")}
-                className="text-[10px] text-[#0052CC] font-bold hover:underline"
+                className="text-[10px] text-[#0052CC] font-bold hover:underline flex items-center gap-0.5"
               >
-                Review Approval Deck →
+                <span>Review Requests</span>
+                <ArrowRight className="w-3 h-3" />
               </button>
             </div>
 
-            <div className="bg-white dark:bg-[#0F131C] p-3.5 rounded-xl border border-[#DFE1E6] dark:border-[#263042] space-y-1 shadow-xs">
+            <div className="bg-white dark:bg-[#0F131C] p-4 rounded-2xl border border-[#DFE1E6]/80 dark:border-[#263042] space-y-1.5 shadow-xs hover:border-[#0052CC] transition-colors">
               <div className="flex items-center justify-between text-[#6B778C] dark:text-slate-400">
-                <span className="text-[11px] font-bold uppercase">Payroll Status</span>
-                <CreditCard className="w-4 h-4 text-[#0052CC]" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Payroll Cycle</span>
+                <div className="p-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-[#0052CC]">
+                  <CreditCard className="w-4 h-4" />
+                </div>
               </div>
               <p className="text-2xl font-black text-[#172B4D] dark:text-white">Ready</p>
-              <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#E3FCEF] text-[#00875A]">
+              <span className="inline-block px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#E3FCEF] text-[#00875A]">
                 Disbursement Open
               </span>
             </div>
           </div>
 
           {/* Quick Admin Actions */}
-          <div className="bg-white dark:bg-[#0F131C] p-4 rounded-xl border border-[#DFE1E6] dark:border-[#263042] space-y-3">
+          <div className="bg-white dark:bg-[#0F131C] p-4 rounded-3xl border border-[#DFE1E6]/80 dark:border-[#263042] space-y-3 shadow-xs">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B778C] dark:text-slate-400">
-              Admin Operations
+              Executive Controls
             </h3>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               <button
                 onClick={() => setBroadcastModalOpen(true)}
-                className="p-3 rounded-xl border border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] text-left hover:border-[#0052CC] active:scale-98 transition-all flex items-start gap-2.5"
+                className="p-3.5 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] text-left hover:border-[#0052CC] active:scale-95 transition-all flex items-start gap-3"
               >
-                <div className="p-2 rounded-lg bg-[#0052CC]/10 text-[#0052CC] shrink-0">
+                <div className="p-2 rounded-xl bg-[#0052CC]/10 text-[#0052CC] shrink-0">
                   <Radio className="w-4 h-4" />
                 </div>
                 <div>
                   <p className="font-bold text-xs text-[#172B4D] dark:text-white">Broadcast</p>
-                  <p className="text-[10px] text-[#6B778C] dark:text-slate-400">Push notice to all</p>
+                  <p className="text-[10px] text-[#6B778C] dark:text-slate-400 mt-0.5">Push notice to all</p>
                 </div>
               </button>
 
               <button
                 onClick={() => navigate("/approvals")}
-                className="p-3 rounded-xl border border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] text-left hover:border-[#0052CC] active:scale-98 transition-all flex items-start gap-2.5"
+                className="p-3.5 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] text-left hover:border-[#0052CC] active:scale-95 transition-all flex items-start gap-3"
               >
-                <div className="p-2 rounded-lg bg-[#00875A]/10 text-[#00875A] shrink-0">
+                <div className="p-2 rounded-xl bg-[#00875A]/10 text-[#00875A] shrink-0">
                   <FileCheck2 className="w-4 h-4" />
                 </div>
                 <div>
                   <p className="font-bold text-xs text-[#172B4D] dark:text-white">Approvals</p>
-                  <p className="text-[10px] text-[#6B778C] dark:text-slate-400">Review 4 items</p>
+                  <p className="text-[10px] text-[#6B778C] dark:text-slate-400 mt-0.5">Review 4 queues</p>
                 </div>
               </button>
             </div>
-          </div>
-
-          {/* Live Biometric & Geofence Gateway Health */}
-          <div className="p-3.5 rounded-xl border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#0F131C] flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <div>
-                <p className="font-bold text-[#172B4D] dark:text-white">Bangalore HQ Gateways</p>
-                <p className="text-[10px] text-[#6B778C] dark:text-slate-400">2 Biometric ADMS Online • 1 Geofence Active</p>
-              </div>
-            </div>
-            <span className="px-2 py-0.5 rounded-md bg-[#E3FCEF] text-[#00875A] font-bold text-[10px]">
-              Healthy
-            </span>
           </div>
         </div>
       )}
@@ -209,24 +222,26 @@ export default function MobileDashboard() {
           {/* Approvals Action Banner */}
           <div
             onClick={() => navigate("/approvals")}
-            className="p-4 rounded-xl bg-[#DEEBFF] dark:bg-blue-950/40 border border-[#0052CC]/30 flex items-center justify-between cursor-pointer active:scale-98 transition-all"
+            className="p-4 rounded-3xl bg-gradient-to-r from-[#DEEBFF]/80 to-blue-50/90 dark:from-blue-950/50 dark:to-blue-900/40 border border-[#0052CC]/30 flex items-center justify-between cursor-pointer active:scale-98 transition-all shadow-xs"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#0052CC] text-white flex items-center justify-center font-bold">
+              <div className="w-11 h-11 rounded-2xl bg-[#0052CC] text-white flex items-center justify-center font-bold shadow-xs">
                 <FileCheck2 className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="font-bold text-xs text-[#172B4D] dark:text-white">Pending Team Approvals</h3>
-                <p className="text-[10px] text-[#0052CC] dark:text-blue-300 font-semibold">
-                  3 Requests awaiting your decision
+                <p className="text-[11px] text-[#0052CC] dark:text-blue-300 font-semibold mt-0.5">
+                  3 Requests awaiting your review
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-[#0052CC]" />
+            <div className="w-8 h-8 rounded-full bg-white dark:bg-[#0F131C] flex items-center justify-center text-[#0052CC] shadow-xs">
+              <ChevronRight className="w-4 h-4" />
+            </div>
           </div>
 
           {/* Squad Attendance Today */}
-          <div className="bg-white dark:bg-[#0F131C] p-4 rounded-xl border border-[#DFE1E6] dark:border-[#263042] space-y-3">
+          <div className="bg-white dark:bg-[#0F131C] p-4 rounded-3xl border border-[#DFE1E6]/80 dark:border-[#263042] space-y-3 shadow-xs">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B778C] dark:text-slate-400 flex items-center gap-1.5">
                 <Users className="w-3.5 h-3.5 text-[#0052CC]" />
@@ -239,15 +254,20 @@ export default function MobileDashboard() {
               {squadAttendance.map((emp, i) => (
                 <div
                   key={i}
-                  className="p-2.5 rounded-lg border border-[#EBECF0] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] flex items-center justify-between text-xs"
+                  className="p-3 rounded-2xl border border-[#EBECF0] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] flex items-center justify-between text-xs"
                 >
-                  <div>
-                    <p className="font-bold text-[#172B4D] dark:text-white">{emp.name}</p>
-                    <p className="text-[10px] text-[#6B778C] dark:text-slate-400">{emp.role}</p>
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-[#EBECF0] dark:bg-[#263042] flex items-center justify-center font-bold text-[11px] text-[#172B4D] dark:text-white">
+                      {emp.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-bold text-[#172B4D] dark:text-white">{emp.name}</p>
+                      <p className="text-[10px] text-[#6B778C] dark:text-slate-400">{emp.role}</p>
+                    </div>
                   </div>
                   <div className="text-right">
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                         emp.status === "Present"
                           ? "bg-[#E3FCEF] text-[#00875A]"
                           : emp.status === "Late"
@@ -270,8 +290,8 @@ export default function MobileDashboard() {
       {/* EMPLOYEE WORKFORCE VIEW                                        */}
       {/* ============================================================== */}
       <div className="space-y-4">
-        {/* Live Attendance Card */}
-        <div className="bg-white dark:bg-[#0F131C] rounded-2xl p-4 border border-[#DFE1E6] dark:border-[#263042] shadow-sm space-y-3">
+        {/* Live Attendance Clock Widget */}
+        <div className="bg-white dark:bg-[#0F131C] rounded-3xl p-5 border border-[#DFE1E6]/80 dark:border-[#263042] shadow-sm space-y-3.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="relative flex h-3 w-3">
@@ -282,44 +302,46 @@ export default function MobileDashboard() {
                 Currently Clocked In
               </span>
             </div>
-            <span className="text-[10px] font-mono text-[#6B778C] dark:text-slate-400">In: 09:12 AM</span>
+            <span className="text-[11px] font-mono font-medium text-[#6B778C] dark:text-slate-400">First In: 09:12 AM</span>
           </div>
 
           <div className="flex items-baseline justify-between pt-1">
             <div>
-              <p className="text-[10px] uppercase font-bold text-[#6B778C] dark:text-slate-400">Work Hours Logged</p>
+              <p className="text-[10px] uppercase font-bold text-[#6B778C] dark:text-slate-400 tracking-wider">
+                Active Shift Time
+              </p>
               <p className="text-3xl font-black tracking-tight text-[#172B4D] dark:text-white font-mono mt-0.5">
                 {workHoursTicking}
               </p>
             </div>
             <button
               onClick={() => navigate("/swipes")}
-              className="px-3.5 py-2 rounded-xl bg-[#0052CC] hover:bg-[#0747A6] text-white text-xs font-bold active:scale-95 transition-transform flex items-center gap-1.5 shadow-sm"
+              className="px-4 py-2.5 rounded-2xl bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-bold active:scale-95 transition-all flex items-center gap-1.5 shadow-sm"
             >
               <Clock className="w-3.5 h-3.5" />
               <span>Punch Swipe</span>
             </button>
           </div>
 
-          {/* GPS Perimeter Pill */}
-          <div className="p-2.5 rounded-xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-[#6B778C] dark:text-slate-400">
+          {/* GPS Perimeter Radar Pill */}
+          <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2 text-[#6B778C] dark:text-slate-400 truncate">
               <MapPin className="w-4 h-4 text-[#0052CC] shrink-0" />
-              <span className="truncate">Bangalore HQ Perimeter (200m zone)</span>
+              <span className="truncate">Tech Park Campus (Authorized Radius: 500m)</span>
             </div>
-            <span className="px-2 py-0.5 rounded-full bg-[#E3FCEF] text-[#00875A] font-bold text-[10px] shrink-0">
-              Inside
+            <span className="px-2.5 py-0.5 rounded-full bg-[#E3FCEF] text-[#00875A] font-bold text-[10px] shrink-0">
+              Verified
             </span>
           </div>
         </div>
 
-        {/* 4 Quick Actions Grid */}
-        <div className="grid grid-cols-4 gap-2">
+        {/* 4 Premium Quick Action Tiles */}
+        <div className="grid grid-cols-4 gap-2.5">
           <button
             onClick={() => navigate("/swipes")}
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] active:scale-95 transition-transform shadow-xs"
+            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC]"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#DEEBFF] text-[#0052CC] flex items-center justify-center mb-1.5">
+            <div className="w-11 h-11 rounded-2xl bg-[#DEEBFF] text-[#0052CC] flex items-center justify-center mb-1.5 shadow-xs">
               <Clock className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-[#172B4D] dark:text-white">Swipes</span>
@@ -327,9 +349,9 @@ export default function MobileDashboard() {
 
           <button
             onClick={() => navigate("/leaves")}
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] active:scale-95 transition-transform shadow-xs"
+            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#00875A]"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#E3FCEF] text-[#00875A] flex items-center justify-center mb-1.5">
+            <div className="w-11 h-11 rounded-2xl bg-[#E3FCEF] text-[#00875A] flex items-center justify-center mb-1.5 shadow-xs">
               <Calendar className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-[#172B4D] dark:text-white">Leaves</span>
@@ -337,9 +359,9 @@ export default function MobileDashboard() {
 
           <button
             onClick={() => navigate("/payslips")}
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] active:scale-95 transition-transform shadow-xs"
+            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#B9770E]"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#FFF0B3] text-[#B9770E] flex items-center justify-center mb-1.5">
+            <div className="w-11 h-11 rounded-2xl bg-[#FFF0B3] text-[#B9770E] flex items-center justify-center mb-1.5 shadow-xs">
               <CreditCard className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-[#172B4D] dark:text-white">Payslips</span>
@@ -347,9 +369,9 @@ export default function MobileDashboard() {
 
           <button
             onClick={() => navigate("/profile")}
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] active:scale-95 transition-transform shadow-xs"
+            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC]"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#F4F5F7] text-[#42526E] flex items-center justify-center mb-1.5">
+            <div className="w-11 h-11 rounded-2xl bg-[#FAFBFC] text-[#0052CC] border border-[#DFE1E6] flex items-center justify-center mb-1.5 shadow-xs">
               <Award className="w-5 h-5" />
             </div>
             <span className="text-[11px] font-bold text-[#172B4D] dark:text-white">Smart ID</span>
@@ -357,69 +379,73 @@ export default function MobileDashboard() {
         </div>
 
         {/* Leave Quota Balance Summary */}
-        <div className="bg-white dark:bg-[#0F131C] rounded-2xl p-4 border border-[#DFE1E6] dark:border-[#263042] shadow-sm space-y-3">
+        <div className="bg-white dark:bg-[#0F131C] rounded-3xl p-4 border border-[#DFE1E6]/80 dark:border-[#263042] shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B778C] dark:text-slate-400">
-              Leave Balances
+              Leave Quotas
             </h3>
             <button
               onClick={() => navigate("/leaves")}
-              className="text-xs text-[#0052CC] dark:text-blue-400 font-bold flex items-center gap-1 hover:underline"
+              className="text-xs text-[#0052CC] dark:text-blue-400 font-bold flex items-center gap-0.5 hover:underline"
             >
-              <span>Manage</span>
+              <span>Apply Leave</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
           <div className="grid grid-cols-4 gap-2">
-            <div className="p-2.5 rounded-xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] text-center">
-              <p className="text-[10px] text-[#6B778C] dark:text-slate-400 font-bold">CL</p>
-              <p className="text-base font-black text-[#0052CC] mt-0.5">4.5</p>
-              <p className="text-[8px] text-[#8993A4]">Casual</p>
+            <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] text-center">
+              <p className="text-[10px] text-[#6B778C] dark:text-slate-400 font-bold uppercase">CL</p>
+              <p className="text-lg font-black text-[#0052CC] mt-0.5 tabular-nums">4.5</p>
+              <p className="text-[9px] text-[#8993A4]">Casual</p>
             </div>
-            <div className="p-2.5 rounded-xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] text-center">
-              <p className="text-[10px] text-[#6B778C] dark:text-slate-400 font-bold">SL</p>
-              <p className="text-base font-black text-[#00875A] mt-0.5">6.0</p>
-              <p className="text-[8px] text-[#8993A4]">Sick</p>
+            <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] text-center">
+              <p className="text-[10px] text-[#6B778C] dark:text-slate-400 font-bold uppercase">SL</p>
+              <p className="text-lg font-black text-[#00875A] mt-0.5 tabular-nums">6.0</p>
+              <p className="text-[9px] text-[#8993A4]">Sick</p>
             </div>
-            <div className="p-2.5 rounded-xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] text-center">
-              <p className="text-[10px] text-[#6B778C] dark:text-slate-400 font-bold">EL</p>
-              <p className="text-base font-black text-[#B9770E] mt-0.5">14.0</p>
-              <p className="text-[8px] text-[#8993A4]">Earned</p>
+            <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] text-center">
+              <p className="text-[10px] text-[#6B778C] dark:text-slate-400 font-bold uppercase">EL</p>
+              <p className="text-lg font-black text-[#B9770E] mt-0.5 tabular-nums">14.0</p>
+              <p className="text-[9px] text-[#8993A4]">Earned</p>
             </div>
-            <div className="p-2.5 rounded-xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] text-center">
-              <p className="text-[10px] text-[#6B778C] dark:text-slate-400 font-bold">CO</p>
-              <p className="text-base font-black text-[#42526E] mt-0.5">2.0</p>
-              <p className="text-[8px] text-[#8993A4]">Comp-Off</p>
+            <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] text-center">
+              <p className="text-[10px] text-[#6B778C] dark:text-slate-400 font-bold uppercase">CO</p>
+              <p className="text-lg font-black text-[#42526E] mt-0.5 tabular-nums">2.0</p>
+              <p className="text-[9px] text-[#8993A4]">Comp-Off</p>
             </div>
           </div>
         </div>
 
         {/* Upcoming Statutory Holidays */}
-        <div className="bg-white dark:bg-[#0F131C] rounded-2xl p-4 border border-[#DFE1E6] dark:border-[#263042] shadow-sm space-y-2.5">
+        <div className="bg-white dark:bg-[#0F131C] rounded-3xl p-4 border border-[#DFE1E6]/80 dark:border-[#263042] shadow-sm space-y-2.5">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B778C] dark:text-slate-400 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-[#0052CC]" />
-              Upcoming Corporate Holidays
+              Corporate Holidays (Q4 2026)
             </h3>
-            <span className="text-[10px] text-[#6B778C] font-semibold">Q4 2026</span>
+            <span className="text-[10px] text-[#00875A] font-bold">2 Remaining</span>
           </div>
 
-          <div className="space-y-1.5 text-xs">
-            <div className="p-2.5 rounded-lg bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between">
+          <div className="space-y-2 text-xs">
+            <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between">
               <div>
                 <p className="font-bold text-[#172B4D] dark:text-white">Diwali (Deepavali)</p>
-                <p className="text-[10px] text-[#6B778C] dark:text-slate-400">Mandatory Public Holiday</p>
+                <p className="text-[10px] text-[#6B778C] dark:text-slate-400">Statutory Public Holiday</p>
               </div>
-              <span className="font-mono text-[11px] font-bold text-[#0052CC]">08 Nov 2026</span>
+              <span className="font-mono text-[11px] font-bold text-[#0052CC] bg-[#DEEBFF] dark:bg-blue-950/60 px-2 py-0.5 rounded-lg">
+                08 Nov 2026
+              </span>
             </div>
 
-            <div className="p-2.5 rounded-lg bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between">
+            <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between">
               <div>
                 <p className="font-bold text-[#172B4D] dark:text-white">Christmas Day</p>
                 <p className="text-[10px] text-[#6B778C] dark:text-slate-400">National Holiday</p>
               </div>
-              <span className="font-mono text-[11px] font-bold text-[#0052CC]">25 Dec 2026</span>
+              <span className="font-mono text-[11px] font-bold text-[#0052CC] bg-[#DEEBFF] dark:bg-blue-950/60 px-2 py-0.5 rounded-lg">
+                25 Dec 2026
+              </span>
             </div>
           </div>
         </div>
@@ -428,7 +454,7 @@ export default function MobileDashboard() {
       {/* Admin Broadcast Modal */}
       {broadcastModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-3 animate-fade-in">
-          <div className="bg-white dark:bg-[#0F131C] w-full max-w-sm rounded-2xl p-5 border border-[#DFE1E6] dark:border-[#263042] shadow-2xl space-y-4">
+          <div className="bg-white dark:bg-[#0F131C] w-full max-w-sm rounded-3xl p-5 border border-[#DFE1E6] dark:border-[#263042] shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Radio className="w-5 h-5 text-[#0052CC]" />
@@ -451,7 +477,7 @@ export default function MobileDashboard() {
                   value={broadcastTitle}
                   onChange={(e) => setBroadcastTitle(e.target.value)}
                   placeholder="e.g. Townhall Announcement"
-                  className="w-full mt-1 px-3 py-2 rounded-xl border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] text-xs text-[#172B4D] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0052CC]"
+                  className="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] text-xs text-[#172B4D] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0052CC]"
                 />
               </div>
 
@@ -463,7 +489,7 @@ export default function MobileDashboard() {
                   value={broadcastMessage}
                   onChange={(e) => setBroadcastMessage(e.target.value)}
                   placeholder="Draft priority notice for all mobile users..."
-                  className="w-full mt-1 px-3 py-2 rounded-xl border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] text-xs text-[#172B4D] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0052CC]"
+                  className="w-full mt-1 px-3.5 py-2.5 rounded-xl border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] text-xs text-[#172B4D] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0052CC]"
                 />
               </div>
 
@@ -471,13 +497,13 @@ export default function MobileDashboard() {
                 <button
                   type="button"
                   onClick={() => setBroadcastModalOpen(false)}
-                  className="px-3 py-2 rounded-xl border border-[#DFE1E6] text-xs font-semibold"
+                  className="px-3.5 py-2 rounded-xl border border-[#DFE1E6] text-xs font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-[#0052CC] text-white text-xs font-bold shadow-sm flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-xl bg-[#0052CC] text-white text-xs font-bold shadow-sm flex items-center gap-1.5 active:scale-95 transition-transform"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Send Broadcast</span>

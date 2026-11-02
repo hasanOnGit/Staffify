@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import StaffifyLogo from '../components/StaffifyLogo';
 import {
   Smartphone,
   Lock,
@@ -80,17 +81,9 @@ export default function MobileLogin() {
     <div className="min-h-screen bg-[#F4F5F7] dark:bg-[#090D14] flex flex-col justify-between px-6 py-10 max-w-md mx-auto">
       {/* Top Branding */}
       <div className="pt-6 space-y-6">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-[#0052CC] flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-            <Smartphone className="w-7 h-7" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-2xl tracking-tight text-[#172B4D] dark:text-white">Staffify</span>
-              <span className="px-2 py-0.5 rounded-md bg-[#0052CC] text-white text-[11px] font-black tracking-wider uppercase">MOB</span>
-            </div>
-            <p className="text-xs text-[#6B778C] dark:text-slate-400 font-medium">Mobile Workforce Companion</p>
-          </div>
+        <div className="space-y-3">
+          <StaffifyLogo size="lg" subtitle="MOB" />
+          <p className="text-xs text-[#6B778C] dark:text-slate-400 font-medium">Enterprise Mobile Companion Suite</p>
         </div>
 
         <div className="space-y-1">
