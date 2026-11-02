@@ -1,0 +1,21 @@
+{
+  "appId": "com.staffify.mob",
+  "appName": "StaffifyMOB",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#0052CC",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "backgroundColor": "#0052CC",
+      "style": "DARK"
+    }
+  }
+}
