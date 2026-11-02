@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import {
@@ -12,11 +13,14 @@ import {
   Send,
   Loader2,
   Info,
+  FileCheck2,
+  ChevronRight
 } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function MobileLeaves() {
-  const { user } = useAuth();
+  const { user, isManager, isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("my_leaves"); // "my_leaves" or "comp_off"
   const [balances, setBalances] = useState(null);
   const [leaveHistory, setLeaveHistory] = useState([]);
@@ -193,6 +197,27 @@ export default function MobileLeaves() {
           <span>Apply</span>
         </button>
       </div>
+
+      {/* Manager / Admin Team Leaves Action Banner */}
+      {(isManager || isAdmin) && (
+        <div
+          onClick={() => navigate("/approvals")}
+          className="p-3 rounded-2xl bg-[#DEEBFF]/80 dark:bg-blue-950/40 border border-[#0052CC]/30 flex items-center justify-between cursor-pointer active:scale-98 transition-transform shadow-xs"
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-[#0052CC] text-white">
+              <FileCheck2 className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-[#172B4D] dark:text-white">Review Team Leave Requests</p>
+              <p className="text-[10px] text-[#0052CC] dark:text-blue-300 font-medium">
+                {isAdmin ? "4 Requests waiting in Executive Deck" : "3 Requests from your direct squad"}
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-[#0052CC]" />
+        </div>
+      )}
 
       {/* Quota KPI Cards */}
       <div className="grid grid-cols-2 gap-2 text-xs">

@@ -7,6 +7,7 @@ import MobileSwipes from './pages/MobileSwipes';
 import MobileLeaves from './pages/MobileLeaves';
 import MobilePayslips from './pages/MobilePayslips';
 import MobileApprovals from './pages/MobileApprovals';
+import MobileWorkforce from './pages/MobileWorkforce';
 import MobileProfile from './pages/MobileProfile';
 import MobileLogin from './pages/MobileLogin';
 
@@ -44,6 +45,7 @@ export default function App() {
             <Route path="leaves" element={<MobileLeaves />} />
             <Route path="payslips" element={<MobilePayslips />} />
             <Route path="approvals" element={<MobileApprovals />} />
+            <Route path="workforce" element={<MobileWorkforce />} />
             <Route path="profile" element={<MobileProfile />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

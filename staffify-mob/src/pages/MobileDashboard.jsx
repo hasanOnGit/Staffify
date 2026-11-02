@@ -22,7 +22,9 @@ import {
   Activity,
   ShieldCheck,
   Zap,
-  ArrowRight
+  ArrowRight,
+  Server,
+  Layers
 } from "lucide-react";
 
 export default function MobileDashboard() {
@@ -211,6 +213,81 @@ export default function MobileDashboard() {
               </button>
             </div>
           </div>
+
+          {/* Master Workforce Directory Snapshot */}
+          <div className="bg-white dark:bg-[#0F131C] p-4 rounded-3xl border border-[#DFE1E6]/80 dark:border-[#263042] space-y-3 shadow-xs">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B778C] dark:text-slate-400 flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-[#0052CC]" />
+                Workforce Distribution
+              </h3>
+              <button
+                onClick={() => navigate("/workforce")}
+                className="text-xs text-[#0052CC] dark:text-blue-400 font-bold flex items-center gap-0.5 hover:underline"
+              >
+                <span>Directory</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="p-2.5 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042]">
+                <p className="text-base font-black text-[#172B4D] dark:text-white">22</p>
+                <p className="text-[9px] text-[#6B778C] dark:text-slate-400 font-bold uppercase mt-0.5">Engg</p>
+              </div>
+              <div className="p-2.5 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042]">
+                <p className="text-base font-black text-[#172B4D] dark:text-white">6</p>
+                <p className="text-[9px] text-[#6B778C] dark:text-slate-400 font-bold uppercase mt-0.5">Product</p>
+              </div>
+              <div className="p-2.5 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042]">
+                <p className="text-base font-black text-[#172B4D] dark:text-white">14</p>
+                <p className="text-[9px] text-[#6B778C] dark:text-slate-400 font-bold uppercase mt-0.5">Ops / Sales</p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => navigate("/workforce")}
+              className="w-full py-2.5 rounded-2xl bg-[#0052CC] text-white text-xs font-bold shadow-xs active:scale-98 transition-all flex items-center justify-center gap-1.5"
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>Explore All 42 Employees</span>
+            </button>
+          </div>
+
+          {/* Biometric Gateways & Terminals Monitor */}
+          <div className="bg-white dark:bg-[#0F131C] p-4 rounded-3xl border border-[#DFE1E6]/80 dark:border-[#263042] space-y-3 shadow-xs">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B778C] dark:text-slate-400 flex items-center gap-1.5">
+                <Server className="w-3.5 h-3.5 text-[#0052CC]" />
+                Biometric Gateway Health
+              </h3>
+              <span className="text-[10px] text-[#00875A] font-bold">3 Online</span>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="p-2.5 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#00875A] animate-pulse" />
+                  <div>
+                    <p className="font-bold text-[#172B4D] dark:text-white">Main Lobby FaceID</p>
+                    <p className="text-[9px] text-[#6B778C] dark:text-slate-400 font-mono">192.168.1.101 • eSSL Terminal</p>
+                  </div>
+                </div>
+                <span className="px-2 py-0.5 rounded-md bg-[#E3FCEF] text-[#00875A] font-bold text-[9px]">99.8%</span>
+              </div>
+
+              <div className="p-2.5 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#00875A]" />
+                  <div>
+                    <p className="font-bold text-[#172B4D] dark:text-white">Wing-B Turnstile</p>
+                    <p className="text-[9px] text-[#6B778C] dark:text-slate-400 font-mono">192.168.1.102 • ZKTeco Finger</p>
+                  </div>
+                </div>
+                <span className="px-2 py-0.5 rounded-md bg-[#E3FCEF] text-[#00875A] font-bold text-[9px]">100%</span>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -283,102 +360,184 @@ export default function MobileDashboard() {
               ))}
             </div>
           </div>
+
+          {/* Manager Personal Shift Clock */}
+          <div className="bg-white dark:bg-[#0F131C] rounded-3xl p-5 border border-[#DFE1E6]/80 dark:border-[#263042] shadow-sm space-y-3.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[#00875A]"></span>
+                </span>
+                <span className="font-bold text-xs uppercase tracking-wider text-[#00875A]">
+                  Manager On Duty
+                </span>
+              </div>
+              <span className="text-[11px] font-mono font-medium text-[#6B778C] dark:text-slate-400">First In: 09:00 AM</span>
+            </div>
+
+            <div className="flex items-baseline justify-between pt-1">
+              <div>
+                <p className="text-[10px] uppercase font-bold text-[#6B778C] dark:text-slate-400 tracking-wider">
+                  Active Shift Time
+                </p>
+                <p className="text-3xl font-black tracking-tight text-[#172B4D] dark:text-white font-mono mt-0.5">
+                  {workHoursTicking}
+                </p>
+              </div>
+              <button
+                onClick={() => navigate("/swipes")}
+                className="px-4 py-2.5 rounded-2xl bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-bold active:scale-95 transition-all flex items-center gap-1.5 shadow-sm"
+              >
+                <Clock className="w-3.5 h-3.5" />
+                <span>Punch Swipe</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Manager 4 Quick Action Tiles */}
+          <div className="grid grid-cols-4 gap-2.5">
+            <button
+              onClick={() => navigate("/swipes")}
+              className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC] group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-[#DEEBFF] text-[#0052CC] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:-rotate-6 ring-1 ring-[#0052CC]/15">
+                <Clock className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
+              </div>
+              <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#0052CC] transition-colors">Swipes</span>
+            </button>
+
+            <button
+              onClick={() => navigate("/approvals")}
+              className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC] group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-[#E3FCEF] text-[#00875A] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:rotate-6 ring-1 ring-[#00875A]/15 relative">
+                <FileCheck2 className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
+                <span className="absolute -top-1 -right-1 px-1.5 py-0.2 bg-[#DE350B] text-white text-[9px] font-black rounded-full shadow-xs">3</span>
+              </div>
+              <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#00875A] transition-colors">Approvals</span>
+            </button>
+
+            <button
+              onClick={() => navigate("/leaves")}
+              className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#B9770E] group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-[#FFF0B3] text-[#B9770E] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:-rotate-6 ring-1 ring-[#B9770E]/15">
+                <Calendar className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
+              </div>
+              <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#B9770E] transition-colors">Leaves</span>
+            </button>
+
+            <button
+              onClick={() => navigate("/profile")}
+              className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC] group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-[#FAFBFC] text-[#0052CC] border border-[#DFE1E6] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:rotate-6 ring-1 ring-[#0052CC]/15">
+                <Award className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
+              </div>
+              <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#0052CC] transition-colors">Smart ID</span>
+            </button>
+          </div>
         </div>
       )}
 
       {/* ============================================================== */}
       {/* EMPLOYEE WORKFORCE VIEW                                        */}
       {/* ============================================================== */}
-      <div className="space-y-4">
-        {/* Live Attendance Clock Widget */}
-        <div className="bg-white dark:bg-[#0F131C] rounded-3xl p-5 border border-[#DFE1E6]/80 dark:border-[#263042] shadow-sm space-y-3.5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-[#00875A]"></span>
-              </span>
-              <span className="font-bold text-xs uppercase tracking-wider text-[#00875A]">
-                Currently Clocked In
+      {!isAdmin && !isManager && (
+        <div className="space-y-4">
+          {/* Live Attendance Clock Widget */}
+          <div className="bg-white dark:bg-[#0F131C] rounded-3xl p-5 border border-[#DFE1E6]/80 dark:border-[#263042] shadow-sm space-y-3.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[#00875A]"></span>
+                </span>
+                <span className="font-bold text-xs uppercase tracking-wider text-[#00875A]">
+                  Currently Clocked In
+                </span>
+              </div>
+              <span className="text-[11px] font-mono font-medium text-[#6B778C] dark:text-slate-400">First In: 09:12 AM</span>
+            </div>
+
+            <div className="flex items-baseline justify-between pt-1">
+              <div>
+                <p className="text-[10px] uppercase font-bold text-[#6B778C] dark:text-slate-400 tracking-wider">
+                  Active Shift Time
+                </p>
+                <p className="text-3xl font-black tracking-tight text-[#172B4D] dark:text-white font-mono mt-0.5">
+                  {workHoursTicking}
+                </p>
+              </div>
+              <button
+                onClick={() => navigate("/swipes")}
+                className="px-4 py-2.5 rounded-2xl bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-bold active:scale-95 transition-all flex items-center gap-1.5 shadow-sm"
+              >
+                <Clock className="w-3.5 h-3.5" />
+                <span>Punch Swipe</span>
+              </button>
+            </div>
+
+            {/* GPS Perimeter Radar Pill */}
+            <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2 text-[#6B778C] dark:text-slate-400 truncate">
+                <MapPin className="w-4 h-4 text-[#0052CC] shrink-0" />
+                <span className="truncate">Tech Park Campus (Authorized Radius: 500m)</span>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full bg-[#E3FCEF] text-[#00875A] font-bold text-[10px] shrink-0">
+                Verified
               </span>
             </div>
-            <span className="text-[11px] font-mono font-medium text-[#6B778C] dark:text-slate-400">First In: 09:12 AM</span>
           </div>
 
-          <div className="flex items-baseline justify-between pt-1">
-            <div>
-              <p className="text-[10px] uppercase font-bold text-[#6B778C] dark:text-slate-400 tracking-wider">
-                Active Shift Time
-              </p>
-              <p className="text-3xl font-black tracking-tight text-[#172B4D] dark:text-white font-mono mt-0.5">
-                {workHoursTicking}
-              </p>
-            </div>
+          {/* 4 Premium Quick Action Tiles with Peak Detailing */}
+          <div className="grid grid-cols-4 gap-2.5">
             <button
               onClick={() => navigate("/swipes")}
-              className="px-4 py-2.5 rounded-2xl bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-bold active:scale-95 transition-all flex items-center gap-1.5 shadow-sm"
+              className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC] group"
             >
-              <Clock className="w-3.5 h-3.5" />
-              <span>Punch Swipe</span>
+              <div className="w-12 h-12 rounded-2xl bg-[#DEEBFF] text-[#0052CC] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:-rotate-6 ring-1 ring-[#0052CC]/15">
+                <Clock className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
+              </div>
+              <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#0052CC] transition-colors">Swipes</span>
+            </button>
+
+            <button
+              onClick={() => navigate("/leaves")}
+              className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#00875A] group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-[#E3FCEF] text-[#00875A] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:rotate-6 ring-1 ring-[#00875A]/15">
+                <Calendar className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
+              </div>
+              <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#00875A] transition-colors">Leaves</span>
+            </button>
+
+            <button
+              onClick={() => navigate("/payslips")}
+              className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#B9770E] group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-[#FFF0B3] text-[#B9770E] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:-rotate-6 ring-1 ring-[#B9770E]/15">
+                <CreditCard className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
+              </div>
+              <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#B9770E] transition-colors">Payslips</span>
+            </button>
+
+            <button
+              onClick={() => navigate("/profile")}
+              className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC] group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-[#FAFBFC] text-[#0052CC] border border-[#DFE1E6] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:rotate-6 ring-1 ring-[#0052CC]/15">
+                <Award className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
+              </div>
+              <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#0052CC] transition-colors">Smart ID</span>
             </button>
           </div>
-
-          {/* GPS Perimeter Radar Pill */}
-          <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-[#6B778C] dark:text-slate-400 truncate">
-              <MapPin className="w-4 h-4 text-[#0052CC] shrink-0" />
-              <span className="truncate">Tech Park Campus (Authorized Radius: 500m)</span>
-            </div>
-            <span className="px-2.5 py-0.5 rounded-full bg-[#E3FCEF] text-[#00875A] font-bold text-[10px] shrink-0">
-              Verified
-            </span>
-          </div>
         </div>
+      )}
 
-        {/* 4 Premium Quick Action Tiles with Peak Detailing */}
-        <div className="grid grid-cols-4 gap-2.5">
-          <button
-            onClick={() => navigate("/swipes")}
-            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC] group"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-[#DEEBFF] text-[#0052CC] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:-rotate-6 ring-1 ring-[#0052CC]/15">
-              <Clock className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
-            </div>
-            <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#0052CC] transition-colors">Swipes</span>
-          </button>
-
-          <button
-            onClick={() => navigate("/leaves")}
-            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#00875A] group"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-[#E3FCEF] text-[#00875A] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:rotate-6 ring-1 ring-[#00875A]/15">
-              <Calendar className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
-            </div>
-            <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#00875A] transition-colors">Leaves</span>
-          </button>
-
-          <button
-            onClick={() => navigate("/payslips")}
-            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#B9770E] group"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-[#FFF0B3] text-[#B9770E] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:-rotate-6 ring-1 ring-[#B9770E]/15">
-              <CreditCard className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
-            </div>
-            <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#B9770E] transition-colors">Payslips</span>
-          </button>
-
-          <button
-            onClick={() => navigate("/profile")}
-            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC] group"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-[#FAFBFC] text-[#0052CC] border border-[#DFE1E6] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:rotate-6 ring-1 ring-[#0052CC]/15">
-              <Award className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
-            </div>
-            <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#0052CC] transition-colors">Smart ID</span>
-          </button>
-        </div>
-
-        {/* Leave Quota Balance Summary */}
+      {/* Common Leave Quotas (For Manager and Employee) */}
+      {!isAdmin && (
         <div className="bg-white dark:bg-[#0F131C] rounded-3xl p-4 border border-[#DFE1E6]/80 dark:border-[#263042] shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B778C] dark:text-slate-400">
@@ -416,37 +575,37 @@ export default function MobileDashboard() {
             </div>
           </div>
         </div>
+      )}
 
-        {/* Upcoming Statutory Holidays */}
-        <div className="bg-white dark:bg-[#0F131C] rounded-3xl p-4 border border-[#DFE1E6]/80 dark:border-[#263042] shadow-sm space-y-2.5">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B778C] dark:text-slate-400 flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-[#0052CC]" />
-              Corporate Holidays (Q4 2026)
-            </h3>
-            <span className="text-[10px] text-[#00875A] font-bold">2 Remaining</span>
+      {/* Corporate Holidays (Universal to all roles) */}
+      <div className="bg-white dark:bg-[#0F131C] rounded-3xl p-4 border border-[#DFE1E6]/80 dark:border-[#263042] shadow-sm space-y-2.5">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B778C] dark:text-slate-400 flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-[#0052CC]" />
+            Corporate Holidays (Q4 2026)
+          </h3>
+          <span className="text-[10px] text-[#00875A] font-bold">2 Remaining</span>
+        </div>
+
+        <div className="space-y-2 text-xs">
+          <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between">
+            <div>
+              <p className="font-bold text-[#172B4D] dark:text-white">Diwali (Deepavali)</p>
+              <p className="text-[10px] text-[#6B778C] dark:text-slate-400">Statutory Public Holiday</p>
+            </div>
+            <span className="font-mono text-[11px] font-bold text-[#0052CC] bg-[#DEEBFF] dark:bg-blue-950/60 px-2 py-0.5 rounded-lg">
+              08 Nov 2026
+            </span>
           </div>
 
-          <div className="space-y-2 text-xs">
-            <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between">
-              <div>
-                <p className="font-bold text-[#172B4D] dark:text-white">Diwali (Deepavali)</p>
-                <p className="text-[10px] text-[#6B778C] dark:text-slate-400">Statutory Public Holiday</p>
-              </div>
-              <span className="font-mono text-[11px] font-bold text-[#0052CC] bg-[#DEEBFF] dark:bg-blue-950/60 px-2 py-0.5 rounded-lg">
-                08 Nov 2026
-              </span>
+          <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between">
+            <div>
+              <p className="font-bold text-[#172B4D] dark:text-white">Christmas Day</p>
+              <p className="text-[10px] text-[#6B778C] dark:text-slate-400">National Holiday</p>
             </div>
-
-            <div className="p-3 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between">
-              <div>
-                <p className="font-bold text-[#172B4D] dark:text-white">Christmas Day</p>
-                <p className="text-[10px] text-[#6B778C] dark:text-slate-400">National Holiday</p>
-              </div>
-              <span className="font-mono text-[11px] font-bold text-[#0052CC] bg-[#DEEBFF] dark:bg-blue-950/60 px-2 py-0.5 rounded-lg">
-                25 Dec 2026
-              </span>
-            </div>
+            <span className="font-mono text-[11px] font-bold text-[#0052CC] bg-[#DEEBFF] dark:bg-blue-950/60 px-2 py-0.5 rounded-lg">
+              25 Dec 2026
+            </span>
           </div>
         </div>
       </div>

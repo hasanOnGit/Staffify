@@ -18,11 +18,49 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 
+import { useNavigate } from 'react-router-dom';
+import { Lock } from 'lucide-react';
+
 export default function MobileApprovals() {
-  const { user } = useAuth();
+  const { user, isManager, isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('leaves'); // 'leaves' | 'compoff' | 'regularization'
   const [loading, setLoading] = useState(false);
   const [actionSuccess, setActionSuccess] = useState(null);
+
+  // If accessed by non-Manager, enforce strict RBAC restriction
+  if (!isManager && !isAdmin) {
+    return (
+      <div className="p-6 text-center space-y-4 pt-10 animate-in fade-in duration-300">
+        <div className="w-14 h-14 rounded-3xl bg-[#FFEBE6] dark:bg-rose-950/40 text-[#DE350B] flex items-center justify-center mx-auto border border-[#DE350B]/20 shadow-xs">
+          <Lock className="w-7 h-7" />
+        </div>
+        <div className="space-y-1.5">
+          <span className="px-2.5 py-0.5 rounded-full bg-[#FFEBE6] text-[#DE350B] text-[10px] font-extrabold uppercase tracking-wider">
+            Access Restricted
+          </span>
+          <h2 className="text-lg font-bold text-[#172B4D] dark:text-white">Manager Authority Required</h2>
+          <p className="text-xs text-[#6B778C] dark:text-slate-400 max-w-xs mx-auto">
+            The Approvals Deck is reserved for Line Managers and HR Administrators. Employee accounts operate under Self-Service mode.
+          </p>
+        </div>
+        <div className="pt-2 flex flex-col gap-2 max-w-xs mx-auto">
+          <button
+            onClick={() => navigate("/leaves")}
+            className="w-full py-2.5 rounded-2xl bg-[#0052CC] text-white text-xs font-bold shadow-xs active:scale-95 transition-transform"
+          >
+            Go to My Leaves & Balances
+          </button>
+          <button
+            onClick={() => navigate("/")}
+            className="w-full py-2.5 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] text-[#6B778C] text-xs font-bold active:scale-95 transition-transform"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Demo queue data for mobile quick-response experience
   const [pendingLeaves, setPendingLeaves] = useState([

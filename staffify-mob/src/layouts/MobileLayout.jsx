@@ -51,18 +51,35 @@ export default function MobileLayout() {
     await switchRole(role);
   };
 
-  const navItems = [
-    { to: "/", label: "Home", icon: Home },
-    { to: "/swipes", label: "Swipes", icon: Clock },
-    { to: "/leaves", label: "Leaves", icon: Calendar },
-    { to: "/payslips", label: "Payslips", icon: CreditCard },
-    {
-      to: isManager ? "/approvals" : "/profile",
-      label: isManager ? "Approvals" : "Smart ID",
-      icon: isManager ? CheckSquare : User,
-      badge: isManager ? 3 : null
-    },
-  ];
+  const getNavItems = () => {
+    if (isAdmin) {
+      return [
+        { to: "/", label: "Pulse", icon: Home },
+        { to: "/workforce", label: "Workforce", icon: Users },
+        { to: "/swipes", label: "Swipes", icon: Clock },
+        { to: "/approvals", label: "Approvals", icon: CheckSquare, badge: 4 },
+        { to: "/profile", label: "Admin ID", icon: User },
+      ];
+    }
+    if (isManager) {
+      return [
+        { to: "/", label: "Squad", icon: Home },
+        { to: "/swipes", label: "Swipes", icon: Clock },
+        { to: "/leaves", label: "Leaves", icon: Calendar },
+        { to: "/approvals", label: "Approvals", icon: CheckSquare, badge: 3 },
+        { to: "/profile", label: "Smart ID", icon: User },
+      ];
+    }
+    return [
+      { to: "/", label: "Home", icon: Home },
+      { to: "/swipes", label: "Swipes", icon: Clock },
+      { to: "/leaves", label: "Leaves", icon: Calendar },
+      { to: "/payslips", label: "Payslips", icon: CreditCard },
+      { to: "/profile", label: "Smart ID", icon: User },
+    ];
+  };
+
+  const navItems = getNavItems();
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F4F5F7] dark:bg-[#090D14] text-[#172B4D] dark:text-[#F1F5F9] max-w-md mx-auto shadow-2xl relative border-x border-[#DFE1E6]/70 dark:border-[#263042]/70 font-sans select-none">
