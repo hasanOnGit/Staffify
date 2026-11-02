@@ -138,7 +138,10 @@ export default function MobileDashboard() {
               </p>
             </div>
 
-            <div className="bg-white dark:bg-[#0F131C] p-4 rounded-2xl border border-[#DFE1E6]/80 dark:border-[#263042] space-y-1.5 shadow-xs hover:border-[#00875A] transition-colors">
+            <div
+              onClick={() => navigate("/swipes?tab=org")}
+              className="bg-white dark:bg-[#0F131C] p-4 rounded-2xl border border-[#DFE1E6]/80 dark:border-[#263042] space-y-1.5 shadow-xs hover:border-[#00875A] transition-colors cursor-pointer active:scale-95 group"
+            >
               <div className="flex items-center justify-between text-[#6B778C] dark:text-slate-400">
                 <span className="text-[10px] font-bold uppercase tracking-wider">Attendance %</span>
                 <div className="p-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-[#00875A]">
@@ -146,7 +149,13 @@ export default function MobileDashboard() {
                 </div>
               </div>
               <p className="text-2xl font-black text-[#00875A] tabular-nums">92.8%</p>
-              <p className="text-[10px] text-[#6B778C] dark:text-slate-400">38 In • 3 Leaves • 1 Late</p>
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] text-[#6B778C] dark:text-slate-400">38 In • 3 Leaves • 1 Late</p>
+                <span className="text-[10px] text-[#0052CC] font-bold flex items-center gap-0.5 group-hover:underline">
+                  <span>Teams</span>
+                  <ArrowRight className="w-3 h-3" />
+                </span>
+              </div>
             </div>
 
             <div className="bg-white dark:bg-[#0F131C] p-4 rounded-2xl border border-[#DFE1E6]/80 dark:border-[#263042] space-y-1.5 shadow-xs hover:border-[#B9770E] transition-colors">
@@ -261,7 +270,13 @@ export default function MobileDashboard() {
                 <Server className="w-3.5 h-3.5 text-[#0052CC]" />
                 Biometric Gateway Health
               </h3>
-              <span className="text-[10px] text-[#00875A] font-bold">3 Online</span>
+              <button
+                onClick={() => navigate("/swipes?tab=gateways")}
+                className="text-xs text-[#0052CC] dark:text-blue-400 font-bold flex items-center gap-0.5 hover:underline"
+              >
+                <span>3 Online</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
             </div>
 
             <div className="space-y-2 text-xs">
@@ -324,14 +339,21 @@ export default function MobileDashboard() {
                 <Users className="w-3.5 h-3.5 text-[#0052CC]" />
                 My Squad Today (4 Members)
               </h3>
-              <span className="text-[10px] text-[#00875A] font-bold">75% Present</span>
+              <button
+                onClick={() => navigate("/swipes?tab=team")}
+                className="text-xs text-[#0052CC] dark:text-blue-400 font-bold flex items-center gap-0.5 hover:underline"
+              >
+                <span>75% Present</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
             </div>
 
             <div className="space-y-2">
               {squadAttendance.map((emp, i) => (
                 <div
                   key={i}
-                  className="p-3 rounded-2xl border border-[#EBECF0] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] flex items-center justify-between text-xs"
+                  onClick={() => navigate("/swipes?tab=team")}
+                  className="p-3 rounded-2xl border border-[#EBECF0] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#151B26] flex items-center justify-between text-xs cursor-pointer hover:border-[#0052CC] active:scale-98 transition-all"
                 >
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-xl bg-[#EBECF0] dark:bg-[#263042] flex items-center justify-center font-bold text-[11px] text-[#172B4D] dark:text-white">
@@ -359,6 +381,14 @@ export default function MobileDashboard() {
                 </div>
               ))}
             </div>
+
+            <button
+              onClick={() => navigate("/swipes?tab=team")}
+              className="w-full py-2.5 rounded-2xl bg-[#0052CC] text-white text-xs font-bold shadow-xs active:scale-98 transition-all flex items-center justify-center gap-1.5"
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>Open Squad Attendance Hub</span>
+            </button>
           </div>
 
           {/* Manager Personal Shift Clock */}

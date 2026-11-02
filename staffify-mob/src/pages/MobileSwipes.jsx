@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   MapPin,
@@ -15,7 +16,20 @@ import {
   Check,
   X,
   Send,
-  Sparkles
+  Sparkles,
+  Users,
+  Search,
+  Building2,
+  Server,
+  Mail,
+  Phone,
+  Filter,
+  Calendar,
+  TrendingUp,
+  Activity,
+  ChevronRight,
+  ExternalLink,
+  Wifi
 } from "lucide-react";
 import api from "../services/api";
 
@@ -34,12 +48,131 @@ function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
 }
 
 export default function MobileSwipes() {
-  const { user, isOnline, queueOfflinePunch } = useAuth();
+  const { user, isAdmin, isManager, isOnline, queueOfflinePunch } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlTab = searchParams.get("tab");
+
+  const [activeMainTab, setActiveMainTab] = useState(
+    isAdmin && (urlTab === "org" || urlTab === "team")
+      ? "org"
+      : isManager && urlTab === "team"
+      ? "team"
+      : isAdmin && urlTab === "gateways"
+      ? "gateways"
+      : "clock"
+  );
+
+  useEffect(() => {
+    if (urlTab === "team" && isManager) setActiveMainTab("team");
+    if ((urlTab === "org" || urlTab === "team") && isAdmin) setActiveMainTab("org");
+    if (urlTab === "gateways" && isAdmin) setActiveMainTab("gateways");
+  }, [urlTab, isAdmin, isManager]);
+
   const [workMode, setWorkMode] = useState("office"); // "office" | "wfh"
   const [coords, setCoords] = useState(null);
   const [distance, setDistance] = useState(42); // default demo distance
   const [isInside, setIsInside] = useState(true);
   const [locating, setLocating] = useState(false);
+
+  // Filters for Squad Attendance (Manager)
+  const [squadSearch, setSquadSearch] = useState("");
+  const [squadStatusFilter, setSquadStatusFilter] = useState("All");
+
+  // Filters for Org Attendance (Admin: Team-Wise + All)
+  const [orgSearch, setOrgSearch] = useState("");
+  const [orgDeptFilter, setOrgDeptFilter] = useState("All");
+  const [orgStatusFilter, setOrgStatusFilter] = useState("All");
+
+  // Squad Attendance Dataset (Manager's Direct Reports)
+  const [squadMembers] = useState([
+    {
+      id: "EMP-014",
+      name: "Priya Sharma",
+      role: "Frontend Developer",
+      dept: "Engineering",
+      status: "Present",
+      inTime: "09:14 AM",
+      outTime: "--",
+      hours: "05h 24m",
+      workMode: "Office Geofence",
+      location: "Tech Park Campus (Verified)",
+      device: "StaffifyMOB Android",
+      email: "priya.sharma@staffify.com",
+      phone: "+91 98765 43210"
+    },
+    {
+      id: "EMP-029",
+      name: "Rahul Verma",
+      role: "Backend Developer",
+      dept: "Engineering",
+      status: "Late",
+      inTime: "10:22 AM",
+      outTime: "--",
+      hours: "04h 16m",
+      workMode: "Office Geofence",
+      location: "Tech Park Campus (Verified)",
+      device: "StaffifyMOB Android",
+      email: "rahul.verma@staffify.com",
+      phone: "+91 98765 43211"
+    },
+    {
+      id: "EMP-033",
+      name: "Aman Patel",
+      role: "DevOps Engineer",
+      dept: "Engineering",
+      status: "Present",
+      inTime: "08:58 AM",
+      outTime: "--",
+      hours: "05h 40m",
+      workMode: "eSSL Terminal #01",
+      location: "Main Lobby FaceID",
+      device: "eSSL Biometric Terminal",
+      email: "aman.patel@staffify.com",
+      phone: "+91 98765 43212"
+    },
+    {
+      id: "EMP-041",
+      name: "Neha Deshmukh",
+      role: "QA Lead",
+      dept: "Engineering",
+      status: "On Leave",
+      inTime: "--",
+      outTime: "--",
+      hours: "00h 00m",
+      workMode: "Approved Leave",
+      location: "Casual Leave (Family Wedding)",
+      device: "HR Leave Portal",
+      email: "neha.deshmukh@staffify.com",
+      phone: "+91 98765 43213"
+    }
+  ]);
+
+  // Organization-Wide Attendance Dataset (Admin: Team-Wise + All)
+  const [orgAttendanceList] = useState([
+    { id: "EMP-001", name: "Ananya Sharma", role: "Head of HR & Ops", dept: "Operations", status: "Present", inTime: "08:50 AM", outTime: "--", hours: "05h 48m", mode: "Office Geofence", terminal: "Tech Park Campus", email: "ananya.sharma@staffify.com" },
+    { id: "EMP-002", name: "Priya Sundaram", role: "Engineering Manager", dept: "Engineering", status: "Present", inTime: "09:00 AM", outTime: "--", hours: "05h 38m", mode: "Office Geofence", terminal: "Tech Park Campus", email: "priya.sundaram@staffify.com" },
+    { id: "EMP-014", name: "Priya Sharma", role: "Frontend Developer", dept: "Engineering", status: "Present", inTime: "09:14 AM", outTime: "--", hours: "05h 24m", mode: "Office Geofence", terminal: "Tech Park Campus", email: "priya.sharma@staffify.com" },
+    { id: "EMP-029", name: "Rahul Verma", role: "Backend Developer", dept: "Engineering", status: "Late", inTime: "10:22 AM", outTime: "--", hours: "04h 16m", mode: "Office Geofence", terminal: "Tech Park Campus", email: "rahul.verma@staffify.com" },
+    { id: "EMP-033", name: "Aman Patel", role: "DevOps Engineer", dept: "Engineering", status: "Present", inTime: "08:58 AM", outTime: "--", hours: "05h 40m", mode: "Biometric eSSL", terminal: "Main Lobby FaceID #01", email: "aman.patel@staffify.com" },
+    { id: "EMP-041", name: "Neha Deshmukh", role: "QA Lead", dept: "Product", status: "On Leave", inTime: "--", outTime: "--", hours: "00h 00m", mode: "Approved Leave", terminal: "Casual Leave", email: "neha.deshmukh@staffify.com" },
+    { id: "EMP-042", name: "Aarav Sharma", role: "Senior Software Engineer", dept: "Engineering", status: "Present", inTime: "09:12 AM", outTime: "--", hours: "05h 26m", mode: "Office Geofence", terminal: "Tech Park Campus", email: "aarav.sharma@staffify.com" },
+    { id: "EMP-045", name: "Vikram Malhotra", role: "Product Manager", dept: "Product", status: "Present", inTime: "09:05 AM", outTime: "--", hours: "05h 33m", mode: "Biometric eSSL", terminal: "Wing-B Turnstile #02", email: "vikram.malhotra@staffify.com" },
+    { id: "EMP-048", name: "Aditi Rao", role: "UX Designer", dept: "Product", status: "Present", inTime: "09:20 AM", outTime: "--", hours: "05h 18m", mode: "Office Geofence", terminal: "Tech Park Campus", email: "aditi.rao@staffify.com" },
+    { id: "EMP-055", name: "Kabir Das", role: "Account Executive", dept: "Sales", status: "Present", inTime: "09:30 AM", outTime: "--", hours: "05h 08m", mode: "Remote WFH", terminal: "Client On-Site GPS", email: "kabir.das@staffify.com" },
+    { id: "EMP-058", name: "Rohan Singhal", role: "Sales Lead", dept: "Sales", status: "On Leave", inTime: "--", outTime: "--", hours: "00h 00m", mode: "Approved Leave", terminal: "Sick Leave", email: "rohan.singhal@staffify.com" },
+    { id: "EMP-061", name: "Meera Nair", role: "Senior Financial Analyst", dept: "Finance", status: "Present", inTime: "08:45 AM", outTime: "--", hours: "05h 53m", mode: "Biometric eSSL", terminal: "Main Lobby FaceID #01", email: "meera.nair@staffify.com" },
+    { id: "EMP-064", name: "Arjun Kapoor", role: "Accounts Manager", dept: "Finance", status: "Present", inTime: "09:10 AM", outTime: "--", hours: "05h 28m", mode: "Office Geofence", terminal: "Tech Park Campus", email: "arjun.kapoor@staffify.com" },
+    { id: "EMP-071", name: "Kavita Reddy", role: "Operations Specialist", dept: "Operations", status: "On Leave", inTime: "--", outTime: "--", hours: "00h 00m", mode: "Approved Leave", terminal: "Earned Leave", email: "kavita.reddy@staffify.com" },
+    { id: "EMP-075", name: "Deepak Joshi", role: "Facilities Lead", dept: "Operations", status: "Present", inTime: "08:15 AM", outTime: "--", hours: "06h 23m", mode: "Biometric eSSL", terminal: "Cafeteria Gate #03", email: "deepak.joshi@staffify.com" }
+  ]);
+
+  // Gateways Dataset (Admin)
+  const [gatewaysList] = useState([
+    { id: "gw-1", name: "Main Lobby FaceID #01", ip: "192.168.1.101", model: "eSSL SilkBio-101", status: "Online", uptime: "99.8%", lastSync: "1 min ago", location: "Ground Floor East Lobby" },
+    { id: "gw-2", name: "Wing-B Turnstile #02", ip: "192.168.1.102", model: "ZKTeco ProCapture-T", status: "Online", uptime: "100%", lastSync: "Just now", location: "3rd Floor Engineering Hub" },
+    { id: "gw-3", name: "Cafeteria Punch #03", ip: "192.168.1.103", model: "eSSL K90 Fingerprint", status: "Online", uptime: "99.4%", lastSync: "3 mins ago", location: "Level 1 Cafeteria & Pantry" }
+  ]);
 
   // Hold-to-Punch
   const [holdProgress, setHoldProgress] = useState(0);
@@ -259,6 +392,29 @@ export default function MobileSwipes() {
     }
   };
 
+  const filteredSquad = squadMembers.filter((m) => {
+    const matchesSearch =
+      m.name.toLowerCase().includes(squadSearch.toLowerCase()) ||
+      m.role.toLowerCase().includes(squadSearch.toLowerCase()) ||
+      m.id.toLowerCase().includes(squadSearch.toLowerCase());
+    const matchesStatus = squadStatusFilter === "All" || m.status === squadStatusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const filteredOrg = orgAttendanceList.filter((emp) => {
+    const matchesSearch =
+      emp.name.toLowerCase().includes(orgSearch.toLowerCase()) ||
+      emp.role.toLowerCase().includes(orgSearch.toLowerCase()) ||
+      emp.id.toLowerCase().includes(orgSearch.toLowerCase()) ||
+      emp.dept.toLowerCase().includes(orgSearch.toLowerCase());
+    const matchesDept = orgDeptFilter === "All" || emp.dept === orgDeptFilter;
+    const matchesStatus = orgStatusFilter === "All" || emp.status === orgStatusFilter;
+    return matchesSearch && matchesDept && matchesStatus;
+  });
+
+  const orgDepartments = ["All", "Engineering", "Product", "Operations", "Sales", "Finance"];
+  const orgStatuses = ["All", "Present", "Late", "On Leave"];
+
   return (
     <div className="pb-8 space-y-4">
       {/* Toast Feedback */}
@@ -269,6 +425,79 @@ export default function MobileSwipes() {
         </div>
       )}
 
+      {/* Top Segmented Tab Switcher for Admin */}
+      {isAdmin && (
+        <div className="flex bg-[#EBECF0] dark:bg-[#151B26] p-1 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] text-xs font-bold">
+          <button
+            onClick={() => { setActiveMainTab("clock"); setSearchParams({ tab: "clock" }); }}
+            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+              activeMainTab === "clock"
+                ? "bg-[#0052CC] text-white shadow-xs"
+                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D]"
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5" />
+            <span>Master Clock</span>
+          </button>
+          <button
+            onClick={() => { setActiveMainTab("org"); setSearchParams({ tab: "org" }); }}
+            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+              activeMainTab === "org"
+                ? "bg-[#0052CC] text-white shadow-xs"
+                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D]"
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>Org Attendance</span>
+            <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[9px] font-black">42</span>
+          </button>
+          <button
+            onClick={() => { setActiveMainTab("gateways"); setSearchParams({ tab: "gateways" }); }}
+            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+              activeMainTab === "gateways"
+                ? "bg-[#0052CC] text-white shadow-xs"
+                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D]"
+            }`}
+          >
+            <Server className="w-3.5 h-3.5" />
+            <span>Gateways</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00875A] animate-pulse" />
+          </button>
+        </div>
+      )}
+
+      {/* Top Segmented Tab Switcher for Manager */}
+      {isManager && !isAdmin && (
+        <div className="flex bg-[#EBECF0] dark:bg-[#151B26] p-1 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] text-xs font-bold">
+          <button
+            onClick={() => { setActiveMainTab("clock"); setSearchParams({ tab: "clock" }); }}
+            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+              activeMainTab === "clock"
+                ? "bg-[#0052CC] text-white shadow-xs"
+                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D]"
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5" />
+            <span>My Clock</span>
+          </button>
+          <button
+            onClick={() => { setActiveMainTab("team"); setSearchParams({ tab: "team" }); }}
+            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+              activeMainTab === "team"
+                ? "bg-[#0052CC] text-white shadow-xs"
+                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D]"
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>Squad Attendance</span>
+            <span className="px-1.5 py-0.2 rounded-full bg-[#00875A] text-white text-[9px] font-black">4</span>
+          </button>
+        </div>
+      )}
+
+      {/* Personal Clock Container (Rendered when activeMainTab is clock) */}
+      {activeMainTab === "clock" && (
+        <div className="space-y-4 animate-in fade-in duration-200">
       {/* Mode Selector Pill */}
       <div className="flex bg-[#EBECF0] dark:bg-[#151B26] p-1 rounded-xl">
         <button
@@ -474,6 +703,403 @@ export default function MobileSwipes() {
           ))}
         </div>
       </div>
+    </div>
+  )}
+
+      {/* ============================================================== */}
+      {/* TAB 2: SQUAD ATTENDANCE (Manager Dedicated View)               */}
+      {/* ============================================================== */}
+      {activeMainTab === "team" && isManager && (
+        <div className="space-y-4 animate-in fade-in duration-200">
+          {/* Header Banner */}
+          <div className="bg-gradient-to-r from-[#0052CC] to-[#0747A6] rounded-3xl p-5 text-white shadow-md space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-[10px] font-bold uppercase tracking-wider">
+                <Users className="w-3 h-3 text-cyan-300" />
+                <span>Squad Attendance</span>
+              </div>
+              <span className="text-xs text-blue-100 font-medium font-mono">
+                {new Date().toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short" })}
+              </span>
+            </div>
+            <h1 className="text-xl font-extrabold leading-tight">Engineering Squad (4 Members)</h1>
+            <p className="text-xs text-blue-100">Live direct report attendance, punch timestamps, and status lozenges</p>
+          </div>
+
+          {/* Quick Squad KPI Metrics */}
+          <div className="grid grid-cols-4 gap-2 text-center text-xs">
+            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+              <span className="text-[9px] uppercase font-bold text-[#6B778C] dark:text-slate-400">Total</span>
+              <p className="text-lg font-black text-[#172B4D] dark:text-white tabular-nums mt-0.5">4</p>
+            </div>
+            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+              <span className="text-[9px] uppercase font-bold text-[#00875A]">Present</span>
+              <p className="text-lg font-black text-[#00875A] tabular-nums mt-0.5">3</p>
+            </div>
+            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+              <span className="text-[9px] uppercase font-bold text-[#B9770E]">Late</span>
+              <p className="text-lg font-black text-[#B9770E] tabular-nums mt-0.5">1</p>
+            </div>
+            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+              <span className="text-[9px] uppercase font-bold text-[#DE350B]">Leave</span>
+              <p className="text-lg font-black text-[#DE350B] tabular-nums mt-0.5">0</p>
+            </div>
+          </div>
+
+          {/* Search & Filter Bar */}
+          <div className="space-y-2">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3.5 top-3 text-[#6B778C]" />
+              <input
+                type="text"
+                value={squadSearch}
+                onChange={(e) => setSquadSearch(e.target.value)}
+                placeholder="Search squad member by name or role..."
+                className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#0F131C] text-xs text-[#172B4D] dark:text-white placeholder-[#8993A4] focus:outline-none focus:ring-2 focus:ring-[#0052CC]"
+              />
+            </div>
+
+            {/* Status Filter Tabs */}
+            <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              {["All", "Present", "Late", "On Leave"].map((st) => (
+                <button
+                  key={st}
+                  onClick={() => setSquadStatusFilter(st)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    squadStatusFilter === st
+                      ? "bg-[#0052CC] text-white shadow-xs"
+                      : "bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] text-[#6B778C] dark:text-slate-300 hover:border-[#0052CC]"
+                  }`}
+                >
+                  {st}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Squad Attendance Member Cards */}
+          <div className="space-y-2.5">
+            {filteredSquad.map((m) => (
+              <div
+                key={m.id}
+                className="bg-white dark:bg-[#0F131C] p-4 rounded-3xl border border-[#DFE1E6]/80 dark:border-[#263042] shadow-xs space-y-3 hover:border-[#0052CC] transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-[#DEEBFF] dark:bg-blue-950/60 text-[#0052CC] font-black text-xs flex items-center justify-center">
+                      {m.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-xs text-[#172B4D] dark:text-white">{m.name}</h3>
+                        <span className="text-[10px] text-[#6B778C] dark:text-slate-400 font-mono">({m.id})</span>
+                      </div>
+                      <p className="text-[11px] text-[#6B778C] dark:text-slate-400 font-medium">{m.role}</p>
+                    </div>
+                  </div>
+
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                      m.status === "Present"
+                        ? "bg-[#E3FCEF] text-[#00875A]"
+                        : m.status === "Late"
+                        ? "bg-[#FFF0B3] text-[#B9770E]"
+                        : "bg-[#FFEBE6] text-[#DE350B]"
+                    }`}
+                  >
+                    {m.status}
+                  </span>
+                </div>
+
+                {/* In / Out / Hours Matrix */}
+                <div className="grid grid-cols-3 gap-2 p-2.5 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] text-center text-xs">
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-[#6B778C] dark:text-slate-400">First In</span>
+                    <p className="font-bold text-[#172B4D] dark:text-white font-mono mt-0.5">{m.inTime}</p>
+                  </div>
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-[#6B778C] dark:text-slate-400">Last Out</span>
+                    <p className="font-bold text-[#172B4D] dark:text-white font-mono mt-0.5">{m.outTime}</p>
+                  </div>
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-[#6B778C] dark:text-slate-400">Logged</span>
+                    <p className="font-bold text-[#0052CC] dark:text-blue-400 font-mono mt-0.5">{m.hours}</p>
+                  </div>
+                </div>
+
+                {/* Device & Location Bar + Contact Buttons */}
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <div className="flex items-center gap-1.5 text-[10px] text-[#6B778C] dark:text-slate-400 truncate">
+                    <MapPin className="w-3.5 h-3.5 text-[#0052CC] shrink-0" />
+                    <span className="truncate">{m.location}</span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <a
+                      href={`mailto:${m.email}`}
+                      className="p-1.5 rounded-xl border border-[#DFE1E6] dark:border-[#263042] text-[#0052CC] hover:bg-blue-50 dark:hover:bg-blue-950/40 active:scale-90 transition-transform"
+                      title="Send Email"
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                    </a>
+                    <a
+                      href={`tel:${m.phone}`}
+                      className="p-1.5 rounded-xl border border-[#DFE1E6] dark:border-[#263042] text-[#00875A] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 active:scale-90 transition-transform"
+                      title="Direct Call"
+                    >
+                      <Phone className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Quick Link to Squad Approvals Deck */}
+          <div
+            onClick={() => navigate("/approvals")}
+            className="p-4 rounded-3xl bg-gradient-to-r from-[#DEEBFF]/90 to-blue-50/90 dark:from-blue-950/40 dark:to-blue-900/30 border border-[#0052CC]/30 flex items-center justify-between cursor-pointer active:scale-98 transition-all shadow-xs"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#0052CC] text-white flex items-center justify-center font-bold shadow-xs">
+                <FileCheck2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-bold text-xs text-[#172B4D] dark:text-white">Squad Requests & Approvals</h4>
+                <p className="text-[11px] text-[#0052CC] dark:text-blue-300 font-semibold mt-0.5">
+                  3 Requests (Leaves, Comp-Off, Regularizations)
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#0052CC]" />
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* TAB 3: ORG ATTENDANCE (Admin: Team-Wise + All)                 */}
+      {/* ============================================================== */}
+      {activeMainTab === "org" && isAdmin && (
+        <div className="space-y-4 animate-in fade-in duration-200">
+          {/* Header Banner */}
+          <div className="bg-gradient-to-r from-[#0052CC] to-[#0747A6] rounded-3xl p-5 text-white shadow-md space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-[10px] font-bold uppercase tracking-wider">
+                <Building2 className="w-3 h-3 text-cyan-300" />
+                <span>Executive Attendance Hub</span>
+              </div>
+              <span className="text-xs text-blue-100 font-medium font-mono">
+                {new Date().toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short" })}
+              </span>
+            </div>
+            <h1 className="text-xl font-extrabold leading-tight">Organization Attendance</h1>
+            <p className="text-xs text-blue-100">Team-wise & enterprise master attendance live roster</p>
+          </div>
+
+          {/* Org KPI Summary Cards */}
+          <div className="grid grid-cols-4 gap-2 text-center text-xs">
+            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+              <span className="text-[9px] uppercase font-bold text-[#6B778C] dark:text-slate-400">Headcount</span>
+              <p className="text-lg font-black text-[#172B4D] dark:text-white tabular-nums mt-0.5">42</p>
+            </div>
+            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+              <span className="text-[9px] uppercase font-bold text-[#00875A]">Present</span>
+              <p className="text-lg font-black text-[#00875A] tabular-nums mt-0.5">38</p>
+            </div>
+            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+              <span className="text-[9px] uppercase font-bold text-[#B9770E]">Late</span>
+              <p className="text-lg font-black text-[#B9770E] tabular-nums mt-0.5">1</p>
+            </div>
+            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+              <span className="text-[9px] uppercase font-bold text-[#DE350B]">On Leave</span>
+              <p className="text-lg font-black text-[#DE350B] tabular-nums mt-0.5">3</p>
+            </div>
+          </div>
+
+          {/* Department / Team Selector (Team-Wise + All) */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs text-[#6B778C] dark:text-slate-400 px-1 font-bold">
+              <span>Filter by Team / Department</span>
+              <span className="text-[#0052CC] font-mono">{orgDeptFilter === "All" ? "All 5 Departments" : orgDeptFilter}</span>
+            </div>
+
+            <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              {orgDepartments.map((dept) => (
+                <button
+                  key={dept}
+                  onClick={() => setOrgDeptFilter(dept)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                    orgDeptFilter === dept
+                      ? "bg-[#0052CC] text-white shadow-xs"
+                      : "bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] text-[#6B778C] dark:text-slate-300 hover:border-[#0052CC]"
+                  }`}
+                >
+                  {dept === "All" ? "All Teams (42)" : `${dept}`}
+                </button>
+              ))}
+            </div>
+
+            {/* Attendance Status Filter */}
+            <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              {orgStatuses.map((st) => (
+                <button
+                  key={st}
+                  onClick={() => setOrgStatusFilter(st)}
+                  className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                    orgStatusFilter === st
+                      ? "bg-[#172B4D] dark:bg-slate-700 text-white shadow-xs"
+                      : "bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] text-[#6B778C] hover:border-[#172B4D]"
+                  }`}
+                >
+                  {st}
+                </button>
+              ))}
+            </div>
+
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3.5 top-3 text-[#6B778C]" />
+              <input
+                type="text"
+                value={orgSearch}
+                onChange={(e) => setOrgSearch(e.target.value)}
+                placeholder="Search staff by name, title, or ID..."
+                className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#0F131C] text-xs text-[#172B4D] dark:text-white placeholder-[#8993A4] focus:outline-none focus:ring-2 focus:ring-[#0052CC]"
+              />
+            </div>
+          </div>
+
+          {/* Org Employee Attendance Cards */}
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between text-xs text-[#6B778C] dark:text-slate-400 px-1">
+              <span>Showing {filteredOrg.length} Employee Records</span>
+              <span className="font-semibold text-[#00875A]">92.8% Attendance Rate</span>
+            </div>
+
+            {filteredOrg.map((emp) => (
+              <div
+                key={emp.id}
+                className="bg-white dark:bg-[#0F131C] p-3.5 rounded-3xl border border-[#DFE1E6]/80 dark:border-[#263042] shadow-xs space-y-2.5 hover:border-[#0052CC] transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-[#DEEBFF] dark:bg-blue-950/60 text-[#0052CC] font-black text-xs flex items-center justify-center">
+                      {emp.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-xs text-[#172B4D] dark:text-white">{emp.name}</h3>
+                        <span className="text-[10px] text-[#6B778C] dark:text-slate-400 font-mono">({emp.id})</span>
+                      </div>
+                      <div className="flex items-center gap-2 pt-0.5">
+                        <span className="px-2 py-0.2 rounded-md bg-[#EBECF0] dark:bg-[#263042] text-[9px] font-bold text-[#172B4D] dark:text-slate-300">
+                          {emp.dept}
+                        </span>
+                        <span className="text-[10px] text-[#6B778C] dark:text-slate-400 font-medium">{emp.role}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                      emp.status === "Present"
+                        ? "bg-[#E3FCEF] text-[#00875A]"
+                        : emp.status === "Late"
+                        ? "bg-[#FFF0B3] text-[#B9770E]"
+                        : "bg-[#FFEBE6] text-[#DE350B]"
+                    }`}
+                  >
+                    {emp.status}
+                  </span>
+                </div>
+
+                {/* Timing & Terminal Grid */}
+                <div className="p-2.5 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] flex items-center justify-between text-xs">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2 font-mono">
+                      <span className="font-bold text-[#172B4D] dark:text-white">In: {emp.inTime}</span>
+                      <span className="text-[#8993A4]">•</span>
+                      <span className="text-[#0052CC] dark:text-blue-400 font-bold">{emp.hours}</span>
+                    </div>
+                    <p className="text-[10px] text-[#6B778C] dark:text-slate-400 flex items-center gap-1">
+                      <Server className="w-3 h-3 text-[#0052CC]" />
+                      <span>{emp.terminal}</span>
+                    </p>
+                  </div>
+
+                  <a
+                    href={`mailto:${emp.email}`}
+                    className="p-2 rounded-xl border border-[#DFE1E6] dark:border-[#263042] text-[#0052CC] hover:bg-blue-50 dark:hover:bg-blue-950/40 active:scale-90 transition-transform"
+                    title="Contact Staff"
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* TAB 4: BIOMETRIC GATEWAYS (Admin Terminal Diagnostics)         */}
+      {/* ============================================================== */}
+      {activeMainTab === "gateways" && isAdmin && (
+        <div className="space-y-4 animate-in fade-in duration-200">
+          <div className="bg-gradient-to-r from-[#0052CC] to-[#0747A6] rounded-3xl p-5 text-white shadow-md space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-[10px] font-bold uppercase tracking-wider">
+                <Server className="w-3 h-3 text-cyan-300" />
+                <span>Biometric Hardware ADMS</span>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 text-[10px] font-bold">
+                All 3 Terminals Online
+              </span>
+            </div>
+            <h1 className="text-xl font-extrabold leading-tight">IP Terminals & Gateways</h1>
+            <p className="text-xs text-blue-100">Live push status for eSSL and ZKTeco biometric IP terminals</p>
+          </div>
+
+          <div className="space-y-2.5">
+            {gatewaysList.map((gw) => (
+              <div
+                key={gw.id}
+                className="bg-white dark:bg-[#0F131C] p-4 rounded-3xl border border-[#DFE1E6] dark:border-[#263042] shadow-xs space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-[#E3FCEF] dark:bg-emerald-950/60 text-[#00875A] flex items-center justify-center font-bold">
+                      <Server className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-xs text-[#172B4D] dark:text-white">{gw.name}</h3>
+                      <p className="text-[10px] text-[#6B778C] dark:text-slate-400">{gw.location}</p>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-[#E3FCEF] text-[#00875A] font-bold text-[10px]">
+                    {gw.status}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 p-2.5 rounded-2xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] text-center text-xs">
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-[#6B778C] dark:text-slate-400">Terminal IP</span>
+                    <p className="font-mono font-bold text-[#172B4D] dark:text-white text-[10px] mt-0.5">{gw.ip}</p>
+                  </div>
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-[#6B778C] dark:text-slate-400">Uptime</span>
+                    <p className="font-mono font-bold text-[#00875A] text-[10px] mt-0.5">{gw.uptime}</p>
+                  </div>
+                  <div>
+                    <span className="text-[9px] uppercase font-bold text-[#6B778C] dark:text-slate-400">Last Sync</span>
+                    <p className="font-mono font-bold text-[#0052CC] text-[10px] mt-0.5">{gw.lastSync}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Swipe Regularization Modal */}
       {regModalOpen && (
