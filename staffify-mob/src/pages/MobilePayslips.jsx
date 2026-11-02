@@ -79,16 +79,16 @@ export default function MobilePayslips() {
       )}
 
       {/* Header with Month/Year Switcher */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-base font-bold text-[#172B4D] dark:text-white">Compensation & Payslips</h1>
-          <p className="text-[11px] text-[#6B778C] dark:text-slate-400">Monthly breakdown & statutory tax filings</p>
+      <div className="flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <h1 className="text-base font-bold text-[#172B4D] dark:text-white truncate">Compensation & Payslips</h1>
+          <p className="text-[11px] text-[#6B778C] dark:text-slate-400 truncate">Monthly breakdown & statutory tax filings</p>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 shrink-0">
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#0F131C] text-[#172B4D] dark:text-white rounded-lg px-2 py-1 text-xs font-semibold"
+            className="border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#0F131C] text-[#172B4D] dark:text-white rounded-lg px-2 py-1 text-xs font-semibold outline-none"
           >
             {MONTHS.map((m) => (
               <option key={m.val} value={m.val}>
@@ -99,7 +99,7 @@ export default function MobilePayslips() {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#0F131C] text-[#172B4D] dark:text-white rounded-lg px-2 py-1 text-xs font-semibold"
+            className="border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#0F131C] text-[#172B4D] dark:text-white rounded-lg px-2 py-1 text-xs font-semibold outline-none"
           >
             <option value={2026}>2026</option>
             <option value={2025}>2025</option>
@@ -123,14 +123,14 @@ export default function MobilePayslips() {
           </p>
         </div>
 
-        <div className="pt-2 border-t border-white/20 flex items-center justify-between relative z-10">
+        <div className="pt-2 border-t border-white/20 flex flex-wrap items-center justify-between gap-2 relative z-10">
           <div className="text-[10px] text-blue-200">
             <span>Pay Period: </span>
             <span className="font-semibold text-white">01 Oct - 31 Oct 2026</span>
           </div>
           <button
             onClick={() => setPayslipModalOpen(true)}
-            className="px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform"
+            className="px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform shrink-0"
           >
             <FileText className="w-3.5 h-3.5" />
             <span>View Statement</span>

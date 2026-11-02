@@ -158,16 +158,16 @@ export default function MobileWorkforce() {
             key={emp.id}
             className="bg-white dark:bg-[#0F131C] p-3.5 rounded-2xl border border-[#DFE1E6]/80 dark:border-[#263042] shadow-xs flex items-center justify-between hover:border-[#0052CC] transition-colors"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#DEEBFF] dark:bg-blue-950/60 text-[#0052CC] font-black text-xs flex items-center justify-center">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-2xl bg-[#DEEBFF] dark:bg-blue-950/60 text-[#0052CC] font-black text-xs flex items-center justify-center shrink-0">
                 {emp.name.slice(0, 2).toUpperCase()}
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-xs text-[#172B4D] dark:text-white">{emp.name}</h3>
-                  <span className="text-[10px] text-[#6B778C] dark:text-slate-400 font-mono">({emp.id})</span>
+              <div className="space-y-1 min-w-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <h3 className="font-bold text-xs text-[#172B4D] dark:text-white truncate">{emp.name}</h3>
+                  <span className="text-[10px] text-[#6B778C] dark:text-slate-400 font-mono shrink-0">({emp.id})</span>
                 </div>
-                <p className="text-[11px] text-[#6B778C] dark:text-slate-400 font-medium">{emp.role}</p>
+                <p className="text-[11px] text-[#6B778C] dark:text-slate-400 font-medium truncate">{emp.role}</p>
                 <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                   <span className="px-2 py-0.5 rounded-md bg-[#EBECF0] dark:bg-[#263042] text-[9px] font-bold text-[#172B4D] dark:text-slate-300">
                     {emp.dept}
@@ -194,7 +194,7 @@ export default function MobileWorkforce() {
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 shrink-0 ml-2">
               <button
                 onClick={() => navigate(`/swipes?tab=org`)}
                 className="p-2 rounded-xl border border-[#DFE1E6] dark:border-[#263042] text-[#6B778C] dark:text-slate-400 hover:text-[#0052CC] active:scale-90 transition-transform"

@@ -174,39 +174,57 @@ export default function MobileApprovals() {
       )}
 
       {/* Segmented Tab Control */}
-      <div className="flex bg-[#EBECF0] dark:bg-[#151B26] p-1 rounded-xl">
+      <div className="grid grid-cols-3 gap-1 bg-[#EBECF0] dark:bg-[#151B26] p-1 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] text-xs font-bold w-full select-none">
         <button
+          type="button"
           onClick={() => setActiveTab('leaves')}
-          className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+          className={`min-w-0 h-10 px-1 rounded-xl transition-colors duration-150 flex items-center justify-center gap-1 active:scale-95 ${
             activeTab === 'leaves'
-              ? 'bg-white dark:bg-[#0052CC] text-[#0052CC] dark:text-white shadow-sm'
-              : 'text-[#6B778C] dark:text-slate-400'
+              ? 'bg-[#0052CC] text-white shadow-xs'
+              : 'text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D] dark:hover:text-white'
           }`}
         >
-          <Calendar className="w-3.5 h-3.5" />
-          Leaves ({pendingLeaves.length})
+          <Calendar className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate text-[11px] min-[360px]:text-xs">Leaves</span>
+          <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-black shrink-0 ${
+            activeTab === 'leaves' ? 'bg-white/20 text-white' : 'bg-[#DFE1E6] dark:bg-[#263042] text-[#172B4D] dark:text-slate-300'
+          }`}>
+            {pendingLeaves.length}
+          </span>
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('compoff')}
-          className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+          className={`min-w-0 h-10 px-1 rounded-xl transition-colors duration-150 flex items-center justify-center gap-1 active:scale-95 ${
             activeTab === 'compoff'
-              ? 'bg-white dark:bg-[#0052CC] text-[#0052CC] dark:text-white shadow-sm'
-              : 'text-[#6B778C] dark:text-slate-400'
+              ? 'bg-[#0052CC] text-white shadow-xs'
+              : 'text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D] dark:hover:text-white'
           }`}
         >
-          <Award className="w-3.5 h-3.5" />
-          Comp-Off ({pendingCompOffs.length})
+          <Award className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate text-[11px] min-[360px]:text-xs">Comp-Off</span>
+          <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-black shrink-0 ${
+            activeTab === 'compoff' ? 'bg-white/20 text-white' : 'bg-[#DFE1E6] dark:bg-[#263042] text-[#172B4D] dark:text-slate-300'
+          }`}>
+            {pendingCompOffs.length}
+          </span>
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('regularization')}
-          className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+          className={`min-w-0 h-10 px-1 rounded-xl transition-colors duration-150 flex items-center justify-center gap-1 active:scale-95 ${
             activeTab === 'regularization'
-              ? 'bg-white dark:bg-[#0052CC] text-[#0052CC] dark:text-white shadow-sm'
-              : 'text-[#6B778C] dark:text-slate-400'
+              ? 'bg-[#0052CC] text-white shadow-xs'
+              : 'text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D] dark:hover:text-white'
           }`}
         >
-          <FileCheck2 className="w-3.5 h-3.5" />
-          Swipes ({pendingRegularizations.length})
+          <FileCheck2 className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate text-[11px] min-[360px]:text-xs">Swipes</span>
+          <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-black shrink-0 ${
+            activeTab === 'regularization' ? 'bg-white/20 text-white' : 'bg-[#DFE1E6] dark:bg-[#263042] text-[#172B4D] dark:text-slate-300'
+          }`}>
+            {pendingRegularizations.length}
+          </span>
         </button>
       </div>
 

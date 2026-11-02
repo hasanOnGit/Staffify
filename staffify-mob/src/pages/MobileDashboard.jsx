@@ -149,9 +149,9 @@ export default function MobileDashboard() {
                 </div>
               </div>
               <p className="text-2xl font-black text-[#00875A] tabular-nums">92.8%</p>
-              <div className="flex items-center justify-between">
-                <p className="text-[10px] text-[#6B778C] dark:text-slate-400">38 In • 3 Leaves • 1 Late</p>
-                <span className="text-[10px] text-[#0052CC] font-bold flex items-center gap-0.5 group-hover:underline">
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-[10px] text-[#6B778C] dark:text-slate-400 truncate">38 Present • 3 Leave</p>
+                <span className="text-[10px] text-[#0052CC] font-bold flex items-center gap-0.5 group-hover:underline shrink-0">
                   <span>Teams</span>
                   <ArrowRight className="w-3 h-3" />
                 </span>

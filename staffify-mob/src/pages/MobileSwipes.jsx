@@ -64,7 +64,8 @@ export default function MobileSwipes() {
   );
 
   useEffect(() => {
-    if (urlTab === "team" && isManager) setActiveMainTab("team");
+    if (urlTab === "clock") setActiveMainTab("clock");
+    if (urlTab === "team" && isManager && !isAdmin) setActiveMainTab("team");
     if ((urlTab === "org" || urlTab === "team") && isAdmin) setActiveMainTab("org");
     if (urlTab === "gateways" && isAdmin) setActiveMainTab("gateways");
   }, [urlTab, isAdmin, isManager]);
@@ -427,70 +428,83 @@ export default function MobileSwipes() {
 
       {/* Top Segmented Tab Switcher for Admin */}
       {isAdmin && (
-        <div className="flex bg-[#EBECF0] dark:bg-[#151B26] p-1 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] text-xs font-bold">
+        <div className="grid grid-cols-3 gap-1 bg-[#EBECF0] dark:bg-[#151B26] p-1 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] text-xs font-bold w-full select-none">
           <button
+            type="button"
             onClick={() => { setActiveMainTab("clock"); setSearchParams({ tab: "clock" }); }}
-            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+            className={`min-w-0 h-10 px-1 rounded-xl transition-colors duration-150 flex items-center justify-center gap-1.5 active:scale-95 ${
               activeMainTab === "clock"
                 ? "bg-[#0052CC] text-white shadow-xs"
-                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D]"
+                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D] dark:hover:text-white"
             }`}
           >
-            <Clock className="w-3.5 h-3.5" />
-            <span>Master Clock</span>
+            <Clock className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate text-[11px] min-[360px]:text-xs">Clock</span>
           </button>
           <button
+            type="button"
             onClick={() => { setActiveMainTab("org"); setSearchParams({ tab: "org" }); }}
-            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+            className={`min-w-0 h-10 px-1 rounded-xl transition-colors duration-150 flex items-center justify-center gap-1 active:scale-95 ${
               activeMainTab === "org"
                 ? "bg-[#0052CC] text-white shadow-xs"
-                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D]"
+                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D] dark:hover:text-white"
             }`}
           >
-            <Users className="w-3.5 h-3.5" />
-            <span>Org Attendance</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[9px] font-black">42</span>
+            <Users className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate text-[11px] min-[360px]:text-xs">Org Staff</span>
+            <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-black shrink-0 ${
+              activeMainTab === "org" ? "bg-white/20 text-white" : "bg-[#DFE1E6] dark:bg-[#263042] text-[#172B4D] dark:text-slate-300"
+            }`}>
+              42
+            </span>
           </button>
           <button
+            type="button"
             onClick={() => { setActiveMainTab("gateways"); setSearchParams({ tab: "gateways" }); }}
-            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+            className={`min-w-0 h-10 px-1 rounded-xl transition-colors duration-150 flex items-center justify-center gap-1.5 active:scale-95 ${
               activeMainTab === "gateways"
                 ? "bg-[#0052CC] text-white shadow-xs"
-                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D]"
+                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D] dark:hover:text-white"
             }`}
           >
-            <Server className="w-3.5 h-3.5" />
-            <span>Gateways</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00875A] animate-pulse" />
+            <Server className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate text-[11px] min-[360px]:text-xs">Gateways</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00875A] shrink-0 animate-pulse" />
           </button>
         </div>
       )}
 
       {/* Top Segmented Tab Switcher for Manager */}
       {isManager && !isAdmin && (
-        <div className="flex bg-[#EBECF0] dark:bg-[#151B26] p-1 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] text-xs font-bold">
+        <div className="grid grid-cols-2 gap-1 bg-[#EBECF0] dark:bg-[#151B26] p-1 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] text-xs font-bold w-full select-none">
           <button
+            type="button"
             onClick={() => { setActiveMainTab("clock"); setSearchParams({ tab: "clock" }); }}
-            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+            className={`min-w-0 h-10 px-2 rounded-xl transition-colors duration-150 flex items-center justify-center gap-1.5 active:scale-95 ${
               activeMainTab === "clock"
                 ? "bg-[#0052CC] text-white shadow-xs"
-                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D]"
+                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D] dark:hover:text-white"
             }`}
           >
-            <Clock className="w-3.5 h-3.5" />
-            <span>My Clock</span>
+            <Clock className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate text-xs">My Clock</span>
           </button>
           <button
+            type="button"
             onClick={() => { setActiveMainTab("team"); setSearchParams({ tab: "team" }); }}
-            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+            className={`min-w-0 h-10 px-2 rounded-xl transition-colors duration-150 flex items-center justify-center gap-1.5 active:scale-95 ${
               activeMainTab === "team"
                 ? "bg-[#0052CC] text-white shadow-xs"
-                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D]"
+                : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D] dark:hover:text-white"
             }`}
           >
-            <Users className="w-3.5 h-3.5" />
-            <span>Squad Attendance</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-[#00875A] text-white text-[9px] font-black">4</span>
+            <Users className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate text-xs">Squad Attendance</span>
+            <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-black shrink-0 ${
+              activeMainTab === "team" ? "bg-white/20 text-white" : "bg-[#00875A] text-white"
+            }`}>
+              4
+            </span>
           </button>
         </div>
       )}
@@ -727,22 +741,22 @@ export default function MobileSwipes() {
           </div>
 
           {/* Quick Squad KPI Metrics */}
-          <div className="grid grid-cols-4 gap-2 text-center text-xs">
-            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-2 text-center text-xs">
+            <div className="py-2.5 px-1 sm:p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
               <span className="text-[9px] uppercase font-bold text-[#6B778C] dark:text-slate-400">Total</span>
-              <p className="text-lg font-black text-[#172B4D] dark:text-white tabular-nums mt-0.5">4</p>
+              <p className="text-base sm:text-lg font-black text-[#172B4D] dark:text-white tabular-nums mt-0.5">4</p>
             </div>
-            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+            <div className="py-2.5 px-1 sm:p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
               <span className="text-[9px] uppercase font-bold text-[#00875A]">Present</span>
-              <p className="text-lg font-black text-[#00875A] tabular-nums mt-0.5">3</p>
+              <p className="text-base sm:text-lg font-black text-[#00875A] tabular-nums mt-0.5">3</p>
             </div>
-            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+            <div className="py-2.5 px-1 sm:p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
               <span className="text-[9px] uppercase font-bold text-[#B9770E]">Late</span>
-              <p className="text-lg font-black text-[#B9770E] tabular-nums mt-0.5">1</p>
+              <p className="text-base sm:text-lg font-black text-[#B9770E] tabular-nums mt-0.5">1</p>
             </div>
-            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+            <div className="py-2.5 px-1 sm:p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
               <span className="text-[9px] uppercase font-bold text-[#DE350B]">Leave</span>
-              <p className="text-lg font-black text-[#DE350B] tabular-nums mt-0.5">0</p>
+              <p className="text-base sm:text-lg font-black text-[#DE350B] tabular-nums mt-0.5">0</p>
             </div>
           </div>
 
@@ -897,22 +911,22 @@ export default function MobileSwipes() {
           </div>
 
           {/* Org KPI Summary Cards */}
-          <div className="grid grid-cols-4 gap-2 text-center text-xs">
-            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-2 text-center text-xs">
+            <div className="py-2.5 px-1 sm:p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
               <span className="text-[9px] uppercase font-bold text-[#6B778C] dark:text-slate-400">Headcount</span>
-              <p className="text-lg font-black text-[#172B4D] dark:text-white tabular-nums mt-0.5">42</p>
+              <p className="text-base sm:text-lg font-black text-[#172B4D] dark:text-white tabular-nums mt-0.5">42</p>
             </div>
-            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+            <div className="py-2.5 px-1 sm:p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
               <span className="text-[9px] uppercase font-bold text-[#00875A]">Present</span>
-              <p className="text-lg font-black text-[#00875A] tabular-nums mt-0.5">38</p>
+              <p className="text-base sm:text-lg font-black text-[#00875A] tabular-nums mt-0.5">38</p>
             </div>
-            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+            <div className="py-2.5 px-1 sm:p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
               <span className="text-[9px] uppercase font-bold text-[#B9770E]">Late</span>
-              <p className="text-lg font-black text-[#B9770E] tabular-nums mt-0.5">1</p>
+              <p className="text-base sm:text-lg font-black text-[#B9770E] tabular-nums mt-0.5">1</p>
             </div>
-            <div className="p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
+            <div className="py-2.5 px-1 sm:p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] shadow-2xs">
               <span className="text-[9px] uppercase font-bold text-[#DE350B]">On Leave</span>
-              <p className="text-lg font-black text-[#DE350B] tabular-nums mt-0.5">3</p>
+              <p className="text-base sm:text-lg font-black text-[#DE350B] tabular-nums mt-0.5">3</p>
             </div>
           </div>
 

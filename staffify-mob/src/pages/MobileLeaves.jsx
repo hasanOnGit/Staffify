@@ -221,73 +221,75 @@ export default function MobileLeaves() {
 
       {/* Quota KPI Cards */}
       <div className="grid grid-cols-2 gap-2 text-xs">
-        <div className="p-3 bg-white border border-[#DFE1E6] rounded-xl shadow-2xs space-y-1">
-          <div className="flex items-center justify-between text-[#6B778C]">
+        <div className="p-3 bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] rounded-2xl shadow-2xs space-y-1">
+          <div className="flex items-center justify-between text-[#6B778C] dark:text-slate-400">
             <span className="text-[10px] uppercase font-bold">Casual Leave</span>
             <span className="w-2 h-2 rounded-full bg-[#0052CC]" />
           </div>
           <span className="text-xl font-black text-[#0052CC] block">
             {balances ? Math.max(0, (balances.casual?.totalAllocated || 12) - (balances.casual?.used || 0)) : 12}
           </span>
-          <span className="text-[10px] text-[#6B778C]">of 12 Days remaining</span>
+          <span className="text-[10px] text-[#6B778C] dark:text-slate-400">of 12 Days remaining</span>
         </div>
 
-        <div className="p-3 bg-white border border-[#DFE1E6] rounded-xl shadow-2xs space-y-1">
-          <div className="flex items-center justify-between text-[#6B778C]">
+        <div className="p-3 bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] rounded-2xl shadow-2xs space-y-1">
+          <div className="flex items-center justify-between text-[#6B778C] dark:text-slate-400">
             <span className="text-[10px] uppercase font-bold">Sick Leave</span>
             <span className="w-2 h-2 rounded-full bg-[#00875A]" />
           </div>
           <span className="text-xl font-black text-[#00875A] block">
             {balances ? Math.max(0, (balances.sick?.totalAllocated || 10) - (balances.sick?.used || 0)) : 10}
           </span>
-          <span className="text-[10px] text-[#6B778C]">of 10 Days remaining</span>
+          <span className="text-[10px] text-[#6B778C] dark:text-slate-400">of 10 Days remaining</span>
         </div>
 
-        <div className="p-3 bg-white border border-[#DFE1E6] rounded-xl shadow-2xs space-y-1">
-          <div className="flex items-center justify-between text-[#6B778C]">
+        <div className="p-3 bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] rounded-2xl shadow-2xs space-y-1">
+          <div className="flex items-center justify-between text-[#6B778C] dark:text-slate-400">
             <span className="text-[10px] uppercase font-bold">Earned Leave</span>
             <span className="w-2 h-2 rounded-full bg-[#403294]" />
           </div>
           <span className="text-xl font-black text-[#403294] block">
             {balances ? Math.max(0, (balances.earned?.totalAllocated || 15) - (balances.earned?.used || 0)) : 15}
           </span>
-          <span className="text-[10px] text-[#6B778C]">Accumulated paid quota</span>
+          <span className="text-[10px] text-[#6B778C] dark:text-slate-400">Accumulated paid quota</span>
         </div>
 
-        <div className="p-3 bg-white border border-[#DFE1E6] rounded-xl shadow-2xs space-y-1">
-          <div className="flex items-center justify-between text-[#6B778C]">
+        <div className="p-3 bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] rounded-2xl shadow-2xs space-y-1">
+          <div className="flex items-center justify-between text-[#6B778C] dark:text-slate-400">
             <span className="text-[10px] uppercase font-bold">Comp-Off Credit</span>
             <span className="w-2 h-2 rounded-full bg-[#FF991F]" />
           </div>
           <span className="text-xl font-black text-[#B9770E] block">
             {balances ? Math.max(0, (balances.compOff?.totalAllocated || 0) - (balances.compOff?.used || 0)) : 0}
           </span>
-          <span className="text-[10px] text-[#6B778C]">Valid for 90 days</span>
+          <span className="text-[10px] text-[#6B778C] dark:text-slate-400">Valid for 90 days</span>
         </div>
       </div>
 
       {/* Tabs Switcher */}
-      <div className="bg-white p-1 rounded-xl border border-[#DFE1E6] flex items-center gap-1 shadow-2xs">
+      <div className="grid grid-cols-2 gap-1 bg-[#EBECF0] dark:bg-[#151B26] p-1 rounded-2xl border border-[#DFE1E6] dark:border-[#263042] shadow-2xs select-none">
         <button
+          type="button"
           onClick={() => setActiveTab("my_leaves")}
-          className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer text-center ${
+          className={`h-9 text-xs font-bold rounded-xl transition-colors duration-150 cursor-pointer flex items-center justify-center ${
             activeTab === "my_leaves"
               ? "bg-[#0052CC] text-white shadow-xs"
-              : "text-[#6B778C] hover:text-[#172B4D]"
+              : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D] dark:hover:text-white"
           }`}
         >
           My Applications
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab("comp_off")}
-          className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer text-center flex items-center justify-center gap-1 ${
+          className={`h-9 text-xs font-bold rounded-xl transition-colors duration-150 cursor-pointer flex items-center justify-center gap-1.5 ${
             activeTab === "comp_off"
               ? "bg-[#0052CC] text-white shadow-xs"
-              : "text-[#6B778C] hover:text-[#172B4D]"
+              : "text-[#6B778C] dark:text-slate-400 hover:text-[#172B4D] dark:hover:text-white"
           }`}
         >
-          <Award size={13} />
-          <span>Comp-Off Tray</span>
+          <Award size={14} className="shrink-0" />
+          <span className="truncate">Comp-Off Tray</span>
         </button>
       </div>
 
