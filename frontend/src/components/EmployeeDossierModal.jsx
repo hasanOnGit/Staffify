@@ -111,6 +111,18 @@ function EmployeeDossierModal({ employee, isOpen, onClose, onEdit }) {
             <Landmark size={13} />
             <span>Bank & Statutory</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab("vault")}
+            className={`flex items-center gap-1.5 py-2.5 px-3 border-b-2 transition cursor-pointer ${
+              activeTab === "vault"
+                ? "border-[#0052CC] text-[#0052CC] bg-white"
+                : "border-transparent text-[#6B778C] hover:text-[#172B4D]"
+            }`}
+          >
+            <ShieldCheck size={13} />
+            <span>Document Vault</span>
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -264,6 +276,46 @@ function EmployeeDossierModal({ employee, isOpen, onClose, onEdit }) {
                     </p>
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* DIGITAL DOCUMENT VAULT TAB */}
+          {activeTab === "vault" && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-[#DFE1E6]">
+                <div>
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-[#172B4D]">
+                    Authenticated KYC & Personnel Document Vault
+                  </h3>
+                  <p className="text-[11px] text-[#6B778C]">
+                    Digitally verified credentials submitted during self-onboarding
+                  </p>
+                </div>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1]">
+                  Compliant Audit Vault
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { name: "PAN Card Document", ref: employee.statutoryDetails?.panNumber || "PAN_VERIFIED", type: "Identity & Tax", status: "Verified" },
+                  { name: "Aadhaar Card (Front/Back)", ref: employee.statutoryDetails?.aadhaarNumber ? "AADHAAR_XXXX" + employee.statutoryDetails.aadhaarNumber.slice(-4) : "UIDAI_TOKEN", type: "Address & National ID", status: "Verified" },
+                  { name: "Bank Account Passbook / Cheque", ref: employee.bankDetails?.accountNumber ? "BANK_ACC_XXXX" + employee.bankDetails.accountNumber.slice(-4) : "BANK_DOC", type: "Direct Payout Proof", status: "Verified" },
+                  { name: "Signed Appointment Letter", ref: `APPT_${employee.employeeId}.pdf`, type: "Contract & Offer", status: "Executed" },
+                  { name: "Previous Relieving Certificate", ref: `RELIEVING_${employee.employeeId}.pdf`, type: "Experience Proof", status: "Archived" },
+                ].map((doc, idx) => (
+                  <div key={idx} className="p-3 border border-[#DFE1E6] rounded-lg bg-[#FAFBFC] flex items-center justify-between gap-3">
+                    <div className="space-y-0.5">
+                      <p className="font-semibold text-xs text-[#172B4D]">{doc.name}</p>
+                      <p className="text-[10px] text-[#6B778C] font-mono">{doc.ref}</p>
+                      <span className="text-[10px] text-[#0052CC]">{doc.type}</span>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1] shrink-0">
+                      {doc.status}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           )}

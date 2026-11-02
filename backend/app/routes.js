@@ -26,6 +26,8 @@ require('./controllers/offboarding.controller')(app);
 require('./controllers/webhook.controller')(app);
 require('./controllers/ai.controller')(app);
 require('./controllers/auditLog.controller')(app);
+require('./controllers/compOff.controller')(app);
+require('./controllers/onboarding.controller')(app);
 
 }
 

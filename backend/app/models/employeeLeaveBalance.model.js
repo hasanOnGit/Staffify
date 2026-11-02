@@ -42,6 +42,10 @@ const LeaveBalanceSchema = new mongoose.Schema(
         totalAllocated: { type: Number, default: 15 },
         used: { type: Number, default: 0 },
       },
+      compOff: {
+        totalAllocated: { type: Number, default: 0 },
+        used: { type: Number, default: 0 },
+      },
       lop: {
         totalAllocated: { type: Number, default: 999 }, // Uncapped
         used: { type: Number, default: 0 },

@@ -22,6 +22,7 @@ import Offboarding from "./pages/Offboarding";
 import WebhookBridge from "./pages/WebhookBridge";
 import AiCopilot from "./pages/AiCopilot";
 import AuditLogs from "./pages/AuditLogs";
+import CandidateOnboarding from "./pages/CandidateOnboarding";
 import StaffifyLoader from "./components/StaffifyLoader";
 
 import { useAuth } from "./context/AuthContext";
@@ -102,6 +103,7 @@ function App() {
             </PublicRoute>
           }
         />
+        <Route path="/onboard/:token" element={<CandidateOnboarding />} />
 
         {/* =========================================
             All Roles (ESS)

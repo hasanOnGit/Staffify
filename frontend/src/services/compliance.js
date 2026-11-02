@@ -20,3 +20,11 @@ export const downloadEsicReturn = (month, year) => {
 export const downloadBankDisbursement = (month, year) => {
   window.open(`${getDownloadBase()}/api/compliance/bank-disbursement?month=${month}&year=${year}`, "_blank");
 };
+
+/**
+ * Execute 1-click direct bank API disbursement (ICICI CIB, HDFC Enet, RazorpayX)
+ */
+export const disburseDirectBank = async (payload) => {
+  const res = await api.post("/api/compliance/disburse/direct-bank", payload);
+  return res.data;
+};

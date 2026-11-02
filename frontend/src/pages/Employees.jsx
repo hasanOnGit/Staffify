@@ -10,9 +10,33 @@ import {
 import DocumentGeneratorModal from "../components/DocumentGeneratorModal";
 import StaffifyLoader from "../components/StaffifyLoader";
 import { TableSkeleton } from "../components/Skeleton";
-import { Users, Search, PlusCircle, Filter, RefreshCw, X, Shield, Landmark, User, Briefcase, FileText, Download } from "lucide-react";
+import {
+  Users,
+  Search,
+  PlusCircle,
+  Filter,
+  RefreshCw,
+  X,
+  Shield,
+  Landmark,
+  User,
+  Briefcase,
+  FileText,
+  Download,
+  UserCheck,
+  Link2,
+  Copy,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
 import BulkActionBar from "../components/BulkActionBar";
 import { exportToCsv } from "../utils/csvExporter";
+import {
+  getOnboardingQueue,
+  generateOnboardingLink,
+  admitCandidateToWorkforce,
+} from "../services/onboarding";
 import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -123,6 +147,69 @@ function Employees() {
   useEffect(() => {
     fetchEmployees();
   }, []);
+
+  const [mainView, setMainView] = useState("directory"); // "directory" or "onboarding"
+  const [onboardingQueue, setOnboardingQueue] = useState([]);
+  const [onboardingLoading, setOnboardingLoading] = useState(false);
+  const [admittingCandidateId, setAdmittingCandidateId] = useState(null);
+
+  const fetchOnboardingQueue = async () => {
+    try {
+      setOnboardingLoading(true);
+      const res = await getOnboardingQueue();
+      if (res?.success) {
+        setOnboardingQueue(res.data || []);
+      }
+    } catch (err) {
+      console.error("Failed to load onboarding queue:", err);
+    } finally {
+      setOnboardingLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (mainView === "onboarding") {
+      fetchOnboardingQueue();
+    }
+  }, [mainView]);
+
+  const handleGenerateLink = async (candidateId) => {
+    try {
+      const res = await generateOnboardingLink(candidateId);
+      if (res?.success) {
+        const fullLink = `${window.location.origin}${res.onboardingUrl}`;
+        await navigator.clipboard.writeText(fullLink);
+        toast.success("Onboarding link generated & copied to clipboard!");
+        fetchOnboardingQueue();
+      } else {
+        toast.error(res?.error || "Failed to generate link");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.error || err.message || "Failed to generate link");
+    }
+  };
+
+  const handleAdmitCandidate = async (candidateId) => {
+    if (!window.confirm("Authorize and admit this candidate to active workforce? This will generate their official Employee ID and Staffify login account.")) {
+      return;
+    }
+
+    try {
+      setAdmittingCandidateId(candidateId);
+      const res = await admitCandidateToWorkforce(candidateId);
+      if (res?.success) {
+        toast.success(res.message || "Candidate officially admitted to organization!");
+        fetchOnboardingQueue();
+        fetchEmployees();
+      } else {
+        toast.error(res?.error || "Failed to admit candidate");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.error || err.message || "Admission error");
+    } finally {
+      setAdmittingCandidateId(null);
+    }
+  };
 
   /* =============================
      FILTER & SEARCH LOGIC
@@ -367,7 +454,44 @@ function Employees() {
         </div>
       </div>
 
-      {/* Smart Filter Presets ("1-Click Quick Views") */}
+      {/* Top View Mode Switcher */}
+      <div className="flex border-b border-[#DFE1E6] dark:border-[#263042] mb-4 gap-2 text-xs font-semibold">
+        <button
+          onClick={() => setMainView("directory")}
+          className={`flex items-center gap-1.5 px-3.5 py-2 border-b-2 transition cursor-pointer ${
+            mainView === "directory"
+              ? "border-[#0052CC] text-[#0052CC] dark:text-[#579DFF] bg-[#DEEBFF]/30 dark:bg-[#0052CC]/15"
+              : "border-transparent text-[#6B778C] dark:text-[#94A3B8] hover:text-[#172B4D]"
+          }`}
+        >
+          <Users size={14} />
+          <span>Active Workforce Directory</span>
+          <span className="text-[10px] px-1.5 py-0.2 bg-[#EBECF0] dark:bg-[#1E293B] text-[#172B4D] dark:text-[#F1F5F9] rounded-full">
+            {employees.length}
+          </span>
+        </button>
+
+        <button
+          onClick={() => setMainView("onboarding")}
+          className={`flex items-center gap-1.5 px-3.5 py-2 border-b-2 transition cursor-pointer ${
+            mainView === "onboarding"
+              ? "border-[#0052CC] text-[#0052CC] dark:text-[#579DFF] bg-[#DEEBFF]/30 dark:bg-[#0052CC]/15"
+              : "border-transparent text-[#6B778C] dark:text-[#94A3B8] hover:text-[#172B4D]"
+          }`}
+        >
+          <UserCheck size={14} />
+          <span>Digital Onboarding Queue</span>
+          {onboardingQueue.filter((c) => c.onboardingStatus === "Submitted").length > 0 && (
+            <span className="text-[10px] px-1.5 py-0.2 bg-[#E3FCEF] text-[#006644] font-bold rounded-full border border-[#ABF5D1]">
+              {onboardingQueue.filter((c) => c.onboardingStatus === "Submitted").length} new
+            </span>
+          )}
+        </button>
+      </div>
+
+      {mainView === "directory" ? (
+        <>
+          {/* Smart Filter Presets ("1-Click Quick Views") */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 mb-3.5 text-xs font-medium">
         {[
           { id: "all", label: "All Personnel" },
@@ -504,6 +628,163 @@ function Employees() {
           }}
         />
       )}
+    </>
+  ) : (
+    /* DIGITAL ONBOARDING QUEUE VIEW */
+    <div className="space-y-4">
+      <div className="p-3.5 bg-[#DEEBFF]/40 dark:bg-[#0052CC]/10 border border-[#B3D4FF] dark:border-[#0052CC]/30 rounded-lg flex items-start gap-3">
+        <UserCheck size={18} className="text-[#0052CC] dark:text-[#579DFF] shrink-0 mt-0.5" />
+        <div className="text-xs space-y-0.5">
+          <span className="font-bold text-[#0747A6] dark:text-[#579DFF]">
+            Employee Self-Onboarding Workflow & Digital Document Vault
+          </span>
+          <p className="text-[#172B4D] dark:text-[#94A3B8]">
+            Prospective hires complete their profile, statutory KYC (PAN/Aadhaar/UAN), direct deposit bank info, and attach proofs via an encrypted 7-day token link. Authorize submissions below to admit candidates into the active workforce directory.
+          </p>
+        </div>
+      </div>
+
+      {onboardingLoading ? (
+        <div className="py-12 text-center text-xs text-[#6B778C]">
+          <Loader2 size={18} className="animate-spin mx-auto mb-2 text-[#0052CC]" />
+          Loading onboarding queue...
+        </div>
+      ) : onboardingQueue.length === 0 ? (
+        <div className="text-center py-12 bg-white dark:bg-[#151B26] border border-dashed border-[#DFE1E6] dark:border-[#263042] rounded-lg space-y-2">
+          <UserCheck size={28} className="mx-auto text-[#6B778C] dark:text-[#94A3B8] opacity-50" />
+          <p className="text-xs font-bold text-[#172B4D] dark:text-[#F1F5F9]">No Candidates in Onboarding Queue</p>
+          <p className="text-[11px] text-[#6B778C] dark:text-[#94A3B8] max-w-sm mx-auto">
+            Offer accepted candidates from the Recruitment ATS pipeline automatically appear here.
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-xs divide-y divide-[#DFE1E6] dark:divide-[#263042]">
+              <thead className="bg-[#FAFBFC] dark:bg-[#0F131C] text-[#6B778C] dark:text-[#94A3B8] font-semibold uppercase text-[10px]">
+                <tr>
+                  <th className="px-3 py-2.5 text-left">Candidate</th>
+                  <th className="px-3 py-2.5 text-left">Position & Dept</th>
+                  <th className="px-3 py-2.5 text-center">Status</th>
+                  <th className="px-3 py-2.5 text-left">Statutory KYC Details</th>
+                  <th className="px-3 py-2.5 text-left">Document Vault</th>
+                  <th className="px-3 py-2.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#DFE1E6] dark:divide-[#263042]">
+                {onboardingQueue.map((c) => {
+                  const ob = c.onboardingData || {};
+                  const docs = ob.documents || {};
+                  const isSubmitted = c.onboardingStatus === "Submitted";
+                  const isAdmitting = admittingCandidateId === c.candidateId;
+
+                  return (
+                    <tr key={c._id || c.candidateId} className="hover:bg-[#FAFBFC] dark:hover:bg-[#0F131C]">
+                      <td className="px-3 py-3">
+                        <span className="font-bold text-[#172B4D] dark:text-[#F1F5F9] block">{c.name}</span>
+                        <span className="text-[11px] text-[#6B778C] dark:text-[#94A3B8]">{c.email}</span>
+                        <span className="text-[10px] text-[#6B778C] block">{c.phone}</span>
+                      </td>
+                      <td className="px-3 py-3 text-[#172B4D] dark:text-[#F1F5F9]">
+                        <span className="font-semibold block">{c.jobTitle}</span>
+                        <span className="text-[11px] text-[#6B778C] dark:text-[#94A3B8]">{c.department || "Engineering"}</span>
+                      </td>
+                      <td className="px-3 py-3 text-center">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                            isSubmitted
+                              ? "bg-[#E3FCEF] text-[#006644] border-[#ABF5D1]"
+                              : "bg-[#FFF0B3] text-[#172B4D] border-[#FFE380]"
+                          }`}
+                        >
+                          {c.onboardingStatus || "Invited"}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-[11px] text-[#42526E] dark:text-[#94A3B8]">
+                        {ob.statutoryDetails?.pan ? (
+                          <div className="space-y-0.5">
+                            <p><strong className="text-[#172B4D] dark:text-[#F1F5F9]">PAN:</strong> {ob.statutoryDetails.pan}</p>
+                            <p><strong className="text-[#172B4D] dark:text-[#F1F5F9]">Aadhaar:</strong> {ob.statutoryDetails.aadhaar ? "•••• " + ob.statutoryDetails.aadhaar.slice(-4) : "None"}</p>
+                            <p><strong className="text-[#172B4D] dark:text-[#F1F5F9]">Bank:</strong> {ob.bankDetails?.bankName || "Provided"}</p>
+                          </div>
+                        ) : (
+                          <span className="text-[#6B778C] italic">Awaiting submission</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="flex items-center gap-1 flex-wrap">
+                          {docs.panCard?.uploaded && (
+                            <span className="text-[9px] font-bold px-1.5 py-0.2 bg-[#DEEBFF] text-[#0052CC] rounded">
+                              PAN
+                            </span>
+                          )}
+                          {docs.aadhaarCard?.uploaded && (
+                            <span className="text-[9px] font-bold px-1.5 py-0.2 bg-[#DEEBFF] text-[#0052CC] rounded">
+                              Aadhaar
+                            </span>
+                          )}
+                          {docs.cancelledCheque?.uploaded && (
+                            <span className="text-[9px] font-bold px-1.5 py-0.2 bg-[#DEEBFF] text-[#0052CC] rounded">
+                              Cheque
+                            </span>
+                          )}
+                          {!docs.panCard?.uploaded && !docs.aadhaarCard?.uploaded && (
+                            <span className="text-[10px] text-[#6B778C]">No docs attached</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-3 py-3 text-right">
+                        <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                          <button
+                            type="button"
+                            onClick={() => handleGenerateLink(c.candidateId)}
+                            className="px-2.5 py-1 bg-white hover:bg-[#EBECF0] border border-[#DFE1E6] rounded text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                            title="Generate secure 7-day self-onboarding URL and copy to clipboard"
+                          >
+                            <Copy size={12} />
+                            <span>Copy Link</span>
+                          </button>
+
+                          {c.onboardingToken && (
+                            <a
+                              href={`/onboard/${c.onboardingToken}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-2 py-1 bg-white hover:bg-[#EBECF0] border border-[#DFE1E6] rounded text-xs font-semibold text-[#0052CC] cursor-pointer"
+                              title="Preview Candidate Onboarding Form"
+                            >
+                              Open
+                            </a>
+                          )}
+
+                          {isSubmitted && (
+                            <button
+                              type="button"
+                              disabled={isAdmitting}
+                              onClick={() => handleAdmitCandidate(c.candidateId)}
+                              className="px-3 py-1 bg-[#00875A] hover:bg-[#006644] text-white rounded text-xs font-bold flex items-center gap-1 cursor-pointer disabled:opacity-60"
+                              title="Admit candidate into workforce directory, creating Employee and User account"
+                            >
+                              {isAdmitting ? (
+                                <Loader2 size={12} className="animate-spin" />
+                              ) : (
+                                <UserCheck size={12} />
+                              )}
+                              <span>Admit to Workforce</span>
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  )}
 
       {/* =========================================================
          ADD / EDIT EMPLOYEE 360 MODAL

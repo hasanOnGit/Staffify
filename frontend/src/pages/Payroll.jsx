@@ -14,6 +14,8 @@ import SettlementModal from "../components/SettlementModal";
 import TaxDeclarationModal from "../components/TaxDeclarationModal";
 import LoanModal from "../components/LoanModal";
 import CtcCalculatorModal from "../components/CtcCalculatorModal";
+import DirectBankPayoutModal from "../components/DirectBankPayoutModal";
+import TaxProofAuditModal from "../components/TaxProofAuditModal";
 import { getLoans } from "../services/loan";
 import {
   getComplianceSummary,
@@ -25,6 +27,11 @@ import { getSettlements, initiateSettlement } from "../services/settlement";
 import { getAllTaxDeclarations, verifyTaxDeclaration } from "../services/tax";
 import { printPayslip } from "../utils/payslipPrinter";
 import { exportToCsv } from "../utils/csvExporter";
+import {
+  printFormAEmployeeRegister,
+  printFormBWageRegister,
+  printFormCLoanRegister,
+} from "../utils/statutoryRegistersPrinter";
 import toast from "react-hot-toast";
 import {
   DollarSign,
@@ -89,9 +96,11 @@ function Payroll() {
   const [activePayslip, setActivePayslip] = useState(null);
   const [showLoanModal, setShowLoanModal] = useState(false);
   const [showCtcCalculator, setShowCtcCalculator] = useState(false);
+  const [showDirectBankModal, setShowDirectBankModal] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [activeSettlement, setActiveSettlement] = useState(null);
   const [activeTaxEmp, setActiveTaxEmp] = useState(null);
+  const [auditProofEmp, setAuditProofEmp] = useState(null);
   const [showInitiateModal, setShowInitiateModal] = useState(false);
   const [initEmpId, setInitEmpId] = useState("");
   const [initResignDate, setInitResignDate] = useState(new Date().toISOString().split("T")[0]);
@@ -332,6 +341,16 @@ function Payroll() {
             >
               <Play size={13} className="fill-white" />
               <span>{running ? "Processing..." : "Run Monthly Payroll"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowDirectBankModal(true)}
+              className="bg-[#00875A] hover:bg-[#006644] text-white px-3.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+              title="Disburse salaries directly via ICICI CIB, HDFC Enet or RazorpayX API"
+            >
+              <Building2 size={13} />
+              <span>Direct Bank Payout</span>
             </button>
           </div>
         </div>
@@ -772,6 +791,47 @@ function Payroll() {
               </div>
             </div>
 
+            {/* Statutory Labour Law Registers (Code on Wages, 2019) */}
+            <div className="p-3.5 bg-[#FAFBFC] border border-[#DFE1E6] rounded-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span className="text-xs font-bold text-[#172B4D] block">
+                  Official Labour Inspection Registers (Code on Wages, 2019)
+                </span>
+                <p className="text-[11px] text-[#6B778C]">
+                  Vector-rendered printable statutory registers under Forms A, B, and C with full legislative audit columns.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => printFormAEmployeeRegister(employees, { companyName: "Staffify Inc.", establishmentName: "Staffify Enterprise" })}
+                  className="px-3 py-1.5 bg-white hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                  title="Print Form A Employee Register under Code on Wages Rules"
+                >
+                  <FileText size={13} className="text-[#0052CC]" />
+                  <span>Print Form A (Employee Register)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => printFormBWageRegister(payslips, { month: selectedMonth, year: selectedYear, companyName: "Staffify Inc." })}
+                  className="px-3 py-1.5 bg-white hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                  title="Print Form B Wage Register under Code on Wages Rules"
+                >
+                  <FileText size={13} className="text-[#00875A]" />
+                  <span>Print Form B (Wage Register)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => printFormCLoanRegister(loans, { month: selectedMonth, year: selectedYear, companyName: "Staffify Inc." })}
+                  className="px-3 py-1.5 bg-white hover:bg-[#EBECF0] text-[#172B4D] border border-[#DFE1E6] rounded text-xs font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                  title="Print Form C Loan & Recovery Register under Code on Wages Rules"
+                >
+                  <FileText size={13} className="text-[#FF991F]" />
+                  <span>Print Form C (Recovery/Loan Register)</span>
+                </button>
+              </div>
+            </div>
+
             {/* Statutory Numbers Breakdown */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
               <div className="p-3 bg-[#FAFBFC] border border-[#DFE1E6] rounded">
@@ -1032,6 +1092,13 @@ function Payroll() {
                         </td>
                         <td className="px-3 py-2.5 text-right">
                           <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => setAuditProofEmp(d)}
+                              className="px-2 py-1 bg-[#DEEBFF] hover:bg-[#B3D4FF] text-[#0052CC] border border-[#B3D4FF] rounded text-xs font-semibold cursor-pointer"
+                              title="Audit landlord PAN, rent receipts and 80C/80D investment proofs"
+                            >
+                              Audit Proofs
+                            </button>
                             <button
                               onClick={() => setActiveTaxEmp(d)}
                               className="px-2 py-1 bg-white hover:bg-[#EBECF0] border border-[#DFE1E6] rounded text-xs font-semibold cursor-pointer"
@@ -1356,6 +1423,23 @@ function Payroll() {
         <CtcCalculatorModal
           isOpen={showCtcCalculator}
           onClose={() => setShowCtcCalculator(false)}
+        />
+
+        {/* Direct Bank API Payout Modal */}
+        <DirectBankPayoutModal
+          isOpen={showDirectBankModal}
+          onClose={() => setShowDirectBankModal(false)}
+          currentMonth={selectedMonth}
+          currentYear={selectedYear}
+          onDisbursementComplete={loadPayrollData}
+        />
+
+        {/* Income Tax Proof Verification Audit Modal */}
+        <TaxProofAuditModal
+          isOpen={Boolean(auditProofEmp)}
+          onClose={() => setAuditProofEmp(null)}
+          declaration={auditProofEmp}
+          onAuditComplete={loadPayrollData}
         />
       </div>
     </DashboardLayout>

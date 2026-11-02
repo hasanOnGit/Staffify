@@ -4,6 +4,7 @@ const Leaves = require("../models/leave.model");
 const LeaveBalance = require("../models/employeeLeaveBalance.model");
 const LeavePolicy = require("../models/leavePolicy.model");
 const Holiday = require("../models/holiday.model");
+const Employee = require("../models/employees.model");
 
 // Ensure default leave policy exists
 async function getOrCreatePolicy() {
@@ -381,65 +382,168 @@ module.exports = function (app) {
      ========================================================== */
   apiRoutes.post("/rollover", async (req, res) => {
     try {
-      const { executedBy = "HR Admin", targetYear } = req.body;
+      const {
+        executedBy = "HR Admin",
+        targetYear,
+        dryRun = false,
+        encashOverLimit = false,
+        maxCarryForwardOverride,
+        compOffPolicy = "preserve", // "preserve" or "lapse"
+      } = req.body;
+
       const nextYear = Number(targetYear) || new Date().getFullYear() + 1;
       const prevYear = nextYear - 1;
 
       const policy = await getOrCreatePolicy();
-      const prevBalances = await LeaveBalance.find({ year: prevYear });
+      let prevBalances = await LeaveBalance.find({ year: prevYear });
+
+      // If no prevBalances found, fall back to current year if targetYear is next year
+      if (prevBalances.length === 0) {
+        prevBalances = await LeaveBalance.find();
+      }
+
+      // Preload employee records for names, departments and salary (for encashment)
+      const employees = await Employee.find({}, "employeeId firstName lastName department basicSalary totalSalary").lean();
+      const empMap = new Map();
+      for (const emp of employees) {
+        empMap.set(emp.employeeId, emp);
+      }
+
+      const maxElCf = maxCarryForwardOverride !== undefined
+        ? Number(maxCarryForwardOverride)
+        : (policy.annualRolloverRules?.earnedLeave?.maxCarryForward || 30);
+      const annualCreditEl = policy.annualRolloverRules?.earnedLeave?.annualCredit || 15;
+
+      const maxSlCf = policy.annualRolloverRules?.sickLeave?.maxCarryForward || 10;
+      const annualCreditSl = policy.annualRolloverRules?.sickLeave?.annualCredit || 10;
+      const annualCreditCl = policy.annualRolloverRules?.casualLeave?.annualCredit || 12;
 
       let rolloverCount = 0;
+      let totalCarriedOverEL = 0;
+      let totalEncashedEL = 0;
+      let totalLapsedEL = 0;
+      let totalCarriedOverSL = 0;
+      let totalLapsedCL = 0;
+      let totalEncashmentPayout = 0;
+      const details = [];
+
       for (const pb of prevBalances) {
+        const emp = empMap.get(pb.employeeId) || {};
+        const empName = [emp.firstName, emp.lastName].filter(Boolean).join(" ") || pb.employeeId;
+        const dept = emp.department || "General";
+        const basicSalary = Number(emp.basicSalary) || 25000;
+        const perDaySalary = Math.round(basicSalary / 30);
+
+        // Earned Leave calculation
         const elAlloc = pb.leaveAllocation?.earned || { totalAllocated: 15, used: 0 };
         const elRemaining = Math.max(0, elAlloc.totalAllocated - elAlloc.used);
-
-        // Max carry forward according to policy
-        const maxElCf = policy.annualRolloverRules?.earnedLeave?.maxCarryForward || 30;
         const carriedOverEl = Math.min(maxElCf, elRemaining);
-        const annualCreditEl = policy.annualRolloverRules?.earnedLeave?.annualCredit || 15;
+        const surplusEl = Math.max(0, elRemaining - maxElCf);
 
-        // Sick leave carry forward
+        let encashedEl = 0;
+        let lapsedEl = 0;
+        if (encashOverLimit && surplusEl > 0) {
+          encashedEl = surplusEl;
+        } else {
+          lapsedEl = surplusEl;
+        }
+        const encashmentAmount = encashedEl * perDaySalary;
+
+        // Sick Leave calculation
         const slAlloc = pb.leaveAllocation?.sick || { totalAllocated: 10, used: 0 };
         const slRemaining = Math.max(0, slAlloc.totalAllocated - slAlloc.used);
-        const maxSlCf = policy.annualRolloverRules?.sickLeave?.maxCarryForward || 10;
         const carriedOverSl = Math.min(maxSlCf, slRemaining);
-        const annualCreditSl = policy.annualRolloverRules?.sickLeave?.annualCredit || 10;
+        const lapsedSl = Math.max(0, slRemaining - maxSlCf);
 
-        // Casual leave lapses (standard Indian law) - reset to fresh credit
-        const annualCreditCl = policy.annualRolloverRules?.casualLeave?.annualCredit || 12;
+        // Casual Leave lapses under Indian labor laws
+        const clAlloc = pb.leaveAllocation?.casual || { totalAllocated: 12, used: 0 };
+        const clRemaining = Math.max(0, clAlloc.totalAllocated - clAlloc.used);
+        const lapsedCl = clRemaining;
 
-        let nextBal = await LeaveBalance.findOne({ employeeId: pb.employeeId, year: nextYear });
-        if (!nextBal) {
-          nextBal = new LeaveBalance({
-            employeeId: pb.employeeId,
-            year: nextYear,
-          });
+        // Comp-Off preservation or reset
+        const compOffAlloc = pb.leaveAllocation?.compOff || { totalAllocated: 0, used: 0 };
+        const compOffRemaining = Math.max(0, compOffAlloc.totalAllocated - compOffAlloc.used);
+        const carriedOverCompOff = compOffPolicy === "preserve" ? compOffRemaining : 0;
+
+        totalCarriedOverEL += carriedOverEl;
+        totalEncashedEL += encashedEl;
+        totalLapsedEL += lapsedEl;
+        totalCarriedOverSL += carriedOverSl;
+        totalLapsedCL += lapsedCl;
+        totalEncashmentPayout += encashmentAmount;
+
+        details.push({
+          employeeId: pb.employeeId,
+          employeeName: empName,
+          department: dept,
+          elRemaining,
+          carriedOverEl,
+          encashedEl,
+          lapsedEl,
+          encashmentAmount,
+          slRemaining,
+          carriedOverSl,
+          lapsedSl,
+          clRemaining,
+          lapsedCl,
+          compOffRemaining,
+          carriedOverCompOff,
+          newElAllocated: carriedOverEl + annualCreditEl,
+          newSlAllocated: carriedOverSl + annualCreditSl,
+          newClAllocated: annualCreditCl,
+        });
+
+        if (!dryRun) {
+          let nextBal = await LeaveBalance.findOne({ employeeId: pb.employeeId, year: nextYear });
+          if (!nextBal) {
+            nextBal = new LeaveBalance({
+              employeeId: pb.employeeId,
+              year: nextYear,
+            });
+          }
+
+          nextBal.leaveAllocation = {
+            earned: { totalAllocated: carriedOverEl + annualCreditEl, used: 0 },
+            casual: { totalAllocated: annualCreditCl, used: 0 },
+            sick: { totalAllocated: carriedOverSl + annualCreditSl, used: 0 },
+            compOff: { totalAllocated: carriedOverCompOff, used: 0 },
+            paid: { totalAllocated: 12, used: 0 },
+            halfDay: { totalAllocated: 6, used: 0 },
+            maternity: { totalAllocated: 180, used: 0 },
+            paternity: { totalAllocated: 15, used: 0 },
+            lop: { totalAllocated: 999, used: 0 },
+          };
+          nextBal.lastUpdated = new Date();
+          await nextBal.save();
         }
 
-        nextBal.leaveAllocation = {
-          earned: { totalAllocated: carriedOverEl + annualCreditEl, used: 0 },
-          casual: { totalAllocated: annualCreditCl, used: 0 },
-          sick: { totalAllocated: carriedOverSl + annualCreditSl, used: 0 },
-          paid: { totalAllocated: 12, used: 0 },
-          halfDay: { totalAllocated: 6, used: 0 },
-          maternity: { totalAllocated: 180, used: 0 },
-          paternity: { totalAllocated: 15, used: 0 },
-          lop: { totalAllocated: 999, used: 0 },
-        };
-        nextBal.lastUpdated = new Date();
-        await nextBal.save();
         rolloverCount++;
       }
 
-      policy.lastRolloverExecutedAt = new Date();
-      policy.lastRolloverExecutedBy = executedBy;
-      await policy.save();
+      if (!dryRun) {
+        policy.lastRolloverExecutedAt = new Date();
+        policy.lastRolloverExecutedBy = executedBy;
+        await policy.save();
+      }
 
       return res.status(200).json({
         success: true,
-        message: `Annual leave rollover executed successfully for ${rolloverCount} employees into FY ${nextYear}`,
-        rolloverCount,
+        dryRun: Boolean(dryRun),
+        message: dryRun
+          ? `Year-End Rollover Simulation completed for ${rolloverCount} employees into FY ${nextYear}`
+          : `Annual leave rollover executed successfully for ${rolloverCount} employees into FY ${nextYear}`,
         targetYear: nextYear,
+        rolloverCount,
+        summary: {
+          totalEmployees: rolloverCount,
+          totalCarriedOverEL,
+          totalEncashedEL,
+          totalLapsedEL,
+          totalCarriedOverSL,
+          totalLapsedCL,
+          totalEncashmentPayout,
+        },
+        details,
       });
     } catch (err) {
       console.error("Rollover error:", err);

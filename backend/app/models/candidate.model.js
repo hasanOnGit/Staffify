@@ -102,6 +102,24 @@ const candidateSchema = new mongoose.Schema(
       type: [feedbackSchema],
       default: [],
     },
+    onboardingToken: {
+      type: String,
+      default: null,
+      index: true,
+    },
+    tokenExpiry: {
+      type: Date,
+      default: null,
+    },
+    onboardingStatus: {
+      type: String,
+      enum: ["None", "Invited", "Submitted", "Admitted"],
+      default: "None",
+    },
+    onboardingData: {
+      type: Object,
+      default: null,
+    },
   },
   {
     timestamps: true,

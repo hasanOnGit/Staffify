@@ -24,9 +24,13 @@ import {
   User,
   Printer,
   Sparkles,
+  FileText,
+  Award,
 } from "lucide-react";
 import { exportToCsv } from "../utils/csvExporter";
 import { printAttendanceRegister } from "../utils/attendancePrinter";
+import { printFormDAttendanceRegister } from "../utils/statutoryRegistersPrinter";
+import CompOffModal from "../components/CompOffModal";
 import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -61,6 +65,7 @@ function Attendance() {
   // Biometric Terminal Modal
   const [showBiometricModal, setShowBiometricModal] = useState(false);
   const [employeesList, setEmployeesList] = useState([]);
+  const [showCompOffModal, setShowCompOffModal] = useState(false);
 
   // Regularization Modal State
   const [showRegModal, setShowRegModal] = useState(false);
@@ -381,6 +386,36 @@ function Attendance() {
             <Printer size={14} />
             <span className="hidden sm:inline">Print Register PDF</span>
             <span className="sm:hidden">PDF</span>
+          </button>
+
+          {/* Print Form D Attendance & Overtime Register (Code on Wages, 2019) */}
+          <button
+            onClick={() => {
+              const records = isPersonal ? myHistory : teamAttendance;
+              printFormDAttendanceRegister(records, {
+                month: new Date(selectedDate).getMonth() + 1,
+                year: new Date(selectedDate).getFullYear(),
+                companyName: "Staffify Inc.",
+              });
+            }}
+            disabled={filteredAttendance.length === 0}
+            className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded transition shadow-2xs cursor-pointer disabled:opacity-50"
+            title="Print Form D Attendance & Overtime Register under Code on Wages, 2019"
+          >
+            <FileText size={14} className="text-[#00875A]" />
+            <span className="hidden sm:inline">Print Form D (OT Register)</span>
+            <span className="sm:hidden">Form D</span>
+          </button>
+
+          {/* Claim Comp-Off Button */}
+          <button
+            onClick={() => setShowCompOffModal(true)}
+            className="flex items-center gap-1.5 bg-[#DEEBFF] text-[#0052CC] hover:bg-[#B3D4FF] border border-[#B3D4FF] text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded transition shadow-2xs cursor-pointer"
+            title="Claim compensatory leave for off-schedule, weekend, or holiday work"
+          >
+            <Award size={14} />
+            <span className="hidden sm:inline">Claim Comp-Off</span>
+            <span className="sm:hidden">Comp-Off</span>
           </button>
 
           {/* Office Geofences Settings / Info */}
@@ -798,6 +833,14 @@ function Attendance() {
           onSynced={fetchRecords}
         />
       )}
+
+      {/* Comp-Off Request Modal */}
+      <CompOffModal
+        isOpen={showCompOffModal}
+        onClose={() => setShowCompOffModal(false)}
+        employeeId={user?.userId}
+        onGrantRequested={fetchRecords}
+      />
     </DashboardLayout>
   );
 }
