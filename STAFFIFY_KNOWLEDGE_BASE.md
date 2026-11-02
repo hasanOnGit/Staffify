@@ -67,3 +67,20 @@
 - Git Author: `hasanOnGit <hasanOnGit@users.noreply.github.com>`.
 - Responsive design: Mobile-first (320px - 768px) and desktop (1024px - 1920px).
 - Security: Parameterized Mongoose queries, strict role scoping per user, zero client-side over-fetching.
+
+---
+
+## 5. StaffifyMOB Mobile Suite Specifications
+- **App Name**: `StaffifyMOB` (`com.staffify.mob`)
+- **Directory**: `/staffify-mob`
+- **Native Container**: Capacitor 6 (`@capacitor/android`, `@capacitor/core`, `@capacitor/geolocation`, `@capacitor/haptics`, `@capacitor/status-bar`, `@capacitor/preferences`).
+- **Cloud Build**: Automated GitHub Actions workflow `.github/workflows/build-apk.yml` compiles `StaffifyMOB-debug.apk` on every push to `main` with Java 17 and Android SDK 34, attaching the `.apk` as a downloadable artifact.
+- **Mobile Pages & Modules**:
+  1. `MobileDashboard.jsx`: Live punch status, quick actions, leave meters, holiday calendar.
+  2. `MobileSwipes.jsx`: GPS geofence radar, tactile 1.2s circular hold-to-punch, haptic feedback, offline caching.
+  3. `MobileLeaves.jsx`: Leave balances (CL/SL/EL/Comp-Off), application bottom sheet, 90-day overtime claim modal.
+  4. `MobilePayslips.jsx`: Hero net take-home salary, earnings vs statutory deductions (EPF/ESIC/PT/TDS), bank UTR, 1-tap PDF payslip download.
+  5. `MobileApprovals.jsx`: 1-tap manager approval deck for pending leaves, comp-off credits, and punch regularizations.
+  6. `MobileProfile.jsx`: Digital Employee Smart ID card with barcode/QR simulation, Digital Document Vault (Aadhaar, PAN, UAN, Form 16), app info, sign out.
+  7. `MobileLogin.jsx`: Mobile login with 1-tap instant demo profiles (Admin, Manager, Employee) and biometric sign-in simulation.
+
