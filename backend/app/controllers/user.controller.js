@@ -73,7 +73,7 @@ module.exports = function (app) {
   /* ==========================================================
      LOGIN USER (PROTECTED BY AUTH RATE LIMITER)
      ========================================================== */
-  apiRoutes.post("/login", authRateLimiter, async (req, res) => {
+  const handleLogin = async (req, res) => {
     const { email, password } = req.body;
     const normalizedEmail = email?.trim().toLowerCase();
     try {
@@ -133,7 +133,10 @@ module.exports = function (app) {
       console.error("Login Error:", err);
       res.status(500).json({ msg: "Error logging in.", error: err.message });
     }
-  });
+  };
+
+  apiRoutes.post("/login", authRateLimiter, handleLogin);
+  apiRoutes.post("/auth/login", authRateLimiter, handleLogin);
 
   /* ==========================================================
      GET CURRENT USER (ME)

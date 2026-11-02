@@ -28,7 +28,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const res = await api.post("/api/auth/login", { email, password });
+    let res;
+    try {
+      res = await api.post("/api/login", { email, password });
+    } catch (err) {
+      // Fallback attempt to /login
+      res = await api.post("/login", { email, password });
+    }
     if (res.data?.token) {
       const userObj = res.data.user || {
         userId: res.data.userId || "USR-DEFAULT",
