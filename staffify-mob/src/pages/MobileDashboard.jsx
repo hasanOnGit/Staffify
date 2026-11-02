@@ -335,46 +335,46 @@ export default function MobileDashboard() {
           </div>
         </div>
 
-        {/* 4 Premium Quick Action Tiles */}
+        {/* 4 Premium Quick Action Tiles with Peak Detailing */}
         <div className="grid grid-cols-4 gap-2.5">
           <button
             onClick={() => navigate("/swipes")}
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC]"
+            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC] group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-[#DEEBFF] text-[#0052CC] flex items-center justify-center mb-1.5 shadow-xs">
-              <Clock className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-[#DEEBFF] text-[#0052CC] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:-rotate-6 ring-1 ring-[#0052CC]/15">
+              <Clock className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
             </div>
-            <span className="text-[11px] font-bold text-[#172B4D] dark:text-white">Swipes</span>
+            <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#0052CC] transition-colors">Swipes</span>
           </button>
 
           <button
             onClick={() => navigate("/leaves")}
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#00875A]"
+            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#00875A] group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-[#E3FCEF] text-[#00875A] flex items-center justify-center mb-1.5 shadow-xs">
-              <Calendar className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-[#E3FCEF] text-[#00875A] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:rotate-6 ring-1 ring-[#00875A]/15">
+              <Calendar className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
             </div>
-            <span className="text-[11px] font-bold text-[#172B4D] dark:text-white">Leaves</span>
+            <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#00875A] transition-colors">Leaves</span>
           </button>
 
           <button
             onClick={() => navigate("/payslips")}
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#B9770E]"
+            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#B9770E] group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-[#FFF0B3] text-[#B9770E] flex items-center justify-center mb-1.5 shadow-xs">
-              <CreditCard className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-[#FFF0B3] text-[#B9770E] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:-rotate-6 ring-1 ring-[#B9770E]/15">
+              <CreditCard className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
             </div>
-            <span className="text-[11px] font-bold text-[#172B4D] dark:text-white">Payslips</span>
+            <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#B9770E] transition-colors">Payslips</span>
           </button>
 
           <button
             onClick={() => navigate("/profile")}
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC]"
+            className="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white dark:bg-[#0F131C] border border-[#DFE1E6]/80 dark:border-[#263042] active:scale-90 transition-all shadow-xs hover:border-[#0052CC] group"
           >
-            <div className="w-11 h-11 rounded-2xl bg-[#FAFBFC] text-[#0052CC] border border-[#DFE1E6] flex items-center justify-center mb-1.5 shadow-xs">
-              <Award className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-[#FAFBFC] text-[#0052CC] border border-[#DFE1E6] flex items-center justify-center mb-1.5 shadow-xs transition-transform duration-200 group-hover:scale-110 group-active:scale-125 group-active:rotate-6 ring-1 ring-[#0052CC]/15">
+              <Award className="w-5 h-5 transition-transform duration-200 group-active:stroke-[2.5]" />
             </div>
-            <span className="text-[11px] font-bold text-[#172B4D] dark:text-white">Smart ID</span>
+            <span className="text-[11px] font-bold text-[#172B4D] dark:text-white group-hover:text-[#0052CC] transition-colors">Smart ID</span>
           </button>
         </div>
 
