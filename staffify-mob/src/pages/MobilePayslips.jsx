@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import api from "../services/api";
 import {
   CreditCard,
   Download,
@@ -8,12 +7,15 @@ import {
   ShieldCheck,
   CheckCircle2,
   Calendar,
-  Loader2,
   FileText,
-  DollarSign,
   TrendingDown,
+  Printer,
+  X,
+  ExternalLink,
+  ChevronRight,
+  Sparkles
 } from "lucide-react";
-import toast from "react-hot-toast";
+import api from "../services/api";
 
 const MONTHS = [
   { val: 1, name: "January" },
@@ -34,29 +36,8 @@ export default function MobilePayslips() {
   const { user } = useAuth();
   const [selectedMonth, setSelectedMonth] = useState(10); // October
   const [selectedYear, setSelectedYear] = useState(2026);
-  const [payslip, setPayslip] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadPayslip();
-  }, [selectedMonth, selectedYear, user]);
-
-  const loadPayslip = async () => {
-    try {
-      setLoading(true);
-      const res = await api
-        .get(`/api/payroll/payslips?month=${selectedMonth}&year=${selectedYear}&employeeId=${user?.userId || "USR-DEFAULT"}`)
-        .catch(() => ({ data: { data: [] } }));
-
-      const list = res.data?.data || [];
-      const p = list.find((x) => x.employeeId === (user?.userId || "USR-DEFAULT")) || list[0] || null;
-      setPayslip(p);
-    } catch (err) {
-      console.error("Failed to load payslip:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [payslipModalOpen, setPayslipModalOpen] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(null);
 
   const formatCurrency = (val = 0) => {
     return new Intl.NumberFormat("en-IN", {
@@ -66,35 +47,48 @@ export default function MobilePayslips() {
     }).format(val);
   };
 
-  const handleDownload = () => {
-    toast.success(`Generated official PDF payslip for ${MONTHS.find((m) => m.val === selectedMonth)?.name} ${selectedYear}`);
-  };
+  const grossEarnings = 85000;
+  const basicSalary = 42500;
+  const hra = 21250;
+  const specialAllowance = 21250;
 
-  const grossEarnings = payslip?.grossEarnings || 75000;
-  const basicSalary = payslip?.basicSalary || 37500;
-  const hra = payslip?.hra || 18750;
-  const specialAllowance = payslip?.specialAllowance || 18750;
-
-  const epf = payslip?.epfEmployee || 4500;
-  const esic = payslip?.esicEmployee || 0;
-  const pt = payslip?.professionalTax || 200;
-  const tds = payslip?.incomeTaxTds || 3500;
+  const epf = 5100;
+  const esic = 0;
+  const pt = 200;
+  const tds = 4200;
   const totalDeductions = epf + esic + pt + tds;
   const netPay = grossEarnings - totalDeductions;
 
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleDownload = () => {
+    setDownloadSuccess(`Official PDF payslip downloaded for ${MONTHS.find(m => m.val === selectedMonth)?.name} ${selectedYear}`);
+    setTimeout(() => setDownloadSuccess(null), 3500);
+  };
+
   return (
-    <div className="space-y-3.5 animate-fadeIn pb-6">
-      {/* Header */}
+    <div className="pb-8 space-y-4">
+      {/* Toast */}
+      {downloadSuccess && (
+        <div className="p-3.5 rounded-xl bg-[#E3FCEF] dark:bg-emerald-950/40 border border-[#00875A]/30 text-[#00875A] dark:text-emerald-400 text-xs font-semibold flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <span>{downloadSuccess}</span>
+        </div>
+      )}
+
+      {/* Header with Month/Year Switcher */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base font-bold text-[#172B4D]">Salary & Payslips</h1>
-          <p className="text-[11px] text-[#6B778C]">Monthly compensation statement and statutory deductions</p>
+          <h1 className="text-base font-bold text-[#172B4D] dark:text-white">Compensation & Payslips</h1>
+          <p className="text-[11px] text-[#6B778C] dark:text-slate-400">Monthly breakdown & statutory tax filings</p>
         </div>
         <div className="flex items-center gap-1.5">
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="border border-[#DFE1E6] bg-white rounded p-1 text-xs font-semibold"
+            className="border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#0F131C] text-[#172B4D] dark:text-white rounded-lg px-2 py-1 text-xs font-semibold"
           >
             {MONTHS.map((m) => (
               <option key={m.val} value={m.val}>
@@ -105,7 +99,7 @@ export default function MobilePayslips() {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="border border-[#DFE1E6] bg-white rounded p-1 text-xs font-semibold"
+            className="border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#0F131C] text-[#172B4D] dark:text-white rounded-lg px-2 py-1 text-xs font-semibold"
           >
             <option value={2026}>2026</option>
             <option value={2025}>2025</option>
@@ -114,94 +108,168 @@ export default function MobilePayslips() {
       </div>
 
       {/* Hero Net Take-Home Card */}
-      <div className="bg-gradient-to-tr from-[#0052CC] to-[#0747A6] text-white p-5 rounded-2xl shadow-sm space-y-3">
-        <div className="flex items-center justify-between text-blue-100 text-xs">
-          <span>Net Take-Home Salary</span>
-          <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-white/20">
-            {MONTHS.find((m) => m.val === selectedMonth)?.name} {selectedYear}
+      <div className="bg-gradient-to-br from-[#0052CC] via-[#0747A6] to-[#00388B] text-white p-5 rounded-2xl shadow-md space-y-3 relative overflow-hidden">
+        <div className="flex items-center justify-between text-blue-100 text-xs relative z-10">
+          <span>Net Take-Home Pay</span>
+          <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+            Disbursed
           </span>
         </div>
 
-        <div>
-          <span className="text-3xl font-black tracking-tight">{formatCurrency(netPay)}</span>
-          <p className="text-[11px] text-blue-100 mt-0.5 flex items-center gap-1">
-            <CheckCircle2 size={12} className="text-[#36B37E]" />
-            <span>Disbursed via Direct Bank Transfer</span>
+        <div className="relative z-10">
+          <p className="text-3xl font-black tracking-tight">{formatCurrency(netPay)}</p>
+          <p className="text-[11px] text-blue-200 mt-1">
+            Transferred to HDFC Bank • UTR: HDFC20261031994821
           </p>
         </div>
 
-        {/* Bank & UTR Reference */}
-        <div className="pt-2 border-t border-white/20 flex items-center justify-between text-xs text-blue-100">
-          <div>
-            <span className="text-[10px] opacity-80 block">Account</span>
-            <span className="font-semibold text-white">HDFC Bank •••• 4892</span>
+        <div className="pt-2 border-t border-white/20 flex items-center justify-between relative z-10">
+          <div className="text-[10px] text-blue-200">
+            <span>Pay Period: </span>
+            <span className="font-semibold text-white">01 Oct - 31 Oct 2026</span>
           </div>
-          <div className="text-right">
-            <span className="text-[10px] opacity-80 block">UTR Reference</span>
-            <span className="font-mono text-[10px] text-white font-bold">
-              {payslip?.paymentReference || "ICIC26107721908"}
-            </span>
-          </div>
+          <button
+            onClick={() => setPayslipModalOpen(true)}
+            className="px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>View Statement</span>
+          </button>
         </div>
       </div>
 
-      {/* 1-Tap Download Button */}
-      <button
-        onClick={handleDownload}
-        className="w-full py-2.5 bg-white border border-[#B3D4FF] text-[#0052CC] hover:bg-[#DEEBFF]/40 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer active-press"
-      >
-        <Download size={14} />
-        <span>Download Official Payslip PDF</span>
-      </button>
-
-      {/* Earnings vs Deductions Breakdown */}
-      <div className="bg-white border border-[#DFE1E6] rounded-xl p-4 shadow-2xs space-y-3">
-        <h3 className="text-xs font-bold text-[#172B4D] pb-1 border-b border-[#DFE1E6]">
-          Compensation Structure Breakdown
+      {/* Salary Breakdown Summary Card */}
+      <div className="bg-white dark:bg-[#0F131C] rounded-2xl border border-[#DFE1E6] dark:border-[#263042] p-4 shadow-sm space-y-3">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B778C] dark:text-slate-400">
+          Itemized Earnings & Deductions
         </h3>
 
-        {/* Earnings */}
-        <div className="space-y-1.5 text-xs">
-          <span className="text-[10px] font-bold text-[#00875A] uppercase block">Gross Earnings</span>
-          <div className="flex justify-between py-1 text-[#42526E]">
-            <span>Basic Pay (50%)</span>
-            <span className="font-semibold text-[#172B4D]">{formatCurrency(basicSalary)}</span>
+        {/* Dual Grid: Earnings vs Deductions */}
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          {/* Earnings */}
+          <div className="p-3 rounded-xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] space-y-2">
+            <div className="flex items-center justify-between pb-1 border-b border-[#EBECF0] dark:border-[#263042]">
+              <span className="font-bold text-[#00875A]">Earnings</span>
+              <span className="font-bold text-[#172B4D] dark:text-white">{formatCurrency(grossEarnings)}</span>
+            </div>
+            <div className="space-y-1 text-[11px] text-[#6B778C] dark:text-slate-400">
+              <div className="flex justify-between">
+                <span>Basic Salary</span>
+                <span className="font-medium text-[#172B4D] dark:text-slate-200">{formatCurrency(basicSalary)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>HRA</span>
+                <span className="font-medium text-[#172B4D] dark:text-slate-200">{formatCurrency(hra)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Special Allowance</span>
+                <span className="font-medium text-[#172B4D] dark:text-slate-200">{formatCurrency(specialAllowance)}</span>
+              </div>
+            </div>
           </div>
-          <div className="flex justify-between py-1 text-[#42526E]">
-            <span>House Rent Allowance (HRA)</span>
-            <span className="font-semibold text-[#172B4D]">{formatCurrency(hra)}</span>
-          </div>
-          <div className="flex justify-between py-1 text-[#42526E]">
-            <span>Special Allowance</span>
-            <span className="font-semibold text-[#172B4D]">{formatCurrency(specialAllowance)}</span>
-          </div>
-          <div className="flex justify-between pt-1 border-t border-dashed border-[#DFE1E6] font-bold text-xs text-[#172B4D]">
-            <span>Total Gross Pay</span>
-            <span className="text-[#00875A]">{formatCurrency(grossEarnings)}</span>
+
+          {/* Deductions */}
+          <div className="p-3 rounded-xl bg-[#FAFBFC] dark:bg-[#151B26] border border-[#EBECF0] dark:border-[#263042] space-y-2">
+            <div className="flex items-center justify-between pb-1 border-b border-[#EBECF0] dark:border-[#263042]">
+              <span className="font-bold text-[#DE350B]">Deductions</span>
+              <span className="font-bold text-[#DE350B]">{formatCurrency(totalDeductions)}</span>
+            </div>
+            <div className="space-y-1 text-[11px] text-[#6B778C] dark:text-slate-400">
+              <div className="flex justify-between">
+                <span>EPF (12%)</span>
+                <span className="font-medium text-[#172B4D] dark:text-slate-200">{formatCurrency(epf)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Prof. Tax (PT)</span>
+                <span className="font-medium text-[#172B4D] dark:text-slate-200">{formatCurrency(pt)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>TDS (IT Act)</span>
+                <span className="font-medium text-[#172B4D] dark:text-slate-200">{formatCurrency(tds)}</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Deductions */}
-        <div className="space-y-1.5 text-xs pt-2 border-t border-[#DFE1E6]">
-          <span className="text-[10px] font-bold text-[#DE350B] uppercase block">Statutory Deductions</span>
-          <div className="flex justify-between py-1 text-[#42526E]">
-            <span>Employee Provident Fund (EPF 12%)</span>
-            <span className="font-semibold text-[#172B4D]">{formatCurrency(epf)}</span>
-          </div>
-          <div className="flex justify-between py-1 text-[#42526E]">
-            <span>Professional Tax (PT)</span>
-            <span className="font-semibold text-[#172B4D]">{formatCurrency(pt)}</span>
-          </div>
-          <div className="flex justify-between py-1 text-[#42526E]">
-            <span>Income Tax TDS</span>
-            <span className="font-semibold text-[#172B4D]">{formatCurrency(tds)}</span>
-          </div>
-          <div className="flex justify-between pt-1 border-t border-dashed border-[#DFE1E6] font-bold text-xs text-[#172B4D]">
-            <span>Total Deductions</span>
-            <span className="text-[#DE350B]">-{formatCurrency(totalDeductions)}</span>
+        {/* 1-Tap Action Button */}
+        <button
+          onClick={handleDownload}
+          className="w-full py-3 rounded-xl bg-[#0052CC] text-white font-bold text-xs flex items-center justify-center gap-2 active:scale-98 transition-transform shadow-xs"
+        >
+          <Download className="w-4 h-4" />
+          <span>Download Official PDF Payslip</span>
+        </button>
+      </div>
+
+      {/* Official Payslip View Modal */}
+      {payslipModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-3 animate-fade-in">
+          <div className="bg-white dark:bg-[#0F131C] w-full max-w-sm rounded-2xl p-5 border border-[#DFE1E6] dark:border-[#263042] shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-[#DFE1E6] dark:border-[#263042] pb-3">
+              <div>
+                <h3 className="font-bold text-sm text-[#172B4D] dark:text-white">Staffify Global Inc.</h3>
+                <p className="text-[10px] text-[#6B778C] dark:text-slate-400">
+                  Payslip for {MONTHS.find(m => m.val === selectedMonth)?.name} {selectedYear}
+                </p>
+              </div>
+              <button
+                onClick={() => setPayslipModalOpen(false)}
+                className="p-1 rounded-lg text-[#6B778C] hover:bg-[#EBECF0]"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Employee Meta */}
+            <div className="p-3 bg-[#FAFBFC] dark:bg-[#151B26] rounded-xl text-xs space-y-1 border border-[#EBECF0] dark:border-[#263042]">
+              <div className="flex justify-between text-[#6B778C] dark:text-slate-400">
+                <span>Employee Name:</span>
+                <span className="font-bold text-[#172B4D] dark:text-white">{user?.name || "Aarav Sharma"}</span>
+              </div>
+              <div className="flex justify-between text-[#6B778C] dark:text-slate-400">
+                <span>Employee ID:</span>
+                <span className="font-mono text-[#172B4D] dark:text-white">{user?.employeeId || "EMP-042"}</span>
+              </div>
+              <div className="flex justify-between text-[#6B778C] dark:text-slate-400">
+                <span>Designation:</span>
+                <span className="text-[#172B4D] dark:text-white">{user?.designation || "Senior Software Engineer"}</span>
+              </div>
+              <div className="flex justify-between text-[#6B778C] dark:text-slate-400">
+                <span>EPFO UAN:</span>
+                <span className="font-mono text-[#172B4D] dark:text-white">101489201948</span>
+              </div>
+            </div>
+
+            {/* Summary Net Badge */}
+            <div className="p-3.5 bg-[#E3FCEF] dark:bg-emerald-950/40 rounded-xl text-center border border-[#00875A]/20">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-[#00875A]">Net Salary Payable</p>
+              <p className="text-2xl font-black text-[#00875A] mt-0.5">{formatCurrency(netPay)}</p>
+            </div>
+
+            {/* Print and Download Actions */}
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                onClick={handlePrint}
+                className="py-2.5 px-3 rounded-xl border border-[#DFE1E6] dark:border-[#263042] text-xs font-bold flex items-center justify-center gap-1.5 active:scale-98 transition-transform"
+              >
+                <Printer className="w-4 h-4 text-[#0052CC]" />
+                <span>Print Sheet</span>
+              </button>
+              <button
+                onClick={() => {
+                  handleDownload();
+                  setPayslipModalOpen(false);
+                }}
+                className="py-2.5 px-3 rounded-xl bg-[#0052CC] text-white text-xs font-bold flex items-center justify-center gap-1.5 active:scale-98 transition-transform shadow-xs"
+              >
+                <Download className="w-4 h-4" />
+                <span>Save PDF</span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

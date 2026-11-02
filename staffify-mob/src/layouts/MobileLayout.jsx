@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -7,28 +7,36 @@ import {
   Calendar,
   CreditCard,
   CheckSquare,
-  Bell,
   User,
-  ShieldCheck,
   Wifi,
   WifiOff,
+  RotateCw,
+  ChevronDown,
+  ShieldAlert,
+  Users,
+  UserCheck,
+  Building2,
+  X,
+  Check
 } from "lucide-react";
 
 export default function MobileLayout() {
-  const { user, isManager } = useAuth();
+  const { user, isManager, isAdmin, isOnline, switchRole, offlineQueue } = useAuth();
   const navigate = useNavigate();
-  const [isOnline, setIsOnline] = React.useState(navigator.onLine);
+  const [roleModalOpen, setRoleModalOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  React.useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 600);
+  };
+
+  const handleSelectRole = async (role) => {
+    setRoleModalOpen(false);
+    await switchRole(role);
+  };
 
   const navItems = [
     { to: "/", label: "Home", icon: Home },
@@ -36,62 +44,89 @@ export default function MobileLayout() {
     { to: "/leaves", label: "Leaves", icon: Calendar },
     { to: "/payslips", label: "Payslips", icon: CreditCard },
     {
-      to: "/approvals",
-      label: isManager ? "Approvals" : "Directory",
-      icon: CheckSquare,
+      to: isManager ? "/approvals" : "/profile",
+      label: isManager ? "Approvals" : "Smart ID",
+      icon: isManager ? CheckSquare : User,
+      badge: isManager ? 3 : null
     },
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F4F5F7] text-[#172B4D] max-w-md mx-auto shadow-2xl relative border-x border-[#DFE1E6]">
-      {/* Top Mobile Header (Sticky) */}
-      <header className="sticky top-0 z-40 bg-white border-b border-[#DFE1E6] px-4 py-2.5 flex items-center justify-between shadow-xs">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded bg-[#0052CC] text-white flex items-center justify-center font-black text-sm tracking-tighter shadow-xs">
+    <div className="flex flex-col min-h-screen bg-[#F4F5F7] dark:bg-[#090D14] text-[#172B4D] dark:text-[#F1F5F9] max-w-md mx-auto shadow-2xl relative border-x border-[#DFE1E6] dark:border-[#263042]">
+      {/* Top Mobile Header (Sticky & Notch-aware) */}
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0F131C]/95 backdrop-blur-md border-b border-[#DFE1E6] dark:border-[#263042] px-3.5 py-2.5 flex items-center justify-between shadow-xs pt-[max(env(safe-area-inset-top),0.6rem)]">
+        <div className="flex items-center gap-2">
+          {/* Logo */}
+          <div className="w-8 h-8 rounded-xl bg-[#0052CC] text-white flex items-center justify-center font-black text-sm tracking-tight shadow-sm">
             S
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-black text-xs text-[#0052CC] tracking-tight">StaffifyMOB</span>
-              <span className="text-[9px] px-1.5 py-0.2 bg-[#DEEBFF] text-[#0052CC] font-bold rounded">
-                v1.0
+              <span className="font-black text-xs text-[#172B4D] dark:text-white tracking-tight">Staffify</span>
+              <span className="text-[9px] px-1.5 py-0.2 bg-[#0052CC] text-white font-extrabold rounded">
+                MOB
               </span>
             </div>
-            <p className="text-[10px] text-[#6B778C] truncate max-w-[150px]">
-              {user?.name || "Employee"} • {user?.role || "Staff"}
-            </p>
+            {/* Quick 1-Tap Role Selector Pill */}
+            <button
+              onClick={() => setRoleModalOpen(true)}
+              className="flex items-center gap-1 text-[10px] font-semibold text-[#0052CC] dark:text-blue-400 hover:underline cursor-pointer"
+            >
+              <span>{user?.role || "Employee"} Mode</span>
+              <ChevronDown className="w-2.5 h-2.5" />
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          {/* Offline Pending Queue Badge */}
+          {offlineQueue.length > 0 && (
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-300">
+              {offlineQueue.length} queued
+            </span>
+          )}
+
           {/* Online/Offline Status Indicator */}
           <div
-            className={`p-1.5 rounded-full ${
-              isOnline ? "text-[#00875A] bg-[#E3FCEF]" : "text-[#DE350B] bg-[#FFEBE6]"
+            className={`p-1.5 rounded-lg ${
+              isOnline
+                ? "text-[#00875A] bg-[#E3FCEF] dark:bg-emerald-950/50"
+                : "text-[#DE350B] bg-[#FFEBE6] dark:bg-rose-950/50"
             }`}
             title={isOnline ? "Network Connected" : "Offline Cache Active"}
           >
-            {isOnline ? <Wifi size={13} /> : <WifiOff size={13} />}
+            {isOnline ? <Wifi className="w-3.5 h-3.5" /> : <WifiOff className="w-3.5 h-3.5" />}
           </div>
 
-          {/* Profile Button */}
+          {/* Quick Refresh Button */}
+          <button
+            onClick={handleRefresh}
+            className={`p-1.5 rounded-lg border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] text-[#6B778C] dark:text-slate-400 active:scale-95 transition-transform ${
+              isRefreshing ? "animate-spin text-[#0052CC]" : ""
+            }`}
+            title="Refresh Data"
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Profile Avatar Button */}
           <button
             onClick={() => navigate("/profile")}
-            className="w-8 h-8 rounded-full bg-[#FAFBFC] border border-[#DFE1E6] text-[#0052CC] flex items-center justify-center cursor-pointer active-press"
-            title="Profile & Settings"
+            className="w-8 h-8 rounded-xl bg-[#DEEBFF] dark:bg-blue-950/60 border border-[#0052CC]/30 text-[#0052CC] dark:text-blue-400 flex items-center justify-center font-bold text-xs cursor-pointer active:scale-95 transition-transform"
+            title="Smart ID & Profile"
           >
-            <User size={15} />
+            {user?.name ? user.name.slice(0, 2).toUpperCase() : "EM"}
           </button>
         </div>
       </header>
 
-      {/* Main Screen Body */}
-      <main className="flex-1 pb-20 overflow-y-auto px-4 pt-3 space-y-3.5">
+      {/* Main Screen Content Body */}
+      <main className="flex-1 pb-24 overflow-y-auto px-3.5 pt-3 space-y-3.5">
         <Outlet />
       </main>
 
-      {/* Bottom Thumb Navigation Bar (Fixed) */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#DFE1E6] max-w-md mx-auto shadow-lg pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-1 px-2">
+      {/* Bottom Fixed Navigation Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0F131C]/95 backdrop-blur-md border-t border-[#DFE1E6] dark:border-[#263042] max-w-md mx-auto shadow-lg pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-1.5 px-2">
         <div className="flex items-center justify-around">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -101,15 +136,20 @@ export default function MobileLayout() {
                 to={item.to}
                 end={item.to === "/"}
                 className={({ isActive }) =>
-                  `flex flex-col items-center justify-center py-1 px-2 rounded transition cursor-pointer active-press ${
+                  `flex flex-col items-center justify-center py-1 px-2 rounded-xl transition cursor-pointer relative ${
                     isActive
-                      ? "text-[#0052CC] font-bold scale-105"
-                      : "text-[#6B778C] font-medium hover:text-[#172B4D]"
+                      ? "text-[#0052CC] dark:text-blue-400 font-bold scale-105"
+                      : "text-[#6B778C] dark:text-slate-400 font-medium hover:text-[#172B4D]"
                   }`
                 }
               >
                 <div className="relative">
-                  <Icon size={20} strokeWidth={2.2} />
+                  <Icon className="w-5 h-5" strokeWidth={2.2} />
+                  {item.badge && (
+                    <span className="absolute -top-1 -right-2 px-1.5 py-0.2 bg-[#DE350B] text-white text-[9px] font-black rounded-full shadow-xs">
+                      {item.badge}
+                    </span>
+                  )}
                 </div>
                 <span className="text-[10px] mt-0.5 tracking-tight">{item.label}</span>
               </NavLink>
@@ -117,6 +157,91 @@ export default function MobileLayout() {
           })}
         </div>
       </nav>
+
+      {/* 1-Tap Fast Role Switcher Modal */}
+      {roleModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end justify-center p-3 sm:items-center animate-fade-in">
+          <div className="bg-white dark:bg-[#0F131C] w-full max-w-sm rounded-2xl p-5 border border-[#DFE1E6] dark:border-[#263042] shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-sm text-[#172B4D] dark:text-white">Quick Switch Testing Role</h3>
+                <p className="text-[11px] text-[#6B778C] dark:text-slate-400">Instantly experience mobile UX for each persona</p>
+              </div>
+              <button
+                onClick={() => setRoleModalOpen(false)}
+                className="p-1 rounded-lg text-[#6B778C] hover:bg-[#EBECF0] dark:hover:bg-[#151B26]"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {/* Admin Option */}
+              <button
+                onClick={() => handleSelectRole("Admin")}
+                className={`w-full p-3 rounded-xl border flex items-center justify-between transition-all ${
+                  user?.role === "Admin"
+                    ? "border-[#0052CC] bg-[#DEEBFF]/30 dark:bg-blue-950/40"
+                    : "border-[#DFE1E6] dark:border-[#263042] hover:border-[#0052CC]"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-[#0052CC]/10 text-[#0052CC] flex items-center justify-center font-bold">
+                    <Building2 className="w-5 h-5" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-bold text-xs text-[#172B4D] dark:text-white">Admin</p>
+                    <p className="text-[10px] text-[#6B778C] dark:text-slate-400">Executive metrics, broadcasts, full controls</p>
+                  </div>
+                </div>
+                {user?.role === "Admin" && <Check className="w-4 h-4 text-[#0052CC]" />}
+              </button>
+
+              {/* Manager Option */}
+              <button
+                onClick={() => handleSelectRole("Manager")}
+                className={`w-full p-3 rounded-xl border flex items-center justify-between transition-all ${
+                  user?.role === "Manager"
+                    ? "border-[#00875A] bg-[#E3FCEF]/30 dark:bg-emerald-950/40"
+                    : "border-[#DFE1E6] dark:border-[#263042] hover:border-[#00875A]"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-[#00875A]/10 text-[#00875A] flex items-center justify-center font-bold">
+                    <Users className="w-5 h-5" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-bold text-xs text-[#172B4D] dark:text-white">Manager</p>
+                    <p className="text-[10px] text-[#6B778C] dark:text-slate-400">Squad attendance, 1-tap approvals deck</p>
+                  </div>
+                </div>
+                {user?.role === "Manager" && <Check className="w-4 h-4 text-[#00875A]" />}
+              </button>
+
+              {/* Employee Option */}
+              <button
+                onClick={() => handleSelectRole("Employee")}
+                className={`w-full p-3 rounded-xl border flex items-center justify-between transition-all ${
+                  user?.role === "Employee"
+                    ? "border-[#B9770E] bg-[#FFF0B3]/30 dark:bg-amber-950/40"
+                    : "border-[#DFE1E6] dark:border-[#263042] hover:border-[#B9770E]"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-[#B9770E]/10 text-[#B9770E] flex items-center justify-center font-bold">
+                    <UserCheck className="w-5 h-5" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-bold text-xs text-[#172B4D] dark:text-white">Employee</p>
+                    <p className="text-[10px] text-[#6B778C] dark:text-slate-400">Hold-to-punch, leave requests, payslips</p>
+                  </div>
+                </div>
+                {user?.role === "Employee" && <Check className="w-4 h-4 text-[#B9770E]" />}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
