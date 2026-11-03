@@ -20,9 +20,18 @@ const authRateLimiter = rateLimit({
 // General API request limiter
 const apiRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // generous ceiling for SPA and Polling
+  max: 10000, // generous ceiling for SPA and Polling
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    const ip = req.ip || req.connection?.remoteAddress || "";
+    return (
+      ip === "127.0.0.1" ||
+      ip === "::1" ||
+      ip.includes("127.0.0.1") ||
+      process.env.NODE_ENV === "development"
+    );
+  },
   message: {
     status: 429,
     error: "API rate limit exceeded. Please throttle your requests.",

@@ -24,6 +24,7 @@ import AiCopilot from "./pages/AiCopilot";
 import AuditLogs from "./pages/AuditLogs";
 import CandidateOnboarding from "./pages/CandidateOnboarding";
 import StaffifyLoader from "./components/StaffifyLoader";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 import { useAuth } from "./context/AuthContext";
 import { AiAssistantProvider } from "./context/AiAssistantContext";
@@ -58,7 +59,7 @@ function ProtectedRoute({ children, allowedRoles }) {
     }
   }
 
-  return children;
+  return <ErrorBoundary>{children}</ErrorBoundary>;
 }
 
 function PublicRoute({ children }) {

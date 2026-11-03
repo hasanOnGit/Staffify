@@ -31,8 +31,11 @@ export function AiAssistantProvider({ children }) {
 
   const location = useLocation();
 
-  // Load capabilities & AI model status on mount
+  // Load capabilities & AI model status when authenticated
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
     aiService
       .getCapabilities()
       .then((data) => setCapabilities(data || []))
@@ -51,7 +54,7 @@ export function AiAssistantProvider({ children }) {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [location.pathname]);
 
   // Load conversation list when opened
   const loadConversations = useCallback(async () => {

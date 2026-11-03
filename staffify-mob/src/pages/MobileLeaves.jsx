@@ -62,7 +62,7 @@ export default function MobileLeaves() {
       setLeaveHistory(myLeaves);
 
       // Comp-Off Grants
-      const grantsRes = await api.get("/api/comp-off/my-grants").catch(() => ({ data: { data: [] } }));
+      const grantsRes = await api.get(`/api/comp-off/my-grants?employeeId=${encodeURIComponent(empId)}`).catch(() => ({ data: { data: [] } }));
       setCompOffGrants(grantsRes.data?.data || []);
     } catch (e) {
       console.error("Failed to load leaves:", e);

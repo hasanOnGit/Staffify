@@ -10,6 +10,7 @@ import MobileApprovals from './pages/MobileApprovals';
 import MobileWorkforce from './pages/MobileWorkforce';
 import MobileProfile from './pages/MobileProfile';
 import MobileLogin from './pages/MobileLogin';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -28,29 +29,31 @@ function ProtectedRoute({ children }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<MobileLogin />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <MobileLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<MobileDashboard />} />
-            <Route path="swipes" element={<MobileSwipes />} />
-            <Route path="leaves" element={<MobileLeaves />} />
-            <Route path="payslips" element={<MobilePayslips />} />
-            <Route path="approvals" element={<MobileApprovals />} />
-            <Route path="workforce" element={<MobileWorkforce />} />
-            <Route path="profile" element={<MobileProfile />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<MobileLogin />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <MobileLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<ErrorBoundary><MobileDashboard /></ErrorBoundary>} />
+              <Route path="swipes" element={<ErrorBoundary><MobileSwipes /></ErrorBoundary>} />
+              <Route path="leaves" element={<ErrorBoundary><MobileLeaves /></ErrorBoundary>} />
+              <Route path="payslips" element={<ErrorBoundary><MobilePayslips /></ErrorBoundary>} />
+              <Route path="approvals" element={<ErrorBoundary><MobileApprovals /></ErrorBoundary>} />
+              <Route path="workforce" element={<ErrorBoundary><MobileWorkforce /></ErrorBoundary>} />
+              <Route path="profile" element={<ErrorBoundary><MobileProfile /></ErrorBoundary>} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

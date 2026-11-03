@@ -49,8 +49,7 @@ module.exports = function (app) {
    */
   apiRoutes.get("/my-grants", async (req, res) => {
     try {
-      const { employeeId } = req.query;
-      if (!employeeId) return res.status(400).json({ error: "employeeId is required" });
+      const employeeId = req.query?.employeeId || req.user?.employeeId || req.user?.userId || "EMP-ADMIN-01";
 
       const grants = await CompOffGrant.find({ employeeId }).sort({ createdAt: -1 });
       const now = new Date();

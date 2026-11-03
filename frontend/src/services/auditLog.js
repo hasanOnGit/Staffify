@@ -7,11 +7,13 @@ export const getAuditLogs = async (params = {}) => {
   if (params.search) query.append("search", params.search);
   if (params.limit) query.append("limit", params.limit);
 
-  const res = await api.get(`/audit-logs?${query.toString()}`);
+  const qs = query.toString();
+  const url = qs ? `/api/audit-logs?${qs}` : "/api/audit-logs";
+  const res = await api.get(url);
   return res.data?.data || [];
 };
 
 export const createAuditLog = async (data) => {
-  const res = await api.post("/audit-logs", data);
+  const res = await api.post("/api/audit-logs", data);
   return res.data;
 };
