@@ -86,15 +86,16 @@ export const printHtmlDocument = (htmlContent, documentTitle = "Staffify Documen
     try {
       const loadingToast = toast.loading(`Preparing ${documentTitle}...`);
 
-      // Create a hidden iframe
+      // Create a hidden iframe positioned off-screen to prevent modern browser print suppression
       const iframe = document.createElement("iframe");
       iframe.style.position = "fixed";
-      iframe.style.right = "0";
-      iframe.style.bottom = "0";
-      iframe.style.width = "0";
-      iframe.style.height = "0";
+      iframe.style.top = "-9999px";
+      iframe.style.left = "-9999px";
+      iframe.style.width = "10px";
+      iframe.style.height = "10px";
+      iframe.style.opacity = "0.01";
+      iframe.style.pointerEvents = "none";
       iframe.style.border = "0";
-      iframe.style.visibility = "hidden";
       iframe.title = documentTitle;
 
       document.body.appendChild(iframe);
@@ -140,8 +141,22 @@ export const printHtmlDocument = (htmlContent, documentTitle = "Staffify Documen
           toast.success(`${documentTitle} ready to print or save as PDF!`);
           resolve(true);
         } catch (printErr) {
-          console.error("Print execution error:", printErr);
-          toast.error("Failed to open print dialog. Please try again.");
+          console.warn("Hidden iframe print blocked, trying popup window fallback:", printErr);
+          try {
+            const printWin = window.open("", "_blank");
+            if (printWin) {
+              printWin.document.write(finalHtml);
+              printWin.document.close();
+              printWin.focus();
+              printWin.print();
+              toast.success(`${documentTitle} opened in print window!`);
+              resolve(true);
+              return;
+            }
+          } catch (winErr) {
+            console.error("Popup window print blocked:", winErr);
+          }
+          toast.error("Failed to open print dialog. Please click Download instead.");
           resolve(false);
         } finally {
           // Clean up iframe after print dialog closes

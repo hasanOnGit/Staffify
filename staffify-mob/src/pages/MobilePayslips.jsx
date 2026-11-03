@@ -16,6 +16,12 @@ import {
   Sparkles
 } from "lucide-react";
 import api from "../services/api";
+import {
+  downloadPayslipFile,
+  printPayslip,
+  formatCurrency,
+  numberToWords,
+} from "../utils/payslipPrinter";
 
 const MONTHS = [
   { val: 1, name: "January" },
@@ -38,34 +44,115 @@ export default function MobilePayslips() {
   const [selectedYear, setSelectedYear] = useState(2026);
   const [payslipModalOpen, setPayslipModalOpen] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(null);
+  const [dbPayslip, setDbPayslip] = useState(null);
 
-  const formatCurrency = (val = 0) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(val);
+  // Fetch real payslip from backend for the selected period
+  useEffect(() => {
+    let isMounted = true;
+    const fetchPayslip = async () => {
+      try {
+        const empId = user?.employeeId || user?.userId;
+        const res = await api
+          .get("/api/payroll/payslips", {
+            params: { month: selectedMonth, year: selectedYear, employeeId: empId },
+          })
+          .catch(() => null);
+
+        if (isMounted && res?.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
+          const match =
+            res.data.data.find((p) => p.month === selectedMonth && p.year === selectedYear) ||
+            res.data.data[0];
+          setDbPayslip(match);
+        } else if (isMounted) {
+          setDbPayslip(null);
+        }
+      } catch (err) {
+        console.warn("Mobile payslip fetch:", err);
+      }
+    };
+    fetchPayslip();
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedMonth, selectedYear, user]);
+
+  const monthObj = MONTHS.find((m) => m.val === selectedMonth) || MONTHS[9];
+  const periodString = dbPayslip?.periodString || `${monthObj.name} ${selectedYear}`;
+  const payslipId =
+    dbPayslip?.payslipId ||
+    `PAY-${selectedYear}${String(selectedMonth).padStart(2, "0")}-${user?.employeeId || "EMP-042"}`;
+
+  const grossEarnings = dbPayslip?.earnings?.grossEarnings ?? 85000;
+  const basicSalary = dbPayslip?.earnings?.basic ?? Math.round(grossEarnings * 0.5);
+  const hra = dbPayslip?.earnings?.hra ?? Math.round(basicSalary * 0.5);
+  const specialAllowance =
+    dbPayslip?.earnings?.specialAllowance ?? Math.max(0, grossEarnings - basicSalary - hra);
+
+  const epf = dbPayslip?.deductions?.epf ?? Math.round(basicSalary * 0.12);
+  const esic = dbPayslip?.deductions?.esi ?? 0;
+  const pt = dbPayslip?.deductions?.professionalTax ?? 200;
+  const tds = dbPayslip?.deductions?.tds ?? 4200;
+  const totalDeductions =
+    dbPayslip?.deductions?.totalDeductions ?? (epf + esic + pt + tds);
+  const netPay = dbPayslip?.netPay ?? (grossEarnings - totalDeductions);
+  const netPayInWords = dbPayslip?.netPayInWords || numberToWords(netPay);
+
+  // Active compiled payslip object
+  const activePayslip = {
+    payslipId,
+    periodString,
+    month: selectedMonth,
+    year: selectedYear,
+    employeeId: user?.employeeId || "EMP-042",
+    employeeName: user?.name || "Aarav Sharma",
+    designation: user?.designation || "Senior Software Engineer",
+    department: user?.department || "Engineering",
+    bankDetails: dbPayslip?.bankDetails || {
+      bankName: "HDFC Bank",
+      accountNumber: "501004892019948",
+      ifscCode: "HDFC0000128",
+    },
+    statutoryDetails: dbPayslip?.statutoryDetails || {
+      panNumber: "ABCDE1234F",
+      uanNumber: "101489201948",
+      pfNumber: "KN/BNG/0048920/1948",
+      esiNumber: "31000489201948",
+    },
+    attendanceSummary: dbPayslip?.attendanceSummary || {
+      totalDays: 31,
+      workedDays: 31,
+      paidLeaveDays: 0,
+      lopDays: 0,
+      payableDays: 31,
+    },
+    earnings: {
+      basic: basicSalary,
+      hra,
+      specialAllowance,
+      grossEarnings,
+    },
+    deductions: {
+      epf,
+      esi: esic,
+      professionalTax: pt,
+      tds,
+      totalDeductions,
+    },
+    netPay,
+    netPayInWords,
+    status: dbPayslip?.status || "Paid",
   };
 
-  const grossEarnings = 85000;
-  const basicSalary = 42500;
-  const hra = 21250;
-  const specialAllowance = 21250;
-
-  const epf = 5100;
-  const esic = 0;
-  const pt = 200;
-  const tds = 4200;
-  const totalDeductions = epf + esic + pt + tds;
-  const netPay = grossEarnings - totalDeductions;
-
   const handlePrint = () => {
-    window.print();
+    printPayslip(activePayslip);
   };
 
   const handleDownload = () => {
-    setDownloadSuccess(`Official PDF payslip downloaded for ${MONTHS.find(m => m.val === selectedMonth)?.name} ${selectedYear}`);
-    setTimeout(() => setDownloadSuccess(null), 3500);
+    const success = downloadPayslipFile(activePayslip);
+    if (success) {
+      setDownloadSuccess(`Official payslip downloaded: ${periodString}`);
+      setTimeout(() => setDownloadSuccess(null), 4000);
+    }
   };
 
   return (
@@ -233,19 +320,19 @@ export default function MobilePayslips() {
             <div className="p-3 bg-[#FAFBFC] dark:bg-[#151B26] rounded-xl text-xs space-y-1 border border-[#EBECF0] dark:border-[#263042]">
               <div className="flex justify-between text-[#6B778C] dark:text-slate-400">
                 <span>Employee Name:</span>
-                <span className="font-bold text-[#172B4D] dark:text-white">{user?.name || "Aarav Sharma"}</span>
+                <span className="font-bold text-[#172B4D] dark:text-white">{activePayslip.employeeName}</span>
               </div>
               <div className="flex justify-between text-[#6B778C] dark:text-slate-400">
                 <span>Employee ID:</span>
-                <span className="font-mono text-[#172B4D] dark:text-white">{user?.employeeId || "EMP-042"}</span>
+                <span className="font-mono text-[#172B4D] dark:text-white">{activePayslip.employeeId}</span>
               </div>
               <div className="flex justify-between text-[#6B778C] dark:text-slate-400">
                 <span>Designation:</span>
-                <span className="text-[#172B4D] dark:text-white">{user?.designation || "Senior Software Engineer"}</span>
+                <span className="text-[#172B4D] dark:text-white">{activePayslip.designation}</span>
               </div>
               <div className="flex justify-between text-[#6B778C] dark:text-slate-400">
                 <span>EPFO UAN:</span>
-                <span className="font-mono text-[#172B4D] dark:text-white">101489201948</span>
+                <span className="font-mono text-[#172B4D] dark:text-white">{activePayslip.statutoryDetails?.uanNumber || "101489201948"}</span>
               </div>
             </div>
 

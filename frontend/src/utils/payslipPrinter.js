@@ -79,15 +79,36 @@ export const generatePayslipHtml = (payslip) => {
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      font-size: 11.5px;
-      line-height: 1.45;
-      color: #172B4D;
-      background: #FFFFFF;
-      padding: 16px;
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        padding: 0 !important;
+      }
+      .payslip-container {
+        border: none !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
     }
-    .payslip-container {
+  </style>
+</head>
+<body>
+  <!-- Floating Quick-Action Bar (Hidden when printed or exported as PDF) -->
+  <div class="no-print" style="position: sticky; top: 0; background: #0052CC; color: #FFFFFF; padding: 10px 16px; margin: -16px -16px 16px -16px; display: flex; justify-content: space-between; align-items: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <strong style="font-weight: 700;">Staffify Official Payslip</strong>
+      <span style="opacity: 0.85;">&bull; ${p.periodString || "Salary Statement"} &bull; ${p.employeeName || "Employee"}</span>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button onclick="window.print()" style="background: #FFFFFF; color: #0052CC; border: none; padding: 6px 14px; border-radius: 4px; font-weight: 700; font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+        Save as PDF / Print
+      </button>
+    </div>
+  </div>
+
+  <div class="payslip-container">
       max-width: 800px;
       margin: 0 auto;
       border: 1px solid #DFE1E6;
@@ -421,6 +442,30 @@ export const printPayslip = (payslip) => {
 };
 
 export const downloadPayslipFile = (payslip) => {
-  // Triggers print dialog where user can immediately Save as PDF with exact vector fidelity
-  return printPayslip(payslip);
+  if (!payslip) {
+    toast.error("No payslip data available for download");
+    return false;
+  }
+  const safeEmpId = payslip.employeeId || "EMP";
+  const safePeriod = (payslip.periodString || "Salary_Statement").replace(/\s+/g, "_");
+  const fileName = `Staffify_Payslip_${safeEmpId}_${safePeriod}.html`;
+
+  try {
+    const htmlContent = generatePayslipHtml(payslip);
+    const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    toast.success(`Payslip downloaded: ${fileName}`);
+    return true;
+  } catch (err) {
+    console.error("Failed to download payslip file:", err);
+    toast.error("Download failed. Opening print view.");
+    return printPayslip(payslip);
+  }
 };

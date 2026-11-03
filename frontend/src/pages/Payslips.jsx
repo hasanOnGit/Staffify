@@ -20,7 +20,7 @@ import {
   Download,
   Calculator,
 } from "lucide-react";
-import { printPayslip } from "../utils/payslipPrinter";
+import { printPayslip, downloadPayslipFile } from "../utils/payslipPrinter";
 import { useLocation } from "react-router-dom";
 
 function Payslips() {
@@ -284,12 +284,12 @@ function Payslips() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => printPayslip(p)}
+                            onClick={() => downloadPayslipFile(p)}
                             className="px-2.5 py-1 bg-[#F4F5F7] dark:bg-[#1C2536] hover:bg-[#EBECF0] dark:hover:bg-[#263042] active:scale-[0.98] text-[#172B4D] dark:text-[#F1F5F9] border border-[#DFE1E6] dark:border-[#263042] rounded text-xs font-semibold cursor-pointer transition inline-flex items-center gap-1 shadow-2xs"
-                            title="Print or Save as PDF"
+                            title="Download official payslip statement"
                           >
                             <Download size={12} className="text-[#0052CC] dark:text-[#579DFF]" />
-                            <span>PDF</span>
+                            <span>Download</span>
                           </button>
                         </div>
                       </td>
