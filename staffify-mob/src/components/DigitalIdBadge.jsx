@@ -71,28 +71,28 @@ export default function DigitalIdBadge({ user }) {
     <div className="w-full select-none" style={{ perspective: "1000px" }}>
       <div
         onClick={() => setIsFlipped(!isFlipped)}
-        className="relative w-full cursor-pointer transition-transform duration-500 min-h-[260px]"
+        className="relative w-full cursor-pointer min-h-[260px] h-[260px]"
         style={{
           transformStyle: "preserve-3d",
           WebkitTransformStyle: "preserve-3d",
-          transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
         }}
       >
         {/* ========================================================
             FRONT FACE OF DIGITAL ID BADGE
             ======================================================== */}
         <div
-          className="w-full h-full min-h-[260px] bg-gradient-to-br from-[#0052CC] via-[#0747A6] to-[#00388B] rounded-2xl p-5 text-white shadow-xl flex flex-col justify-between relative overflow-hidden"
+          className={`absolute inset-0 w-full h-full bg-gradient-to-br from-[#0052CC] via-[#0747A6] to-[#00388B] rounded-2xl p-5 text-white shadow-xl flex flex-col justify-between transition-all duration-500 ease-in-out ${
+            isFlipped ? "pointer-events-none" : "pointer-events-auto"
+          }`}
           style={{
+            transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+            WebkitTransform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+            opacity: isFlipped ? 0 : 1,
+            zIndex: isFlipped ? 0 : 20,
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
           }}
         >
-          {/* Watermark Security Hologram */}
-          <div className="absolute right-0 top-0 opacity-10 translate-x-4 -translate-y-4 pointer-events-none">
-            <QrCode className="w-48 h-48" />
-          </div>
-
           {/* Top Header */}
           <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center gap-2">
@@ -113,7 +113,7 @@ export default function DigitalIdBadge({ user }) {
           </div>
 
           {/* Photo & Identity Section */}
-          <div className="flex items-center gap-4 relative z-10 py-2">
+          <div className="flex items-center gap-4 relative z-10 py-1">
             <div className="w-16 h-16 rounded-2xl bg-white/20 border-2 border-white/40 flex items-center justify-center text-white text-xl font-black shadow-inner overflow-hidden shrink-0">
               {user?.avatar ? (
                 <img src={user.avatar} alt={empName} className="w-full h-full object-cover" />
@@ -161,14 +161,19 @@ export default function DigitalIdBadge({ user }) {
         </div>
 
         {/* ========================================================
-            BACK FACE OF DIGITAL ID BADGE (Rotated 180deg)
+            BACK FACE OF DIGITAL ID BADGE
             ======================================================== */}
         <div
-          className="absolute inset-0 w-full h-full min-h-[260px] bg-gradient-to-br from-[#091E42] via-[#0F131C] to-[#151B26] border border-[#263042] rounded-2xl p-4 text-white shadow-xl flex flex-col justify-between"
+          className={`absolute inset-0 w-full h-full bg-gradient-to-br from-[#091E42] via-[#0F131C] to-[#151B26] border border-[#263042] rounded-2xl p-4 text-white shadow-xl flex flex-col justify-between transition-all duration-500 ease-in-out ${
+            isFlipped ? "pointer-events-auto" : "pointer-events-none"
+          }`}
           style={{
+            transform: isFlipped ? "rotateY(0deg)" : "rotateY(-180deg)",
+            WebkitTransform: isFlipped ? "rotateY(0deg)" : "rotateY(-180deg)",
+            opacity: isFlipped ? 1 : 0,
+            zIndex: isFlipped ? 20 : 0,
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
-            transform: "rotateY(180deg)",
           }}
         >
           {/* Top Bar: Security & Verification Status */}
