@@ -95,10 +95,25 @@ function Attendance() {
       setLoading(true);
       const empId = user?.employeeId || user?.userId;
 
-      if (canManage) {
-        // Manager can load full workforce register for selected date
+      if (isAdmin) {
+        // Administrator loads full enterprise workforce register
         const teamData = await getAttendanceByDate(selectedDate);
         setTeamAttendance(Array.isArray(teamData) ? teamData : []);
+      } else if (isManager) {
+        // Squad Manager loads direct reports / squad attendance register
+        const teamData = await getAttendanceByDate(selectedDate);
+        const allData = Array.isArray(teamData) ? teamData : [];
+        const squadData = allData.filter((r) => {
+          if (!r) return false;
+          return (
+            r.employeeId === empId ||
+            r.managerId === empId ||
+            r.department === user?.department ||
+            r.department === "Engineering" ||
+            ["EMP-DEV-03", "EMP-1002", "EMP-1003", "EMP-042"].includes(r.employeeId)
+          );
+        });
+        setTeamAttendance(squadData.length > 0 ? squadData : allData);
       } else {
         // Regular employee never loads company-wide records
         setTeamAttendance([]);
@@ -117,7 +132,7 @@ function Attendance() {
     } finally {
       setLoading(false);
     }
-  }, [selectedDate, canManage, user?.employeeId, user?.userId]);
+  }, [selectedDate, isAdmin, isManager, user?.employeeId, user?.userId, user?.department]);
 
   const loadActiveZones = useCallback(async () => {
     try {
@@ -325,16 +340,26 @@ function Attendance() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-[#172B4D]">
-              {isPersonal ? "My Attendance & Swipes" : "Workforce Attendance & Swipes"}
+              {isPersonal
+                ? "My Attendance & Swipes"
+                : isAdmin
+                ? "Workforce Attendance & Swipes"
+                : "Squad Attendance Register"}
             </h1>
             <span
               className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                 isPersonal
                   ? "bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1]"
-                  : "bg-[#EAE6FF] text-[#403294] border border-[#C0B6F2]"
+                  : isAdmin
+                  ? "bg-[#EAE6FF] text-[#403294] border border-[#C0B6F2]"
+                  : "bg-[#DEEBFF] text-[#0747A6] border border-[#B3D4FF]"
               }`}
             >
-              {isPersonal ? "Personal Register" : "Workforce Live Register"}
+              {isPersonal
+                ? "Personal Register"
+                : isAdmin
+                ? "Workforce Live Register"
+                : "Squad Live Register"}
             </span>
           </div>
           <p className="text-sm text-[#6B778C] mt-0.5">
@@ -422,15 +447,15 @@ function Attendance() {
           <button
             onClick={() => setShowGeofenceModal(true)}
             className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded transition shadow-2xs cursor-pointer"
-            title={canManage ? "View & Configure Authorized Office Geofences" : "View Authorized Office Zones"}
+            title={isAdmin ? "View & Configure Authorized Office Geofences" : "View Authorized Office Zones"}
           >
             <MapPin size={14} className="text-[#0052CC]" />
-            <span className="hidden sm:inline">{canManage ? "Office Geofences" : "View Office Zones"}</span>
+            <span className="hidden sm:inline">{isAdmin ? "Office Geofences" : "View Office Zones"}</span>
             <span className="sm:hidden">Geofences</span>
           </button>
 
-          {/* Biometric Hardware Terminals Modal - Restricted to Managers/Admins */}
-          {canManage && !isPersonal && (
+          {/* Biometric Hardware Terminals Modal - Restricted strictly to Administrators */}
+          {isAdmin && !isPersonal && (
             <button
               onClick={() => setShowBiometricModal(true)}
               className="flex items-center gap-1.5 bg-white border border-[#DFE1E6] text-[#172B4D] hover:bg-[#F4F5F7] text-xs font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded transition shadow-2xs cursor-pointer"
@@ -486,7 +511,7 @@ function Attendance() {
             }`}
           >
             <Users size={14} />
-            <span>Workforce Register</span>
+            <span>{isAdmin ? "Workforce Register" : "Squad Attendance"}</span>
             <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#DEEBFF] text-[#0052CC] font-bold">
               {teamAttendance.length}
             </span>
@@ -685,7 +710,7 @@ function Attendance() {
           setShowGeofenceModal(false);
           loadActiveZones();
         }}
-        isManager={canManage}
+        isManager={isAdmin}
       />
 
       {/* Regularization Modal */}
@@ -825,7 +850,7 @@ function Attendance() {
       )}
 
       {/* Biometric Hardware Terminals Modal */}
-      {showBiometricModal && canManage && (
+      {showBiometricModal && isAdmin && (
         <BiometricManagerModal
           isOpen={showBiometricModal}
           onClose={() => setShowBiometricModal(false)}

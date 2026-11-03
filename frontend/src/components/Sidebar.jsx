@@ -158,11 +158,6 @@ function Sidebar({ mobileOpen = false, onCloseMobile = () => {} }) {
             <UserMinus size={15} />
             <span>Offboarding & Exits</span>
           </NavLink>
-
-          <NavLink to="/webhook-bridge" className={getNavLinkClass} onClick={onCloseMobile}>
-            <Webhook size={15} />
-            <span>Webhooks & Integrations</span>
-          </NavLink>
         </div>
       )}
 

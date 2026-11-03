@@ -225,14 +225,6 @@ function App() {
           }
         />
         <Route
-          path="/webhook-bridge"
-          element={
-            <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
-              <WebhookBridge />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/teams"
           element={
             <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
@@ -258,7 +250,7 @@ function App() {
         />
 
         {/* =========================================
-            Admin Only (HR Administration)
+            Admin Only (HR Administration & IT Security)
            ========================================= */}
         <Route
           path="/employees"
@@ -277,9 +269,17 @@ function App() {
           }
         />
         <Route
+          path="/webhook-bridge"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <WebhookBridge />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/audit-logs"
           element={
-            <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
+            <ProtectedRoute allowedRoles={["Admin"]}>
               <AuditLogs />
             </ProtectedRoute>
           }

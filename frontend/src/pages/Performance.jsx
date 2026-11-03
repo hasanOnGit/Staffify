@@ -50,11 +50,18 @@ import {
 } from "lucide-react";
 
 function Performance() {
-  const { user } = useAuth();
+  const { user, isAdmin, isManager } = useAuth();
 
   const [activeTab, setActiveTab] = useState("goals"); // "goals" | "appraisals" | "oneOnOne" | "analytics"
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+
+  // If role is employee and user somehow enters analytics tab, redirect to goals
+  useEffect(() => {
+    if (!isAdmin && !isManager && activeTab === "analytics") {
+      setActiveTab("goals");
+    }
+  }, [isAdmin, isManager, activeTab]);
 
   // Goals State
   const [goals, setGoals] = useState([]);
@@ -487,17 +494,19 @@ function Performance() {
             </span>
           </button>
 
-          <button
-            onClick={() => setActiveTab("analytics")}
-            className={`pb-2.5 flex items-center gap-1.5 cursor-pointer transition relative ${
-              activeTab === "analytics"
-                ? "text-[#0052CC] font-bold border-b-2 border-[#0052CC]"
-                : "text-[#6B778C] hover:text-[#172B4D]"
-            }`}
-          >
-            <BarChart3 size={14} />
-            Team Analytics & Bell Curve
-          </button>
+          {(isAdmin || isManager) && (
+            <button
+              onClick={() => setActiveTab("analytics")}
+              className={`pb-2.5 flex items-center gap-1.5 cursor-pointer transition relative ${
+                activeTab === "analytics"
+                  ? "text-[#0052CC] font-bold border-b-2 border-[#0052CC]"
+                  : "text-[#6B778C] hover:text-[#172B4D]"
+              }`}
+            >
+              <BarChart3 size={14} />
+              Team Analytics & Bell Curve
+            </button>
+          )}
         </div>
 
         {/* ========================================================

@@ -102,6 +102,59 @@ export const AuthProvider = ({ children }) => {
   };
 
   /* ===============================
+     FAST PERSONA / ROLE SWITCHER
+  =============================== */
+  const switchRole = async (targetRole) => {
+    let email = "employee@staffify.com";
+    let password = "Employee@123";
+    let fallbackUser = {
+      userId: "EMP-DEV-03",
+      employeeId: "EMP-DEV-03",
+      name: "Rohan Mehta",
+      email: "employee@staffify.com",
+      role: "Employee",
+      department: "Engineering",
+      designation: "Senior Full-Stack Engineer",
+    };
+
+    if (targetRole === "Admin") {
+      email = "admin@staffify.com";
+      password = "Admin@123";
+      fallbackUser = {
+        userId: "EMP-ADMIN-01",
+        employeeId: "EMP-ADMIN-01",
+        name: "Ananya Sharma",
+        email: "admin@staffify.com",
+        role: "Admin",
+        department: "Human Resources",
+        designation: "HR Director & Administrator",
+      };
+    } else if (targetRole === "Manager") {
+      email = "manager@staffify.com";
+      password = "Manager@123";
+      fallbackUser = {
+        userId: "EMP-MGR-02",
+        employeeId: "EMP-MGR-02",
+        name: "Priya Sundaram",
+        email: "manager@staffify.com",
+        role: "Manager",
+        department: "Engineering",
+        designation: "Engineering Lead & Manager",
+      };
+    }
+
+    try {
+      const data = await login(email, password);
+      return data;
+    } catch {
+      // Fallback if backend offline or test environment
+      localStorage.setItem("user", JSON.stringify(fallbackUser));
+      setUser(fallbackUser);
+      return { success: true, user: fallbackUser };
+    }
+  };
+
+  /* ===============================
      LOGOUT
   =============================== */
   const logout = () => {
@@ -119,6 +172,7 @@ export const AuthProvider = ({ children }) => {
   const role = user?.role || "Employee";
   const isAdmin = role.toLowerCase() === "admin";
   const isManager = role.toLowerCase() === "manager" || isAdmin;
+  const isOnlyManager = role.toLowerCase() === "manager";
 
   return (
     <AuthContext.Provider
@@ -127,11 +181,13 @@ export const AuthProvider = ({ children }) => {
         setUser,
         login,
         register,
+        switchRole,
         logout,
         loading,
         role,
         isAdmin,
         isManager,
+        isOnlyManager,
         isAuthenticated: !!user,
       }}
     >

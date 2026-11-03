@@ -44,7 +44,7 @@ import toast from "react-hot-toast";
 
 function Leaves() {
   const location = useLocation();
-  const { user, isManager } = useAuth();
+  const { user, isManager, isAdmin } = useAuth();
   const currentUserId = user?.userId;
   const currentUserName = user?.name || "Employee";
 
@@ -383,7 +383,7 @@ function Leaves() {
             <span>Export CSV</span>
           </button>
 
-          {(isManager || user?.role === "Admin") && (
+          {isAdmin && (
             <>
               <button
                 onClick={() => setShowYearEndModal(true)}

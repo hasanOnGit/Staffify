@@ -5,9 +5,11 @@ import TeamForm from "../components/TeamForm";
 import StaffifyLoader from "../components/StaffifyLoader";
 import { getTeams, createTeam, deleteTeam } from "../services/team";
 import { Plus, X, Search, CheckCircle2 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
 function Teams() {
+  const { isAdmin } = useAuth();
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -93,22 +95,24 @@ function Teams() {
           </p>
         </div>
 
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-[#0052CC] hover:bg-[#0747A6] text-white font-medium px-3.5 py-1.5 rounded text-xs transition flex items-center gap-1.5 cursor-pointer"
-        >
-          {showForm ? (
-            <>
-              <X size={13} />
-              <span>Close Form</span>
-            </>
-          ) : (
-            <>
-              <Plus size={13} />
-              <span>Create Team</span>
-            </>
-          )}
-        </button>
+        {isAdmin && (
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-[#0052CC] hover:bg-[#0747A6] text-white font-medium px-3.5 py-1.5 rounded text-xs transition flex items-center gap-1.5 cursor-pointer"
+          >
+            {showForm ? (
+              <>
+                <X size={13} />
+                <span>Close Form</span>
+              </>
+            ) : (
+              <>
+                <Plus size={13} />
+                <span>Create Team</span>
+              </>
+            )}
+          </button>
+        )}
       </div>
 
       {/* Alert Notification */}
@@ -190,7 +194,7 @@ function Teams() {
           <StaffifyLoader mode="card" size="md" text="Loading organizational squad structures..." />
         </div>
       ) : (
-        <TeamTable teams={filteredTeams} onDelete={handleDeleteTeam} />
+        <TeamTable teams={filteredTeams} onDelete={isAdmin ? handleDeleteTeam : undefined} />
       )}
     </DashboardLayout>
   );

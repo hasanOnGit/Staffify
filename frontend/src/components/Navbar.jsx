@@ -32,17 +32,21 @@ import {
   Moon,
   Volume2,
   VolumeX,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { isSoundEnabled, toggleSound } from "../utils/soundFx";
 
 function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) {
-  const { user, logout, isAdmin, isManager } = useAuth();
+  const { user, logout, isAdmin, isManager, role, switchRole } = useAuth();
   const { toggleAssistant } = useAiAssistant();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [soundOn, setSoundOn] = useState(isSoundEnabled());
 
+  const [showRoleMenu, setShowRoleMenu] = useState(false);
+  const [roleSwitching, setRoleSwitching] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotificationDrawer, setShowNotificationDrawer] = useState(false);
@@ -115,8 +119,161 @@ function Navbar({ onToggleMobileMenu, isMobileMenuOpen, onOpenCommandPalette }) 
           </div>
         </div>
 
-        {/* Right: + Create, Web Clock-In, Sun/Moon, Notifications, Help, Settings & Avatar */}
+        {/* Right: Persona Switcher, + Create, Web Clock-In, Sun/Moon, Notifications, Help, Settings & Avatar */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          {/* Fast Role Persona Switcher Pill */}
+          <div className="relative shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowRoleMenu(!showRoleMenu)}
+              disabled={roleSwitching}
+              className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded text-xs font-semibold border transition cursor-pointer shadow-2xs ${
+                role === "Admin"
+                  ? "bg-[#EAE6FF] dark:bg-purple-950/40 text-[#403294] dark:text-purple-300 border-[#C0B6F2] dark:border-purple-800 hover:bg-[#DED7FC]"
+                  : role === "Manager"
+                  ? "bg-[#DEEBFF] dark:bg-[#1C2331] text-[#0747A6] dark:text-[#579DFF] border-[#B3D4FF] dark:border-[#263042] hover:bg-[#B3D4FF]/40"
+                  : "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100"
+              }`}
+              title="Click to switch persona (Admin / Manager / Employee)"
+              aria-label="Switch User Persona"
+            >
+              {role === "Admin" ? (
+                <ShieldCheck size={13} className="text-[#403294] dark:text-purple-400 shrink-0" />
+              ) : role === "Manager" ? (
+                <Briefcase size={13} className="text-[#0747A6] dark:text-[#579DFF] shrink-0" />
+              ) : (
+                <UserCheck size={13} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+              )}
+              <span className="hidden xs:inline">
+                {role === "Admin" ? "Admin" : role === "Manager" ? "Manager" : "Employee"}
+              </span>
+              <ChevronDown size={11} className={`text-current opacity-70 transition-transform ${showRoleMenu ? "rotate-180" : ""}`} />
+            </button>
+
+            {showRoleMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowRoleMenu(false)}
+                />
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#0F131C] border border-[#DFE1E6] dark:border-[#263042] rounded-md shadow-xl py-2 z-50 text-xs text-[#172B4D] dark:text-neutral-100 animate-in fade-in zoom-in-95 duration-100">
+                  <div className="px-3 pb-2 border-b border-[#DFE1E6] dark:border-[#263042]">
+                    <p className="text-[10px] font-bold text-[#6B778C] dark:text-neutral-400 uppercase tracking-wider">
+                      Switch Role Persona
+                    </p>
+                    <p className="text-[11px] text-[#6B778C] dark:text-neutral-400 mt-0.5">
+                      Instant testing across enterprise access tiers
+                    </p>
+                  </div>
+
+                  <div className="py-1">
+                    {/* Admin Persona */}
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setShowRoleMenu(false);
+                        setRoleSwitching(true);
+                        try {
+                          await switchRole("Admin");
+                          toast.success("Switched to Administrator (Ananya Sharma)");
+                        } finally {
+                          setRoleSwitching(false);
+                        }
+                      }}
+                      className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331] cursor-pointer transition ${
+                        role === "Admin" ? "bg-[#F4F5F7] dark:bg-[#1C2331] font-semibold" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded bg-[#EAE6FF] dark:bg-purple-950/50 text-[#403294] dark:text-purple-300 flex items-center justify-center shrink-0">
+                          <ShieldCheck size={13} />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-[#172B4D] dark:text-white flex items-center gap-1.5">
+                            <span>Administrator</span>
+                            <span className="text-[9px] bg-[#EAE6FF] text-[#403294] dark:bg-purple-950/60 dark:text-purple-300 px-1 py-0.2 rounded font-bold">
+                              Full Org
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-[#6B778C] dark:text-neutral-400">Ananya Sharma (HR Director)</p>
+                        </div>
+                      </div>
+                      {role === "Admin" && <Check size={14} className="text-[#0052CC] shrink-0" />}
+                    </button>
+
+                    {/* Manager Persona */}
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setShowRoleMenu(false);
+                        setRoleSwitching(true);
+                        try {
+                          await switchRole("Manager");
+                          toast.success("Switched to Manager (Priya Sundaram)");
+                        } finally {
+                          setRoleSwitching(false);
+                        }
+                      }}
+                      className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331] cursor-pointer transition ${
+                        role === "Manager" ? "bg-[#F4F5F7] dark:bg-[#1C2331] font-semibold" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded bg-[#DEEBFF] dark:bg-[#1C2331] text-[#0747A6] dark:text-[#579DFF] flex items-center justify-center shrink-0">
+                          <Briefcase size={13} />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-[#172B4D] dark:text-white flex items-center gap-1.5">
+                            <span>Manager</span>
+                            <span className="text-[9px] bg-[#DEEBFF] text-[#0747A6] dark:bg-blue-950/60 dark:text-blue-300 px-1 py-0.2 rounded font-bold">
+                              Squad Lead
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-[#6B778C] dark:text-neutral-400">Priya Sundaram (Engineering Lead)</p>
+                        </div>
+                      </div>
+                      {role === "Manager" && <Check size={14} className="text-[#0052CC] shrink-0" />}
+                    </button>
+
+                    {/* Employee Persona */}
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setShowRoleMenu(false);
+                        setRoleSwitching(true);
+                        try {
+                          await switchRole("Employee");
+                          toast.success("Switched to Employee (Rohan Mehta)");
+                        } finally {
+                          setRoleSwitching(false);
+                        }
+                      }}
+                      className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331] cursor-pointer transition ${
+                        role === "Employee" ? "bg-[#F4F5F7] dark:bg-[#1C2331] font-semibold" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                          <UserCheck size={13} />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-[#172B4D] dark:text-white flex items-center gap-1.5">
+                            <span>Employee</span>
+                            <span className="text-[9px] bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 px-1 py-0.2 rounded font-bold">
+                              Self-Service
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-[#6B778C] dark:text-neutral-400">Rohan Mehta (Sr. Engineer)</p>
+                        </div>
+                      </div>
+                      {role === "Employee" && <Check size={14} className="text-[#0052CC] shrink-0" />}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
           {/* Global Quick "+ Create" Action Button */}
           <button
             onClick={() => setShowCreateModal(true)}
