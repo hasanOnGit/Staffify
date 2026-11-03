@@ -101,35 +101,46 @@ function ApplyLeaveModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded max-w-lg w-full p-5 shadow-lg border border-[#DFE1E6] max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between pb-3 border-b border-[#DFE1E6]">
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+      <div className="bg-white dark:bg-[#101520] rounded-lg max-w-lg w-full shadow-2xl border border-[#DFE1E6] dark:border-[#263042] max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        {/* Fixed Header */}
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#0D121B] shrink-0">
           <div className="flex items-center gap-2">
-            <Calendar size={18} className="text-[#0052CC]" />
-            <h3 className="text-sm font-bold text-[#172B4D]">
-              Apply Leave — Staffify ESS
-            </h3>
+            <div className="w-7 h-7 rounded bg-[#DEEBFF] dark:bg-[#0747A6]/30 text-[#0052CC] dark:text-[#38BDF8] flex items-center justify-center">
+              <Calendar size={15} />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-[#172B4D] dark:text-[#F1F5F9]">
+                Apply Leave — Staffify ESS
+              </h3>
+              <p className="text-[11px] text-[#6B778C] dark:text-[#94A3B8]">
+                Submit statutory time-off or comp-off application
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="text-[#6B778C] hover:text-[#172B4D] p-1 cursor-pointer"
+            className="p-1 rounded-md text-[#6B778C] hover:text-[#172B4D] dark:text-[#94A3B8] dark:hover:text-[#F1F5F9] hover:bg-[#EBECF0] dark:hover:bg-[#1E293B] transition-colors cursor-pointer"
+            aria-label="Close modal"
           >
             <X size={16} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-3.5 space-y-3.5">
-          {/* Employee Name */}
-          <div>
-            <label className="block text-xs font-semibold text-[#172B4D] mb-1">
-              Applicant
-            </label>
-            <input
-              value={`${employeeName} (${employeeId})`}
-              disabled
-              className="w-full border border-[#DFE1E6] bg-[#F4F5F7] rounded px-3 py-1.5 text-xs font-medium text-[#172B4D]"
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          {/* Scrollable Form Body */}
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3.5 scroll-smooth">
+            {/* Employee Name */}
+            <div>
+              <label className="block text-xs font-semibold text-[#172B4D] dark:text-[#E2E8F0] mb-1">
+                Applicant
+              </label>
+              <input
+                value={`${employeeName} (${employeeId})`}
+                disabled
+                className="w-full border border-[#DFE1E6] dark:border-[#263042] bg-[#F4F5F7] dark:bg-[#151B26] rounded px-3 py-1.5 text-xs font-medium text-[#172B4D] dark:text-[#F1F5F9]"
+              />
+            </div>
 
           {/* Leave Type Selector */}
           <div>
@@ -303,8 +314,9 @@ function ApplyLeaveModal({
               placeholder="e.g. Attending family function, medical appointment..."
               value={reason}
               onChange={(e) => setReason(e.target.value)}
+              onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 100)}
               required
-              className="w-full border border-[#DFE1E6] rounded px-3 py-1.5 text-xs text-[#172B4D] focus:outline-none focus:border-[#0052CC]"
+              className="w-full border border-[#DFE1E6] dark:border-[#263042] rounded px-3 py-1.5 text-xs text-[#172B4D] dark:text-[#F1F5F9] bg-white dark:bg-[#151B26] focus:outline-none focus:border-[#0052CC]"
             />
             <div className="flex flex-wrap gap-1 mt-1.5">
               {[
@@ -316,7 +328,7 @@ function ApplyLeaveModal({
                   key={item.label}
                   type="button"
                   onClick={() => setReason(item.text)}
-                  className="text-[9.5px] bg-[#F4F5F7] hover:bg-[#EBECF0] text-[#42526E] px-2 py-0.5 rounded border border-[#DFE1E6] cursor-pointer"
+                  className="text-[9.5px] bg-[#F4F5F7] dark:bg-[#1C2331] hover:bg-[#EBECF0] dark:hover:bg-[#263042] text-[#42526E] dark:text-[#94A3B8] px-2 py-0.5 rounded border border-[#DFE1E6] dark:border-[#263042] cursor-pointer"
                 >
                   + {item.label}
                 </button>
@@ -326,7 +338,7 @@ function ApplyLeaveModal({
 
           {/* Emergency Contact */}
           <div>
-            <label className="block text-xs font-semibold text-[#172B4D] mb-1">
+            <label className="block text-xs font-semibold text-[#172B4D] dark:text-[#E2E8F0] mb-1">
               Contact Details During Leave (Optional)
             </label>
             <input
@@ -334,28 +346,39 @@ function ApplyLeaveModal({
               placeholder="e.g. Phone number or alternate email"
               value={contactDetails}
               onChange={(e) => setContactDetails(e.target.value)}
-              className="w-full border border-[#DFE1E6] rounded px-3 py-1.5 text-xs text-[#172B4D] focus:outline-none focus:border-[#0052CC]"
+              onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 100)}
+              className="w-full border border-[#DFE1E6] dark:border-[#263042] rounded px-3 py-1.5 text-xs text-[#172B4D] dark:text-[#F1F5F9] bg-white dark:bg-[#151B26] focus:outline-none focus:border-[#0052CC]"
             />
           </div>
+        </div>
 
-          {/* Footer Actions */}
-          <div className="pt-3 border-t border-[#DFE1E6] flex justify-end gap-2">
+        {/* Sticky Pinned Footer Actions */}
+        <div className="px-5 py-3 border-t border-[#DFE1E6] dark:border-[#263042] bg-[#FAFBFC] dark:bg-[#0D121B] flex items-center justify-between shrink-0 shadow-xs">
+          <div>
+            {duration > 0 && (
+              <span className="text-[11px] font-bold text-[#0052CC] dark:text-[#579DFF] bg-[#DEEBFF] dark:bg-[#1C2331] px-2.5 py-1 rounded border border-[#B3D4FF] dark:border-[#263042]">
+                {duration} {duration === 1 ? "Day Total" : "Days Total"}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-1.5 border border-[#DFE1E6] rounded text-xs font-medium text-[#172B4D] hover:bg-[#F4F5F7] cursor-pointer"
+              className="px-3.5 py-1.5 border border-[#DFE1E6] dark:border-[#263042] rounded text-xs font-medium text-[#172B4D] dark:text-[#CBD5E1] hover:bg-[#F4F5F7] dark:hover:bg-[#1C2331] transition cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded text-xs font-medium transition disabled:opacity-50 cursor-pointer"
+              className="px-4 py-1.5 bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white rounded text-xs font-semibold transition disabled:opacity-50 cursor-pointer shadow-xs"
             >
               {loading ? "Submitting..." : "Submit Application"}
             </button>
           </div>
-        </form>
+        </div>
+      </form>
       </div>
     </div>
   );

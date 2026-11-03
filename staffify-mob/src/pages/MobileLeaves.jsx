@@ -404,10 +404,10 @@ export default function MobileLeaves() {
           onClick={() => setShowApplyModal(false)}
         >
           <div
-            className="bg-white dark:bg-[#0F131C] rounded-t-3xl p-5 w-full max-w-md shadow-2xl border-t border-[#DFE1E6] dark:border-[#263042] space-y-4 animate-slideUp"
+            className="bg-white dark:bg-[#0F131C] rounded-t-3xl w-full max-w-md shadow-2xl border-t border-[#DFE1E6] dark:border-[#263042] max-h-[85vh] flex flex-col overflow-hidden animate-slideUp"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-[#DFE1E6] dark:border-[#263042] pb-3">
+            <div className="flex items-center justify-between border-b border-[#DFE1E6] dark:border-[#263042] px-5 py-3.5 shrink-0 bg-[#FAFBFC] dark:bg-[#151B26]">
               <h3 className="font-bold text-sm text-[#172B4D] dark:text-white">Apply for Leave</h3>
               <button
                 type="button"
@@ -419,64 +419,70 @@ export default function MobileLeaves() {
               </button>
             </div>
 
-            <form onSubmit={handleApplyLeave} className="space-y-3 text-xs">
-              <div>
-                <label className="font-bold block mb-1">Leave Category</label>
-                <select
-                  value={leaveType}
-                  onChange={(e) => setLeaveType(e.target.value)}
-                  className="w-full border border-[#DFE1E6] rounded p-2 text-xs outline-none focus:border-[#0052CC]"
+            <form onSubmit={handleApplyLeave} className="flex flex-col flex-1 min-h-0">
+              <div className="flex-1 overflow-y-auto p-5 space-y-3.5 text-xs scroll-smooth">
+                <div>
+                  <label className="font-bold block mb-1">Leave Category</label>
+                  <select
+                    value={leaveType}
+                    onChange={(e) => setLeaveType(e.target.value)}
+                    className="w-full border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] rounded p-2 text-xs outline-none focus:border-[#0052CC]"
+                  >
+                    <option value="casual">Casual Leave (CL)</option>
+                    <option value="sick">Sick Leave (SL)</option>
+                    <option value="earned">Earned Leave (EL)</option>
+                    <option value="compOff">Compensatory Off (Comp-Off)</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="font-bold block mb-1">Start Date</label>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="w-full border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] rounded p-2 text-xs outline-none"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold block mb-1">End Date</label>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="w-full border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] rounded p-2 text-xs outline-none"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="font-bold block mb-1">Reason for Absence</label>
+                  <textarea
+                    rows={2}
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 150)}
+                    placeholder="Reason for taking time off..."
+                    className="w-full border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] rounded p-2 text-xs outline-none focus:border-[#0052CC]"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Pinned Sticky Bottom Submit Bar */}
+              <div className="p-4 border-t border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#0F131C] shrink-0 pb-safe">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full py-2.5 bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white rounded-lg font-bold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60 active-press shadow-xs"
                 >
-                  <option value="casual">Casual Leave (CL)</option>
-                  <option value="sick">Sick Leave (SL)</option>
-                  <option value="earned">Earned Leave (EL)</option>
-                  <option value="compOff">Compensatory Off (Comp-Off)</option>
-                </select>
+                  {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                  <span>Submit Leave Application</span>
+                </button>
               </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="font-bold block mb-1">Start Date</label>
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full border border-[#DFE1E6] rounded p-2 text-xs outline-none"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="font-bold block mb-1">End Date</label>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full border border-[#DFE1E6] rounded p-2 text-xs outline-none"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="font-bold block mb-1">Reason for Absence</label>
-                <textarea
-                  rows={2}
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  placeholder="Reason for taking time off..."
-                  className="w-full border border-[#DFE1E6] rounded p-2 text-xs outline-none focus:border-[#0052CC]"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full py-2.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded-lg font-bold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
-              >
-                {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-                <span>Submit Leave Application</span>
-              </button>
             </form>
           </div>
         </div>
@@ -489,10 +495,10 @@ export default function MobileLeaves() {
           onClick={() => setShowCompOffModal(false)}
         >
           <div
-            className="bg-white dark:bg-[#0F131C] rounded-t-3xl p-5 w-full max-w-md shadow-2xl border-t border-[#DFE1E6] dark:border-[#263042] space-y-4 animate-slideUp"
+            className="bg-white dark:bg-[#0F131C] rounded-t-3xl w-full max-w-md shadow-2xl border-t border-[#DFE1E6] dark:border-[#263042] max-h-[85vh] flex flex-col overflow-hidden animate-slideUp"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-[#DFE1E6] dark:border-[#263042] pb-3">
+            <div className="flex items-center justify-between border-b border-[#DFE1E6] dark:border-[#263042] px-5 py-3.5 shrink-0 bg-[#FAFBFC] dark:bg-[#151B26]">
               <h3 className="font-bold text-sm text-[#172B4D] dark:text-white">Claim Compensatory Off</h3>
               <button
                 type="button"
@@ -504,51 +510,57 @@ export default function MobileLeaves() {
               </button>
             </div>
 
-            <form onSubmit={handleClaimCompOff} className="space-y-3 text-xs">
-              <div>
-                <label className="font-bold block mb-1">Date Worked (Weekend / Holiday)</label>
-                <input
-                  type="date"
-                  value={workDate}
-                  onChange={(e) => setWorkDate(e.target.value)}
-                  max={new Date().toISOString().slice(0, 10)}
-                  className="w-full border border-[#DFE1E6] rounded p-2 text-xs outline-none"
-                  required
-                />
+            <form onSubmit={handleClaimCompOff} className="flex flex-col flex-1 min-h-0">
+              <div className="flex-1 overflow-y-auto p-5 space-y-3.5 text-xs scroll-smooth">
+                <div>
+                  <label className="font-bold block mb-1">Date Worked (Weekend / Holiday)</label>
+                  <input
+                    type="date"
+                    value={workDate}
+                    onChange={(e) => setWorkDate(e.target.value)}
+                    max={new Date().toISOString().slice(0, 10)}
+                    className="w-full border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] rounded p-2 text-xs outline-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold block mb-1">Credit Allocation</label>
+                  <select
+                    value={daysGranted}
+                    onChange={(e) => setDaysGranted(Number(e.target.value))}
+                    className="w-full border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] rounded p-2 text-xs outline-none"
+                  >
+                    <option value={1.0}>Full Day (1.0 Credit)</option>
+                    <option value={0.5}>Half Day (0.5 Credit)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-bold block mb-1">Reason / Deliverables</label>
+                  <textarea
+                    rows={2}
+                    value={compOffReason}
+                    onChange={(e) => setCompOffReason(e.target.value)}
+                    onFocus={(e) => setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 150)}
+                    placeholder="Detail work performed during weekend or off-schedule day..."
+                    className="w-full border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] rounded p-2 text-xs outline-none"
+                    required
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="font-bold block mb-1">Credit Allocation</label>
-                <select
-                  value={daysGranted}
-                  onChange={(e) => setDaysGranted(Number(e.target.value))}
-                  className="w-full border border-[#DFE1E6] rounded p-2 text-xs outline-none"
+              {/* Pinned Sticky Bottom Submit Bar */}
+              <div className="p-4 border-t border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#0F131C] shrink-0 pb-safe">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full py-2.5 bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white rounded-lg font-bold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60 active-press shadow-xs"
                 >
-                  <option value={1.0}>Full Day (1.0 Credit)</option>
-                  <option value={0.5}>Half Day (0.5 Credit)</option>
-                </select>
+                  {submitting ? <Loader2 size={14} className="animate-spin" /> : <Award size={14} />}
+                  <span>Submit Comp-Off Claim</span>
+                </button>
               </div>
-
-              <div>
-                <label className="font-bold block mb-1">Reason / Deliverables</label>
-                <textarea
-                  rows={2}
-                  value={compOffReason}
-                  onChange={(e) => setCompOffReason(e.target.value)}
-                  placeholder="Detail work performed during weekend or off-schedule day..."
-                  className="w-full border border-[#DFE1E6] rounded p-2 text-xs outline-none"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full py-2.5 bg-[#0052CC] hover:bg-[#0747A6] text-white rounded-lg font-bold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
-              >
-                {submitting ? <Loader2 size={14} className="animate-spin" /> : <Award size={14} />}
-                <span>Submit Comp-Off Claim</span>
-              </button>
             </form>
           </div>
         </div>

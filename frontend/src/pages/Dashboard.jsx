@@ -178,24 +178,169 @@ function Dashboard() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        {/* Minimal Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
-          <div>
-            <h1 className="text-xl font-bold text-[#172B4D] dark:text-[#F1F5F9]">Dashboard</h1>
-            <p className="text-xs text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
-              {isAdmin
-                ? "Enterprise overview and workforce operations."
-                : isManager
-                ? "Team leadership dashboard and approvals."
-                : "Personal attendance and self-service overview."}
-            </p>
-          </div>
+        {/* ========================================================
+            1. DYNAMIC ROLE-SPECIFIC HERO WELCOME BANNER
+            ======================================================== */}
+        <div className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-5 shadow-xs transition-colors">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#DEEBFF] dark:bg-[#1C2536] text-[#0052CC] dark:text-[#579DFF] border border-[#B3D4FF] dark:border-[#263042] flex items-center gap-1.5">
+                  {isAdmin ? (
+                    <>
+                      <ShieldCheck size={13} />
+                      <span>Executive HR Administrator</span>
+                    </>
+                  ) : isManager ? (
+                    <>
+                      <Users size={13} />
+                      <span>Squad Lead & Manager</span>
+                    </>
+                  ) : (
+                    <>
+                      <Briefcase size={13} />
+                      <span>{user?.designation || "Engineering"} • {user?.department || "Core Team"}</span>
+                    </>
+                  )}
+                </span>
 
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 text-xs text-[#42526E] dark:text-[#CBD5E1] bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] px-3 py-1.5 rounded-md font-medium shadow-2xs">
-              <Calendar size={13} className="text-[#6B778C] dark:text-[#94A3B8]" />
-              <span>{todayStr}</span>
-            </span>
+                <span className="inline-flex items-center gap-1.5 text-xs text-[#42526E] dark:text-[#CBD5E1] bg-[#F4F5F7] dark:bg-[#090D14] border border-[#DFE1E6] dark:border-[#263042] px-2.5 py-0.5 rounded-full font-medium">
+                  <Calendar size={12} className="text-[#6B778C] dark:text-[#94A3B8]" />
+                  <span>{todayStr}</span>
+                </span>
+              </div>
+
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-[#172B4D] dark:text-[#F1F5F9] tracking-tight">
+                  {greeting}, {user?.name || (isAdmin ? "Administrator" : isManager ? "Lead Manager" : "Team Member")}
+                </h1>
+                <p className="text-xs sm:text-sm text-[#6B778C] dark:text-[#94A3B8] mt-0.5">
+                  {isAdmin
+                    ? "Enterprise workforce intelligence, biometric telemetry, and governance operations."
+                    : isManager
+                    ? "Real-time squad attendance, pending approvals, and team productivity overview."
+                    : "Track daily shifts, biometric punch logs, leave balances, and company announcements."}
+                </p>
+              </div>
+
+              {/* Persona Context Highlights */}
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                {isAdmin ? (
+                  <>
+                    <span className="text-xs text-[#42526E] dark:text-[#CBD5E1] bg-[#F4F5F7] dark:bg-[#1C2536] px-2.5 py-1 rounded-md border border-[#DFE1E6] dark:border-[#263042] flex items-center gap-1.5">
+                      <Users size={12} className="text-[#0052CC] dark:text-[#579DFF]" />
+                      <span className="font-semibold text-[#172B4D] dark:text-[#F1F5F9]">{stats.totalEmployees}</span> Total Staff
+                    </span>
+                    <span className="text-xs text-[#006644] dark:text-emerald-400 bg-[#E3FCEF] dark:bg-emerald-950/40 px-2.5 py-1 rounded-md border border-[#ABF5D1] dark:border-emerald-800 flex items-center gap-1.5">
+                      <UserCheck size={12} />
+                      <span className="font-semibold">{stats.presentToday} Present</span> ({attendanceRate}%)
+                    </span>
+                    <span className="text-xs text-[#0052CC] dark:text-[#579DFF] bg-[#DEEBFF] dark:bg-[#1C2536] px-2.5 py-1 rounded-md border border-[#B3D4FF] dark:border-[#263042] flex items-center gap-1.5">
+                      <CheckCircle2 size={12} />
+                      <span>Statutory Compliance: EPF/ESIC Active</span>
+                    </span>
+                  </>
+                ) : isManager ? (
+                  <>
+                    <span className="text-xs text-[#42526E] dark:text-[#CBD5E1] bg-[#F4F5F7] dark:bg-[#1C2536] px-2.5 py-1 rounded-md border border-[#DFE1E6] dark:border-[#263042] flex items-center gap-1.5">
+                      <Users size={12} className="text-[#0052CC] dark:text-[#579DFF]" />
+                      <span className="font-semibold text-[#172B4D] dark:text-[#F1F5F9]">{stats.totalEmployees}</span> Squad Members
+                    </span>
+                    <span className="text-xs text-[#006644] dark:text-emerald-400 bg-[#E3FCEF] dark:bg-emerald-950/40 px-2.5 py-1 rounded-md border border-[#ABF5D1] dark:border-emerald-800 flex items-center gap-1.5">
+                      <UserCheck size={12} />
+                      <span className="font-semibold">{stats.presentToday} Present Today</span>
+                    </span>
+                    {pendingLeaves.length > 0 && (
+                      <span className="text-xs text-[#B9770E] dark:text-amber-400 bg-[#FFF0B3] dark:bg-amber-950/40 px-2.5 py-1 rounded-md border border-[#FFE380] dark:border-amber-800 flex items-center gap-1.5 font-medium animate-pulse">
+                        <AlertCircle size={12} />
+                        <span>{pendingLeaves.length} Leaves Awaiting Your Approval</span>
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xs text-[#006644] dark:text-emerald-400 bg-[#E3FCEF] dark:bg-emerald-950/40 px-2.5 py-1 rounded-md border border-[#ABF5D1] dark:border-emerald-800 flex items-center gap-1.5">
+                      <Clock size={12} />
+                      <span>Shift: General (09:30 AM - 06:30 PM)</span>
+                    </span>
+                    <span className="text-xs text-[#0052CC] dark:text-[#579DFF] bg-[#DEEBFF] dark:bg-[#1C2536] px-2.5 py-1 rounded-md border border-[#B3D4FF] dark:border-[#263042] flex items-center gap-1.5">
+                      <CalendarDays size={12} />
+                      <span>
+                        {(leaveBalances?.casual?.available ?? 12) + (leaveBalances?.earned?.available ?? 15)} Days Leaves Available
+                      </span>
+                    </span>
+                    {upcomingHoliday && (
+                      <span className="text-xs text-[#42526E] dark:text-[#CBD5E1] bg-[#F4F5F7] dark:bg-[#1C2331] px-2.5 py-1 rounded-md border border-[#DFE1E6] dark:border-[#263042] flex items-center gap-1.5">
+                        <Calendar size={12} className="text-[#0052CC] dark:text-[#579DFF]" />
+                        <span>{upcomingHoliday.name} {daysUntilHoliday !== null && `(${daysUntilHoliday === 0 ? "Today" : `in ${daysUntilHoliday}d`})`}</span>
+                      </span>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Quick 1-Tap Persona Actions */}
+            <div className="flex flex-wrap lg:flex-col items-stretch gap-2 shrink-0">
+              {isAdmin ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/employees")}
+                    className="px-3.5 py-2 bg-[#0052CC] hover:bg-[#0747A6] active:scale-[0.98] text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                  >
+                    <UserPlus size={14} />
+                    <span>Onboard Employee</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/payroll")}
+                    className="px-3.5 py-2 bg-white dark:bg-[#151B26] hover:bg-[#F4F5F7] dark:hover:bg-[#1C2536] active:scale-[0.98] text-[#172B4D] dark:text-[#F1F5F9] border border-[#DFE1E6] dark:border-[#263042] rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <FileText size={14} />
+                    <span>Run Payroll</span>
+                  </button>
+                </>
+              ) : isManager ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/leaves")}
+                    className="px-3.5 py-2 bg-[#0052CC] hover:bg-[#0747A6] active:scale-[0.98] text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                  >
+                    <CheckSquare size={14} />
+                    <span>Review Leaves {pendingLeaves.length > 0 && `(${pendingLeaves.length})`}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/attendance")}
+                    className="px-3.5 py-2 bg-white dark:bg-[#151B26] hover:bg-[#F4F5F7] dark:hover:bg-[#1C2536] active:scale-[0.98] text-[#172B4D] dark:text-[#F1F5F9] border border-[#DFE1E6] dark:border-[#263042] rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <Clock size={14} />
+                    <span>Squad Swipes</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/attendance")}
+                    className="px-3.5 py-2 bg-[#0052CC] hover:bg-[#0747A6] active:scale-[0.98] text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                  >
+                    <Clock size={14} />
+                    <span>Clock In / Punch</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/leaves")}
+                    className="px-3.5 py-2 bg-white dark:bg-[#151B26] hover:bg-[#F4F5F7] dark:hover:bg-[#1C2536] active:scale-[0.98] text-[#172B4D] dark:text-[#F1F5F9] border border-[#DFE1E6] dark:border-[#263042] rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <CalendarDays size={14} />
+                    <span>Apply Leave</span>
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -965,7 +1110,7 @@ function ActionTile({ icon: Icon, iconBg, iconColor, title, subtitle, badge, onC
   return (
     <div
       onClick={onClick}
-      className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-3.5 hover:border-[#0052CC] dark:hover:border-[#579DFF] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group flex items-start gap-3 relative"
+      className="bg-white dark:bg-[#151B26] border border-[#DFE1E6] dark:border-[#263042] rounded-xl p-3.5 hover:border-[#0052CC] dark:hover:border-[#579DFF] hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] select-none transition-all duration-150 cursor-pointer group flex items-start gap-3 relative"
     >
       <div className={`w-10 h-10 rounded-lg ${iconBg} ${iconColor} flex items-center justify-center shrink-0`}>
         <Icon size={19} />

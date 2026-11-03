@@ -22,7 +22,7 @@ const ROUTE_MAP = {
   "/timesheets": { section: "Self Service", title: "Project Timesheets" },
   "/org-chart": { section: "Self Service", title: "Organization Chart" },
   "/offboarding": { section: "Manager Tools", title: "Offboarding & Exits" },
-  "/webhook-bridge": { section: "Manager Tools", title: "Webhooks & Integrations" },
+  "/webhook-bridge": { section: "Administration", title: "Webhooks & Integrations" },
   "/copilot": { section: "Self Service", title: "AI Copilot" },
   "/ai-copilot": { section: "Self Service", title: "AI Copilot" },
   "/audit-logs": { section: "Administration", title: "Audit Logs" },

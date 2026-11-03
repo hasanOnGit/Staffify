@@ -122,31 +122,40 @@ function CommandPalette({ isOpen, onClose }) {
       },
     });
 
-    // --- NAVIGATION ---
-    const navItems = [
+    // --- NAVIGATION (ROLE-FILTERED) ---
+    const baseNavItems = [
       { path: "/dashboard", label: "Dashboard", desc: "Executive KPI overview & pulse", icon: LayoutDashboard },
       { path: "/attendance", label: "Attendance & Swipes", desc: "Clock-in records and biometric logs", icon: Clock },
       { path: "/leaves", label: "Leave Management", desc: "Time-off balances and approvals", icon: CalendarDays },
-      { path: "/payroll", label: "Payroll & Salary", desc: "Compensation structures and disbursements", icon: CreditCard },
       { path: "/payslips", label: "Payslips & Tax Slips", desc: "Monthly salary statements", icon: FileText },
-      { path: "/employees", label: "Employee Directory", desc: "Staff directory and organizational records", icon: Users },
-      { path: "/teams", label: "Team Management", desc: "Departments, squads, and reporting lines", icon: Users2 },
       { path: "/performance", label: "Performance & OKRs", desc: "Quarterly reviews, KPIs, and goals", icon: Target },
       { path: "/roster", label: "Shift Roster", desc: "Weekly schedules and shift assignments", icon: Calendar },
       { path: "/helpdesk", label: "IT & HR Helpdesk", desc: "Internal ticketing and support requests", icon: LifeBuoy },
-      { path: "/recruitment", label: "Recruitment & ATS", desc: "Job postings and candidate pipeline", icon: Briefcase },
       { path: "/org-chart", label: "Organization Chart", desc: "Interactive company hierarchy", icon: Network },
       { path: "/expenses", label: "Expense Claims", desc: "Reimbursements and financial claims", icon: Receipt },
-      { path: "/analytics", label: "HR Analytics", desc: "Turnover, headcount, and trend metrics", icon: BarChart3 },
       { path: "/timesheets", label: "Timesheets", desc: "Project billable hours and logs", icon: Clock },
-      { path: "/offboarding", label: "Employee Offboarding", desc: "Resignations, clearances, and exits", icon: UserMinus },
-      { path: "/audit-logs", label: "Audit & Governance", desc: "Immutable compliance ledger & mutation snapshots", icon: ShieldCheck },
       { path: "/copilot", label: "AI Copilot Console", desc: "Dedicated conversational analytics environment", icon: Sparkles },
     ];
 
-    if (isAdmin) {
-      navItems.push({ path: "/webhooks", label: "Webhook Integrations", desc: "Configure REST API webhook triggers", icon: Webhook });
-    }
+    const managerNavItems = [
+      { path: "/teams", label: "Team Management", desc: "Departments, squads, and reporting lines", icon: Users2 },
+      { path: "/recruitment", label: "Recruitment & ATS", desc: "Job postings and candidate pipeline", icon: Briefcase },
+      { path: "/analytics", label: "HR Analytics", desc: "Turnover, headcount, and trend metrics", icon: BarChart3 },
+      { path: "/offboarding", label: "Employee Offboarding", desc: "Resignations, clearances, and exits", icon: UserMinus },
+    ];
+
+    const adminNavItems = [
+      { path: "/employees", label: "Employee Directory", desc: "Staff directory and master KYC records", icon: Users },
+      { path: "/payroll", label: "Payroll & Salary", desc: "Compensation structures and disbursements", icon: CreditCard },
+      { path: "/webhook-bridge", label: "Webhooks & Integrations", desc: "Configure REST API webhook triggers", icon: Webhook },
+      { path: "/audit-logs", label: "Audit & Governance", desc: "Immutable compliance ledger & mutation snapshots", icon: ShieldCheck },
+    ];
+
+    const navItems = [
+      ...baseNavItems,
+      ...(isManager || isAdmin ? managerNavItems : []),
+      ...(isAdmin ? adminNavItems : []),
+    ];
 
     navItems.forEach((item) => {
       list.push({
@@ -189,7 +198,11 @@ function CommandPalette({ isOpen, onClose }) {
           iconBg: "bg-[#DEEBFF] dark:bg-[#1C2331]",
           action: () => {
             onClose();
-            navigate(`/employees?search=${encodeURIComponent(fullName)}`);
+            if (isAdmin) {
+              navigate(`/employees?search=${encodeURIComponent(fullName)}`);
+            } else {
+              navigate("/org-chart");
+            }
           },
         });
       });
