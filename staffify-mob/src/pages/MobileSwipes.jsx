@@ -29,9 +29,12 @@ import {
   Activity,
   ChevronRight,
   ExternalLink,
-  Wifi
+  Wifi,
+  ScanFace,
 } from "lucide-react";
 import api from "../services/api";
+import BiometricAuthModal from "../components/BiometricAuthModal";
+import { getBiometricSettings } from "../utils/biometrics";
 
 const OFFICE_GPS = { lat: 12.9352, lng: 77.6946, radiusMeters: 500, name: "Headquarters - Tech Park Campus" };
 
@@ -53,6 +56,7 @@ export default function MobileSwipes() {
   const [searchParams, setSearchParams] = useSearchParams();
   const urlTab = searchParams.get("tab");
   const [syncingOffline, setSyncingOffline] = useState(false);
+  const [showBiometricSwipeModal, setShowBiometricSwipeModal] = useState(false);
 
   const [activeMainTab, setActiveMainTab] = useState(
     isAdmin && (urlTab === "org" || urlTab === "team")
@@ -261,7 +265,12 @@ export default function MobileSwipes() {
         clearInterval(holdIntervalRef.current);
         setIsHolding(false);
         setHoldProgress(100);
-        executePunch();
+        const bio = getBiometricSettings();
+        if (bio.requireOnSwipe) {
+          setShowBiometricSwipeModal(true);
+        } else {
+          executePunch();
+        }
       }
     }, 25);
   };
@@ -1265,6 +1274,22 @@ export default function MobileSwipes() {
           </div>
         </div>
       )}
+
+      {/* Biometric Verification Modal for Clock-In Swipes */}
+      <BiometricAuthModal
+        isOpen={showBiometricSwipeModal}
+        onClose={() => {
+          setShowBiometricSwipeModal(false);
+          setHoldProgress(0);
+        }}
+        onSuccess={() => {
+          setShowBiometricSwipeModal(false);
+          executePunch();
+        }}
+        title="Biometric Swipe Verification"
+        subtitle="Verify with FaceID or Fingerprint to confirm this punch"
+        user={user}
+      />
     </div>
   );
 }

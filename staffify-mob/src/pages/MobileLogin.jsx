@@ -12,8 +12,10 @@ import {
   AlertCircle,
   Building2,
   Users,
-  UserCheck
+  UserCheck,
+  ScanFace,
 } from 'lucide-react';
+import BiometricAuthModal from '../components/BiometricAuthModal';
 
 export default function MobileLogin() {
   const { login } = useAuth();
@@ -22,6 +24,7 @@ export default function MobileLogin() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showBiometricModal, setShowBiometricModal] = useState(false);
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -75,6 +78,20 @@ export default function MobileLogin() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBiometricSuccess = async () => {
+    setShowBiometricModal(false);
+    const savedUser = localStorage.getItem('staffify_user');
+    let role = 'employee';
+    if (savedUser) {
+      try {
+        const parsed = JSON.parse(savedUser);
+        if (parsed.role === 'Admin') role = 'admin';
+        else if (parsed.role === 'Manager') role = 'manager';
+      } catch {}
+    }
+    await quickLoginAs(role);
   };
 
   return (
@@ -147,15 +164,16 @@ export default function MobileLogin() {
           </button>
         </form>
 
-        {/* Biometric Quick Touch Simulation */}
+        {/* Biometric Quick Touch / Native WebAuthn Scan */}
         <div className="text-center pt-2">
           <button
             type="button"
-            onClick={() => quickLoginAs('employee')}
-            className="inline-flex items-center gap-2 text-xs font-semibold text-[#0052CC] dark:text-blue-400 py-1.5 px-3 rounded-lg border border-[#0052CC]/20 bg-[#DEEBFF]/40 dark:bg-blue-950/30"
+            onClick={() => setShowBiometricModal(true)}
+            className="inline-flex items-center gap-2 text-xs font-semibold text-[#0052CC] dark:text-[#579DFF] py-2 px-3.5 rounded-xl border border-[#0052CC]/30 bg-[#DEEBFF]/50 dark:bg-blue-950/40 active:scale-95 transition-all shadow-xs"
           >
-            <Fingerprint className="w-4 h-4" />
-            Sign in with Biometrics / Face Unlock
+            <Fingerprint className="w-4 h-4 text-[#0052CC] dark:text-[#579DFF]" />
+            <ScanFace className="w-4 h-4 text-[#0052CC] dark:text-[#579DFF]" />
+            <span>Sign in with FaceID / Fingerprint</span>
           </button>
         </div>
 
@@ -206,6 +224,15 @@ export default function MobileLogin() {
           StaffifyMOB v2.4.0 (Build 20261102)
         </p>
       </div>
+
+      {/* Biometric Verification Modal */}
+      <BiometricAuthModal
+        isOpen={showBiometricModal}
+        onClose={() => setShowBiometricModal(false)}
+        onSuccess={handleBiometricSuccess}
+        title="Biometric Sign In"
+        subtitle="Authenticate with your device FaceID or Fingerprint sensor to sign in securely"
+      />
     </div>
   );
 }

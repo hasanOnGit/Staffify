@@ -19,15 +19,31 @@ import {
   Sparkles,
   Award,
   Lock,
-  Smartphone
+  Smartphone,
+  Fingerprint,
+  ScanFace,
+  ShieldCheck,
 } from 'lucide-react';
 
 import DigitalIdBadge from '../components/DigitalIdBadge';
+import BiometricAuthModal from '../components/BiometricAuthModal';
+import {
+  getBiometricSettings,
+  saveBiometricSettings,
+  checkBiometricHardwareSupport,
+} from '../utils/biometrics';
 
 export default function MobileProfile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [downloadSuccess, setDownloadSuccess] = useState(null);
+  const [showBiometricModal, setShowBiometricModal] = useState(false);
+  const [biometricSettings, setBiometricSettings] = useState(getBiometricSettings());
+  const [hardwareInfo, setHardwareInfo] = useState({ supported: true, type: 'FaceID / Fingerprint' });
+
+  useEffect(() => {
+    checkBiometricHardwareSupport().then(setHardwareInfo);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -133,6 +149,72 @@ export default function MobileProfile() {
         </div>
       </div>
 
+      {/* Biometric Hardware & Device Security */}
+      <div className="bg-white dark:bg-[#0F131C] rounded-xl border border-[#DFE1E6] dark:border-[#263042] p-4 space-y-3.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-[#DEEBFF] dark:bg-blue-950/60 text-[#0052CC] dark:text-[#579DFF]">
+              <Fingerprint className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-[#172B4D] dark:text-white">
+                Biometric Hardware & Security
+              </h3>
+              <p className="text-[10px] text-[#6B778C] dark:text-slate-400">
+                {hardwareInfo.type} • Hardware Verified
+              </p>
+            </div>
+          </div>
+          <span className="px-2 py-0.5 rounded-full bg-[#E3FCEF] dark:bg-emerald-950/40 text-[#00875A] dark:text-emerald-400 border border-[#00875A]/20 text-[10px] font-bold">
+            Protected
+          </span>
+        </div>
+
+        {/* Toggles */}
+        <div className="space-y-2.5 pt-1 text-xs">
+          <div className="flex items-center justify-between py-1 border-b border-[#EBECF0] dark:border-[#263042]/50">
+            <div>
+              <p className="font-semibold text-[#172B4D] dark:text-white">Biometric Sign-In</p>
+              <p className="text-[10px] text-[#6B778C] dark:text-slate-400">Allow 1-touch FaceID / Fingerprint login</p>
+            </div>
+            <input
+              type="checkbox"
+              checked={biometricSettings.enabled}
+              onChange={(e) => {
+                const updated = saveBiometricSettings({ enabled: e.target.checked });
+                if (updated) setBiometricSettings(updated);
+              }}
+              className="w-4 h-4 rounded text-[#0052CC] accent-[#0052CC] cursor-pointer"
+            />
+          </div>
+
+          <div className="flex items-center justify-between py-1 border-b border-[#EBECF0] dark:border-[#263042]/50">
+            <div>
+              <p className="font-semibold text-[#172B4D] dark:text-white">Biometric Swipe Confirmation</p>
+              <p className="text-[10px] text-[#6B778C] dark:text-slate-400">Require fingerprint / face scan to punch</p>
+            </div>
+            <input
+              type="checkbox"
+              checked={biometricSettings.requireOnSwipe}
+              onChange={(e) => {
+                const updated = saveBiometricSettings({ requireOnSwipe: e.target.checked });
+                if (updated) setBiometricSettings(updated);
+              }}
+              className="w-4 h-4 rounded text-[#0052CC] accent-[#0052CC] cursor-pointer"
+            />
+          </div>
+        </div>
+
+        {/* Test Sensor Action */}
+        <button
+          onClick={() => setShowBiometricModal(true)}
+          className="w-full py-2 rounded-lg border border-[#0052CC]/30 bg-[#DEEBFF]/30 hover:bg-[#DEEBFF]/60 dark:bg-blue-950/30 text-[#0052CC] dark:text-[#579DFF] text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
+        >
+          <ScanFace className="w-3.5 h-3.5" />
+          <span>Test Biometric Sensor (FaceID / Fingerprint)</span>
+        </button>
+      </div>
+
       {/* App Information & Logout */}
       <div className="space-y-2 pt-2">
         <div className="bg-white dark:bg-[#0F131C] rounded-xl border border-[#DFE1E6] dark:border-[#263042] p-4 text-xs space-y-2">
@@ -158,6 +240,19 @@ export default function MobileProfile() {
           <span>Sign Out from StaffifyMOB</span>
         </button>
       </div>
+
+      {/* Biometric Test / Verification Modal */}
+      <BiometricAuthModal
+        isOpen={showBiometricModal}
+        onClose={() => setShowBiometricModal(false)}
+        user={user}
+        onSuccess={() => {
+          setDownloadSuccess("Biometric hardware authentication successful!");
+          setTimeout(() => setDownloadSuccess(null), 3500);
+        }}
+        title="Biometric Sensor Test"
+        subtitle="Verify your physical FaceID or Fingerprint sensor hardware"
+      />
     </div>
   );
 }
