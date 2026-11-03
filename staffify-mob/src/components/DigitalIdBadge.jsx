@@ -12,6 +12,7 @@ import {
   BadgeCheck,
   Lock,
 } from "lucide-react";
+import { hapticLight } from "../utils/haptics";
 
 // Persona-aligned metadata for realistic corporate verification
 const PERSONA_DEFAULTS = {
@@ -70,7 +71,10 @@ export default function DigitalIdBadge({ user }) {
   return (
     <div className="w-full select-none" style={{ perspective: "1000px" }}>
       <div
-        onClick={() => setIsFlipped(!isFlipped)}
+        onClick={() => {
+          hapticLight();
+          setIsFlipped(!isFlipped);
+        }}
         className="relative w-full cursor-pointer min-h-[260px] h-[260px]"
         style={{
           transformStyle: "preserve-3d",

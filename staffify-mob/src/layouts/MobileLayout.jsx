@@ -19,8 +19,11 @@ import {
   X,
   Check,
   CheckCircle2,
-  Sparkles
+  Sparkles,
+  Bell
 } from "lucide-react";
+import NotificationCenterModal from "../components/NotificationCenterModal";
+import { hapticLight } from "../utils/haptics";
 
 export default function MobileLayout() {
   const { user, isManager, isAdmin, isOnline, switchRole, offlineQueue } = useAuth();
@@ -28,6 +31,7 @@ export default function MobileLayout() {
   const [roleModalOpen, setRoleModalOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showSyncToast, setShowSyncToast] = useState(false);
+  const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
 
   const handleRefresh = () => {
     if (isRefreshing) return;
@@ -136,6 +140,21 @@ export default function MobileLayout() {
                 isRefreshing ? "animate-refresh-spin text-[#0052CC]" : "group-hover:rotate-45"
               }`}
             />
+          </button>
+
+          {/* In-App Notification Center Bell */}
+          <button
+            type="button"
+            onClick={() => {
+              hapticLight();
+              setNotificationCenterOpen(true);
+            }}
+            className="p-1.5 sm:p-2 rounded-xl border border-[#DFE1E6] dark:border-[#263042] bg-white dark:bg-[#151B26] text-[#6B778C] dark:text-slate-300 active:scale-85 transition-all shadow-xs relative hover:border-[#0052CC] hover:text-[#0052CC]"
+            title="Notification Alerts"
+          >
+            <Bell className="w-3.5 h-3.5" />
+            {/* Active Unread Notification Indicator */}
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#0052CC] ring-2 ring-white dark:ring-[#0F131C] animate-pulse" />
           </button>
 
           {/* Profile Avatar Button */}
@@ -316,6 +335,12 @@ export default function MobileLayout() {
           </div>
         </div>
       )}
+
+      {/* In-App Notification Center Modal */}
+      <NotificationCenterModal
+        isOpen={notificationCenterOpen}
+        onClose={() => setNotificationCenterOpen(false)}
+      />
     </div>
   );
 }

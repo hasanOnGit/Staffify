@@ -26,6 +26,7 @@ import {
   Server,
   Layers
 } from "lucide-react";
+import PullToRefresh from "../components/PullToRefresh";
 
 export default function MobileDashboard() {
   const { user, isAdmin, isManager } = useAuth();
@@ -73,9 +74,15 @@ export default function MobileDashboard() {
     { name: "Aman Patel", role: "DevOps", status: "Present", inTime: "08:58 AM" }
   ];
 
+  const handleRefresh = async () => {
+    // Refresh dashboard state
+    await new Promise((r) => setTimeout(r, 650));
+  };
+
   return (
-    <div className="pb-8 space-y-4 animate-in fade-in duration-300">
-      {/* Toast */}
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="pb-8 space-y-4 animate-in fade-in duration-300">
+        {/* Toast */}
       {broadcastSuccess && (
         <div className="p-3.5 rounded-2xl bg-[#E3FCEF] dark:bg-emerald-950/40 border border-[#00875A]/30 text-[#00875A] dark:text-emerald-400 text-xs font-semibold flex items-center gap-2 shadow-xs">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
@@ -710,6 +717,7 @@ export default function MobileDashboard() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </PullToRefresh>
   );
 }

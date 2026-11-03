@@ -31,9 +31,14 @@ import {
   ExternalLink,
   Wifi,
   ScanFace,
+  Radio,
+  Crosshair,
 } from "lucide-react";
 import api from "../services/api";
 import BiometricAuthModal from "../components/BiometricAuthModal";
+import LiveGeofenceMapModal from "../components/LiveGeofenceMapModal";
+import PullToRefresh from "../components/PullToRefresh";
+import { hapticSuccess, hapticLight, hapticWarning } from "../utils/haptics";
 import { getBiometricSettings } from "../utils/biometrics";
 
 const OFFICE_GPS = { lat: 12.9352, lng: 77.6946, radiusMeters: 500, name: "Headquarters - Tech Park Campus" };
@@ -80,6 +85,8 @@ export default function MobileSwipes() {
   const [distance, setDistance] = useState(42); // default demo distance
   const [isInside, setIsInside] = useState(true);
   const [locating, setLocating] = useState(false);
+  const [showLiveMapModal, setShowLiveMapModal] = useState(false);
+  const [gpsAccuracy, setGpsAccuracy] = useState(6);
 
   // Filters for Squad Attendance (Manager)
   const [squadSearch, setSquadSearch] = useState("");
@@ -220,6 +227,8 @@ export default function MobileSwipes() {
         (pos) => {
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
+          const acc = Math.round(pos.coords.accuracy || 6);
+          setGpsAccuracy(acc);
           setCoords({ lat, lng });
           const dist = calculateDistanceMeters(lat, lng, OFFICE_GPS.lat, OFFICE_GPS.lng);
           setDistance(dist);
@@ -230,6 +239,7 @@ export default function MobileSwipes() {
           // Fallback simulation within office perimeter for demo
           setCoords({ lat: 12.9354, lng: 77.6948 });
           setDistance(38);
+          setGpsAccuracy(6);
           setIsInside(true);
           setLocating(false);
         },
@@ -238,21 +248,21 @@ export default function MobileSwipes() {
     } else {
       setCoords({ lat: 12.9354, lng: 77.6948 });
       setDistance(38);
+      setGpsAccuracy(6);
       setIsInside(true);
       setLocating(false);
     }
   };
 
   const triggerHaptic = () => {
-    if (typeof navigator !== "undefined" && navigator.vibrate) {
-      navigator.vibrate([40, 80, 40]);
-    }
+    hapticSuccess();
   };
 
   // Hold-to-Punch Handlers
   const handleTouchStart = () => {
     if (punching) return;
     setIsHolding(true);
+    hapticLight();
     const start = Date.now();
     const duration = 1200; // 1.2s tactile hold
 
@@ -260,6 +270,9 @@ export default function MobileSwipes() {
       const elapsed = Date.now() - start;
       const pct = Math.min(100, Math.round((elapsed / duration) * 100));
       setHoldProgress(pct);
+
+      if (elapsed >= 400 && elapsed < 430) hapticLight();
+      if (elapsed >= 800 && elapsed < 830) hapticLight();
 
       if (elapsed >= duration) {
         clearInterval(holdIntervalRef.current);
@@ -463,8 +476,9 @@ export default function MobileSwipes() {
   const orgStatuses = ["All", "Present", "Late", "On Leave"];
 
   return (
-    <div className="pb-8 space-y-4">
-      {/* Toast Feedback */}
+    <PullToRefresh onRefresh={fetchCurrentLocation}>
+      <div className="pb-8 space-y-4">
+        {/* Toast Feedback */}
       {feedback && (
         <div className="p-3.5 rounded-xl bg-[#E3FCEF] dark:bg-emerald-950/40 border border-[#00875A]/30 text-[#00875A] dark:text-emerald-400 text-xs font-semibold flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
@@ -625,11 +639,19 @@ export default function MobileSwipes() {
               <Navigation className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-bold text-xs text-[#172B4D] dark:text-white">GPS Radar Perimeter</h3>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h3 className="font-bold text-xs text-[#172B4D] dark:text-white">GPS Radar Perimeter</h3>
+                {/* GPS Precision Indicator Chip */}
+                <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-[#DEEBFF] dark:bg-blue-950/60 text-[#0052CC] dark:text-[#579DFF] border border-[#0052CC]/20 flex items-center gap-1">
+                  <Radio className="w-2.5 h-2.5 text-[#00875A] animate-pulse" />
+                  <span>±{gpsAccuracy}m Precision</span>
+                </span>
+              </div>
               <p className="text-[10px] text-[#6B778C] dark:text-slate-400">{OFFICE_GPS.name}</p>
             </div>
           </div>
           <button
+            type="button"
             onClick={fetchCurrentLocation}
             className="p-1.5 rounded-lg border border-[#DFE1E6] dark:border-[#263042] text-[#6B778C] hover:text-[#0052CC] text-xs font-semibold flex items-center gap-1"
           >
@@ -655,6 +677,20 @@ export default function MobileSwipes() {
             {isInside ? "Authorized Inside" : "Outside Perimeter"}
           </span>
         </div>
+
+        {/* View Live GPS Map Popup Button */}
+        <button
+          type="button"
+          onClick={() => {
+            hapticLight();
+            setShowLiveMapModal(true);
+          }}
+          className="w-full py-2 px-3 rounded-xl bg-[#DEEBFF]/80 dark:bg-blue-950/40 hover:bg-[#DEEBFF] text-[#0052CC] dark:text-[#579DFF] border border-[#0052CC]/25 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-98 transition-all"
+        >
+          <Crosshair className="w-3.5 h-3.5" />
+          <span>View Live GPS Map & Satellite Radar</span>
+          <ChevronRight className="w-3.5 h-3.5 ml-auto text-[#0052CC]/70" />
+        </button>
       </div>
 
       {/* Geofence / Location Alert Banner (if any) */}
@@ -1290,6 +1326,19 @@ export default function MobileSwipes() {
         subtitle="Verify with FaceID or Fingerprint to confirm this punch"
         user={user}
       />
-    </div>
+
+      {/* Live Geofence Satellite Radar Map Modal */}
+      <LiveGeofenceMapModal
+        isOpen={showLiveMapModal}
+        onClose={() => setShowLiveMapModal(false)}
+        currentDistance={distance}
+        onLocationUpdate={({ distance: newDist, isInside: newInside, accuracy: newAcc }) => {
+          setDistance(newDist);
+          setIsInside(newInside);
+          if (newAcc) setGpsAccuracy(newAcc);
+        }}
+      />
+      </div>
+    </PullToRefresh>
   );
 }
