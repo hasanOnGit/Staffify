@@ -7,6 +7,7 @@ import {
   updateLeave,
   cancelLeave,
   getLeaveBalance,
+  getDelegations,
 } from "../services/leave";
 import {
   getAllCompOffGrants,
@@ -21,6 +22,7 @@ import ApplyLeaveModal from "../components/ApplyLeaveModal";
 import LeavePolicyModal from "../components/LeavePolicyModal";
 import CompOffModal from "../components/CompOffModal";
 import LeaveYearEndModal from "../components/LeaveYearEndModal";
+import ManagerDelegationModal from "../components/ManagerDelegationModal";
 import {
   Calendar,
   CheckCircle2,
@@ -36,6 +38,7 @@ import {
   Award,
   AlertCircle,
   Loader2,
+  UserCheck,
 } from "lucide-react";
 import BulkActionBar from "../components/BulkActionBar";
 import { exportToCsv } from "../utils/csvExporter";
@@ -60,6 +63,9 @@ function Leaves() {
   const [showPolicyModal, setShowPolicyModal] = useState(false);
   const [showCompOffModal, setShowCompOffModal] = useState(false);
   const [showYearEndModal, setShowYearEndModal] = useState(false);
+  const [showDelegationModal, setShowDelegationModal] = useState(false);
+  const [activeDelegation, setActiveDelegation] = useState(null);
+  const [incomingProxy, setIncomingProxy] = useState(null);
   const [compOffGrants, setCompOffGrants] = useState([]);
   const [compOffLoading, setCompOffLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState("All");
@@ -89,6 +95,18 @@ function Leaves() {
         if (balanceRes?.data) {
           setBalances(balanceRes.data);
         }
+      }
+
+      // Check for active delegations
+      try {
+        const delRes = await getDelegations({ activeOnly: "true" });
+        const list = delRes?.delegations || [];
+        const out = list.find((d) => d.delegatorId === currentUserId && d.isActive);
+        const inc = list.find((d) => d.delegateId === currentUserId && d.isActive);
+        setActiveDelegation(out || null);
+        setIncomingProxy(inc || null);
+      } catch (e) {
+        console.warn("Delegation check skipped:", e);
       }
     } catch (err) {
       console.error("Fetch leaves error:", err);
@@ -139,8 +157,13 @@ function Leaves() {
   const handleApprove = async (leave) => {
     setActionLoading(true);
     try {
-      await updateLeave(leave.leaveId, "Approved", currentUserName);
-      toast.success(`Leave approved for ${leave.employeeName}`);
+      const proxyFor = incomingProxy ? incomingProxy.delegatorName : "";
+      await updateLeave(leave.leaveId, "Approved", currentUserName, "", proxyFor);
+      toast.success(
+        proxyFor
+          ? `Approved for ${leave.employeeName} (as Proxy for ${proxyFor})`
+          : `Leave approved for ${leave.employeeName}`
+      );
       fetchData();
     } catch {
       toast.error("Failed to approve leave");
@@ -155,7 +178,8 @@ function Leaves() {
 
     setActionLoading(true);
     try {
-      await updateLeave(leave.leaveId, "Rejected", currentUserName, remark);
+      const proxyFor = incomingProxy ? incomingProxy.delegatorName : "";
+      await updateLeave(leave.leaveId, "Rejected", currentUserName, remark, proxyFor);
       toast.success(`Leave rejected for ${leave.employeeName}`);
       fetchData();
     } catch {
@@ -405,6 +429,20 @@ function Leaves() {
             </>
           )}
 
+          {(isManager || isAdmin) && (
+            <button
+              onClick={() => setShowDelegationModal(true)}
+              className="flex items-center gap-1.5 bg-white dark:bg-[#1E293B] border border-[#DFE1E6] dark:border-[#334155] hover:bg-[#F4F5F7] dark:hover:bg-[#334155] text-[#172B4D] dark:text-[#F1F5F9] text-xs font-semibold px-3 py-1.5 rounded transition cursor-pointer"
+              title="Configure Out-of-Office Approval Delegation"
+            >
+              <UserCheck size={13} className="text-[#0052CC]" />
+              <span>Delegate Approvals</span>
+              {activeDelegation && (
+                <span className="w-2 h-2 rounded-full bg-[#00875A] shrink-0" />
+              )}
+            </button>
+          )}
+
           <button
             onClick={() => setShowApplyModal(true)}
             className="flex items-center gap-1.5 bg-[#0052CC] hover:bg-[#0747A6] text-white text-xs font-medium px-3.5 py-1.5 rounded transition cursor-pointer shadow-xs"
@@ -414,6 +452,42 @@ function Leaves() {
           </button>
         </div>
       </div>
+
+      {/* Active Delegation Status Banner */}
+      {activeDelegation && (
+        <div className="mb-4 p-3 rounded-xl bg-[#DEEBFF] dark:bg-blue-950/40 border border-[#0052CC]/30 text-[#0052CC] dark:text-[#579DFF] flex items-center justify-between">
+          <div className="flex items-center gap-2.5 text-xs font-medium">
+            <UserCheck className="w-4 h-4 shrink-0 text-[#0052CC]" />
+            <span>
+              <strong>Out-of-Office Delegation Active:</strong> Your leave approvals are delegated to{" "}
+              <strong>{activeDelegation.delegateName}</strong> until{" "}
+              {new Date(activeDelegation.endDate).toLocaleDateString()}.
+            </span>
+          </div>
+          <button
+            onClick={() => setShowDelegationModal(true)}
+            className="text-xs font-bold underline hover:text-[#0747A6] cursor-pointer"
+          >
+            Manage
+          </button>
+        </div>
+      )}
+
+      {incomingProxy && (
+        <div className="mb-4 p-3 rounded-xl bg-[#E3FCEF] dark:bg-emerald-950/40 border border-[#00875A]/30 text-[#00875A] dark:text-emerald-400 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 text-xs font-medium">
+            <UserCheck className="w-4 h-4 shrink-0 text-[#00875A]" />
+            <span>
+              <strong>Proxy Authority:</strong> You are acting as designated approval proxy for{" "}
+              <strong>{incomingProxy.delegatorName}</strong> until{" "}
+              {new Date(incomingProxy.endDate).toLocaleDateString()}.
+            </span>
+          </div>
+          <span className="px-2 py-0.5 rounded-full bg-white/60 dark:bg-emerald-900/60 text-[10px] font-bold uppercase tracking-wider">
+            Proxy Approver
+          </span>
+        </div>
+      )}
 
       {/* Staffify Navigation Tabs */}
       <div className="flex border-b border-[#DFE1E6] mb-5 gap-1 text-xs font-semibold overflow-x-auto">
@@ -742,6 +816,16 @@ function Leaves() {
           isOpen={showPolicyModal}
           onClose={() => setShowPolicyModal(false)}
           onPolicyUpdated={fetchData}
+        />
+      )}
+
+      {/* Manager Out-of-Office Delegation Modal */}
+      {showDelegationModal && (
+        <ManagerDelegationModal
+          isOpen={showDelegationModal}
+          onClose={() => setShowDelegationModal(false)}
+          currentUser={user}
+          onDelegationChanged={fetchData}
         />
       )}
 

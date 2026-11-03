@@ -17,14 +17,15 @@ export const createLeave = async (leaveData) => {
 };
 
 /**
- * Update leave status (Approve / Reject) with optional remarks
+ * Update leave status (Approve / Reject) with optional remarks and proxy approver delegation
  */
-export const updateLeave = async (leaveId, status, approvedBy, rejectionReason = "") => {
+export const updateLeave = async (leaveId, status, approvedBy, rejectionReason = "", proxyFor = "") => {
   const res = await api.post("/updateLeave", {
     leaveId,
     status,
     approvedBy,
     rejectionReason,
+    proxyFor,
   });
   return res.data;
 };
@@ -81,4 +82,23 @@ export const executeLeaveRollover = async (rolloverData) => {
   const res = await api.post("/api/leaves/rollover", rolloverData);
   return res.data;
 };
+
+/**
+ * Out-of-Office Approval Delegations
+ */
+export const getDelegations = async (params = {}) => {
+  const res = await api.get("/delegations", { params });
+  return res.data;
+};
+
+export const createDelegation = async (delegationData) => {
+  const res = await api.post("/delegations", delegationData);
+  return res.data;
+};
+
+export const revokeDelegation = async (delegationId) => {
+  const res = await api.post("/revokeDelegation", { delegationId });
+  return res.data;
+};
+
 

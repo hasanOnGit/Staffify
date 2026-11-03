@@ -142,17 +142,31 @@ export function AuthProvider({ children }) {
 
   const syncOfflinePunches = useCallback(async () => {
     const queue = JSON.parse(localStorage.getItem("staffify_offline_punches") || "[]");
-    if (!queue.length) return;
+    if (!queue.length) return { synced: 0, remaining: 0 };
+
+    let syncedCount = 0;
+    const remaining = [];
 
     for (const item of queue) {
       try {
-        await api.post("/api/punch", item);
+        let sent = false;
+        try {
+          await api.post("/api/attendance/punch", item);
+          sent = true;
+        } catch {
+          await api.post("/api/punch", item);
+          sent = true;
+        }
+        if (sent) syncedCount++;
       } catch (err) {
-        console.warn("Could not sync item yet:", err);
+        console.warn("Could not sync offline punch item yet:", err);
+        remaining.push(item);
       }
     }
-    setOfflineQueue([]);
-    localStorage.removeItem("staffify_offline_punches");
+
+    setOfflineQueue(remaining);
+    localStorage.setItem("staffify_offline_punches", JSON.stringify(remaining));
+    return { synced: syncedCount, remaining: remaining.length };
   }, []);
 
   const isManager = user?.role === "Manager" || user?.role === "Admin";

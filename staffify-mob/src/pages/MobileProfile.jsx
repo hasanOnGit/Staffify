@@ -22,10 +22,11 @@ import {
   Smartphone
 } from 'lucide-react';
 
+import DigitalIdBadge from '../components/DigitalIdBadge';
+
 export default function MobileProfile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [showIdFlip, setShowIdFlip] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(null);
 
   const handleLogout = () => {
@@ -56,65 +57,8 @@ export default function MobileProfile() {
         </div>
       )}
 
-      {/* Digital Smart Employee ID Card */}
-      <div className="relative group">
-        <div className="bg-gradient-to-br from-[#0052CC] via-[#0747A6] to-[#00388B] rounded-2xl p-5 text-white shadow-lg space-y-4 relative overflow-hidden">
-          {/* Card Watermark pattern */}
-          <div className="absolute right-0 top-0 opacity-10 translate-x-4 -translate-y-4 pointer-events-none">
-            <QrCode className="w-48 h-48" />
-          </div>
-
-          <div className="flex items-center justify-between relative z-10">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center font-black text-sm">
-                S
-              </div>
-              <div>
-                <p className="font-black text-sm tracking-wider uppercase">Staffify Global Inc.</p>
-                <p className="text-[10px] text-blue-200">Official Mobile ID Card</p>
-              </div>
-            </div>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase tracking-wider border border-emerald-400/30">
-              Active Status
-            </span>
-          </div>
-
-          <div className="flex items-center gap-4 relative z-10 pt-2">
-            <div className="w-16 h-16 rounded-2xl bg-white/20 border-2 border-white/40 flex items-center justify-center text-white text-xl font-black shadow-inner">
-              {user?.avatar ? (
-                <img src={user.avatar} alt={user?.name} className="w-full h-full rounded-2xl object-cover" />
-              ) : (
-                user?.name?.slice(0, 2).toUpperCase() || 'EM'
-              )}
-            </div>
-            <div className="space-y-0.5">
-              <h2 className="text-lg font-bold leading-tight">{user?.name || 'Aarav Sharma'}</h2>
-              <p className="text-xs text-blue-100 font-medium">{user?.designation || 'Senior Software Engineer'}</p>
-              <div className="flex items-center gap-2 pt-1 text-[11px] font-mono text-blue-200">
-                <span>{user?.employeeId || 'EMP-0042'}</span>
-                <span>•</span>
-                <span>{user?.department || 'Engineering'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Barcode & Security Chip Simulation */}
-          <div className="pt-3 border-t border-white/20 flex items-center justify-between relative z-10">
-            <div className="space-y-1">
-              <p className="text-[9px] uppercase tracking-wider text-blue-200 font-bold">Biometric NFC Gate Key</p>
-              <div className="flex items-center gap-1 font-mono text-[10px] tracking-widest text-white/90">
-                <span>STF</span>
-                <span>9924</span>
-                <span>8810</span>
-                <span>0042</span>
-              </div>
-            </div>
-            <div className="p-1.5 rounded-lg bg-white text-[#0052CC]">
-              <QrCode className="w-6 h-6" />
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Digital Smart Employee ID Card (Interactive 3D Flip) */}
+      <DigitalIdBadge user={user} />
 
       {/* Employment Details */}
       <div className="bg-white dark:bg-[#0F131C] rounded-xl border border-[#DFE1E6] dark:border-[#263042] p-4 space-y-3">

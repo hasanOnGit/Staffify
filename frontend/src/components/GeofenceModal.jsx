@@ -17,6 +17,7 @@ import {
   createGeofenceZone,
   deleteGeofenceZone,
 } from "../services/geofence";
+import GeofenceRadarMap from "./GeofenceRadarMap";
 
 function GeofenceModal({ isOpen, onClose, isManager = true }) {
   const [zones, setZones] = useState([]);
@@ -366,6 +367,22 @@ function GeofenceModal({ isOpen, onClose, isManager = true }) {
                 />
               </div>
 
+              {/* Live Radar Preview of configured zone */}
+              <div className="space-y-1">
+                <label className="font-semibold text-[#172B4D] block text-xs">
+                  Perimeter Radar Simulation
+                </label>
+                <GeofenceRadarMap
+                  latitude={Number(latitude) || 12.9352}
+                  longitude={Number(longitude) || 77.6946}
+                  radiusMeters={radiusMeters}
+                  zoneName={name || "New Office Perimeter"}
+                  interactive={true}
+                  onRadiusChange={(r) => setRadiusMeters(r)}
+                  showSimulateControls={false}
+                />
+              </div>
+
               <div className="flex justify-end gap-2 pt-2 border-t border-[#EBECF0]">
                 <button
                   type="button"
@@ -382,6 +399,20 @@ function GeofenceModal({ isOpen, onClose, isManager = true }) {
                 </button>
               </div>
             </form>
+          )}
+
+          {/* Active Perimeter Radar Preview */}
+          {!showAddForm && zones.length > 0 && (
+            <div className="mb-4">
+              <GeofenceRadarMap
+                latitude={zones[0].latitude || 12.9352}
+                longitude={zones[0].longitude || 77.6946}
+                radiusMeters={zones[0].radiusMeters || 300}
+                zoneName={zones[0].name || "Corporate Headquarters"}
+                interactive={false}
+                showSimulateControls={false}
+              />
+            </div>
           )}
 
           {/* Zones List */}

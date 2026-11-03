@@ -5,6 +5,7 @@ const LeaveBalance = require("../models/employeeLeaveBalance.model");
 const LeavePolicy = require("../models/leavePolicy.model");
 const Holiday = require("../models/holiday.model");
 const Employee = require("../models/employees.model");
+const LeaveDelegation = require("../models/leaveDelegation.model");
 
 // Ensure default leave policy exists
 async function getOrCreatePolicy() {
@@ -197,7 +198,7 @@ module.exports = function (app) {
      ========================================================== */
   apiRoutes.post("/updateLeave", async (req, res) => {
     try {
-      const { leaveId, status, approvedBy, rejectionReason } = req.body;
+      const { leaveId, status, approvedBy, rejectionReason, proxyFor } = req.body;
 
       const leave = await Leaves.findOne({ leaveId });
       if (!leave) {
@@ -212,7 +213,11 @@ module.exports = function (app) {
       }
 
       leave.status = status;
-      leave.approvedBy = approvedBy || "Manager";
+      if (proxyFor) {
+        leave.approvedBy = `${approvedBy || "Manager"} (Proxy for ${proxyFor})`;
+      } else {
+        leave.approvedBy = approvedBy || "Manager";
+      }
       if (status === "Rejected" && rejectionReason) {
         leave.rejectionReason = rejectionReason;
       }
@@ -238,6 +243,100 @@ module.exports = function (app) {
       return res.status(500).json({ error: error.message });
     }
   });
+
+  /* ==========================================================
+     LEAVE APPROVAL DELEGATIONS (OUT-OF-OFFICE PROXY WORKFLOW)
+     ========================================================== */
+  const getDelegationsHandler = async (req, res) => {
+    try {
+      const { delegatorId, delegateId, activeOnly } = req.query;
+      const query = {};
+      if (delegatorId) query.delegatorId = delegatorId;
+      if (delegateId) query.delegateId = delegateId;
+      if (activeOnly === "true") {
+        query.isActive = true;
+        query.endDate = { $gte: new Date() };
+      }
+
+      const delegations = await LeaveDelegation.find(query).sort({ createdAt: -1 });
+      return res.status(200).json({ success: true, delegations, count: delegations.length });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  };
+
+  const createDelegationHandler = async (req, res) => {
+    try {
+      const {
+        delegatorId,
+        delegatorName,
+        delegateId,
+        delegateName,
+        delegateEmail,
+        startDate,
+        endDate,
+        reason,
+      } = req.body;
+
+      if (!delegatorId || !delegateId || !startDate || !endDate) {
+        return res.status(400).json({ error: "Missing required delegation fields." });
+      }
+
+      const delegationId = `DEL-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const delegation = await LeaveDelegation.create({
+        delegationId,
+        delegatorId,
+        delegatorName: delegatorName || "Manager",
+        delegateId,
+        delegateName: delegateName || "Proxy Manager",
+        delegateEmail: delegateEmail || "",
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        reason: reason || "Out of Office / Annual Leave Delegation",
+        isActive: true,
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: `Leave approvals successfully delegated to ${delegateName}`,
+        delegation,
+      });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  };
+
+  const revokeDelegationHandler = async (req, res) => {
+    try {
+      const id = req.params.id || req.body.delegationId || req.body.id;
+      const delegation = await LeaveDelegation.findOne({
+        $or: [{ _id: id }, { delegationId: id }],
+      });
+
+      if (!delegation) {
+        return res.status(404).json({ error: "Delegation record not found." });
+      }
+
+      delegation.isActive = false;
+      await delegation.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Delegation revoked successfully.",
+        delegation,
+      });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  };
+
+  apiRoutes.get("/delegations", getDelegationsHandler);
+  apiRoutes.get("/leave/delegations", getDelegationsHandler);
+  apiRoutes.post("/delegations", createDelegationHandler);
+  apiRoutes.post("/leave/delegations", createDelegationHandler);
+  apiRoutes.delete("/delegations/:id", revokeDelegationHandler);
+  apiRoutes.delete("/leave/delegations/:id", revokeDelegationHandler);
+  apiRoutes.post("/revokeDelegation", revokeDelegationHandler);
 
   /* ==========================================================
      CANCEL LEAVE (EMPLOYEE WITHDRAWAL)

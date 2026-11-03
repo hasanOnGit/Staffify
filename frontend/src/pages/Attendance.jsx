@@ -3,6 +3,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import AttendanceTable from "../components/AttendanceTable";
 import AttendanceHeatmap from "../components/AttendanceHeatmap";
 import GeofenceModal from "../components/GeofenceModal";
+import GeofenceRadarMap from "../components/GeofenceRadarMap";
 import BiometricManagerModal from "../components/BiometricManagerModal";
 import StaffifyLoader from "../components/StaffifyLoader";
 import ClockWidget from "../components/ClockWidget";
@@ -626,44 +627,32 @@ function Attendance() {
         )}
       </div>
 
-      {/* Geofence Perimeter Status Card */}
-      <div className="bg-[#FAFBFC] border border-[#DFE1E6] rounded p-3 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-[#DEEBFF] text-[#0052CC] rounded border border-[#B3D4FF] shrink-0">
-            <MapPin size={18} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-xs font-bold text-[#172B4D] uppercase tracking-wide">
-                GPS Geofence Perimeter Protection
-              </h3>
-              <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1]">
-                Active Enforcement
-              </span>
-            </div>
-            <p className="text-xs text-[#6B778C] mt-0.5">
-              Clock-In and Clock-Out swipe buttons are automatically verified against assigned office boundaries. Punches outside authorized perimeter are locked.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="text-right hidden sm:block">
-            <p className="text-[11px] font-semibold text-[#172B4D]">
-              {activeZones.length > 0
-                ? `${activeZones.length} Office Zone${activeZones.length > 1 ? "s" : ""} Active`
-                : "Bangalore HQ Active"}
-            </p>
-            <p className="text-[10px] text-[#6B778C]">Standard Radius: 300m</p>
+      {/* Visual Interactive Geofence Radar Perimeter */}
+      <div className="mb-6 space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#172B4D] dark:text-[#F1F5F9] flex items-center gap-1.5">
+              <MapPin size={14} className="text-[#0052CC]" /> Live Geofence Radar Telemetry
+            </h3>
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#E3FCEF] text-[#006644] border border-[#ABF5D1]">
+              Active Enforcement
+            </span>
           </div>
           <button
             onClick={() => setShowGeofenceModal(true)}
-            className="text-xs font-medium bg-white text-[#0052CC] hover:bg-[#DEEBFF] border border-[#B3D4FF] px-2.5 py-1.5 rounded transition cursor-pointer flex items-center gap-1"
+            className="text-xs font-medium text-[#0052CC] hover:underline flex items-center gap-1 cursor-pointer"
           >
-            <SlidersHorizontal size={13} />
-            <span>{canManage ? "Configure Radii" : "View Office Zones"}</span>
+            <SlidersHorizontal size={12} />
+            <span>{canManage ? "Manage Office Zones" : "View Office Zones"}</span>
           </button>
         </div>
+        <GeofenceRadarMap
+          zoneName={activeZones[0]?.name || "Headquarters - Tech Park Campus"}
+          latitude={activeZones[0]?.latitude || 12.9352}
+          longitude={activeZones[0]?.longitude || 77.6946}
+          radiusMeters={activeZones[0]?.radiusMeters || 300}
+          showSimulateControls={true}
+        />
       </div>
 
       {/* 30-Day Attendance Consistency Heatmap (Personalized to current user) */}

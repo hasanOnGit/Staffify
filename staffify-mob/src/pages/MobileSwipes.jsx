@@ -48,10 +48,11 @@ function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
 }
 
 export default function MobileSwipes() {
-  const { user, isAdmin, isManager, isOnline, queueOfflinePunch } = useAuth();
+  const { user, isAdmin, isManager, isOnline, queueOfflinePunch, offlineQueue, syncOfflinePunches } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const urlTab = searchParams.get("tab");
+  const [syncingOffline, setSyncingOffline] = useState(false);
 
   const [activeMainTab, setActiveMainTab] = useState(
     isAdmin && (urlTab === "org" || urlTab === "team")
@@ -335,28 +336,64 @@ export default function MobileSwipes() {
         msg: `Verified Swipe ${nextType} recorded at ${nowTimeStr}`
       });
     } catch (err) {
-      const errMsg = err.response?.data?.error || "Geofence boundary mismatch";
-      setErrorBanner(errMsg);
-      // Even if perimeter rejects, update local UI state so demo testing is smooth
-      setPunches(prev => [
-        {
-          type: nextType,
-          time: nowTimeStr,
-          ip: "Remote Gateway",
-          verified: true,
-          zone: "On-Duty Swipe"
-        },
-        ...prev
-      ]);
-      setIsClockedIn(nextType === "IN");
-      setFeedback({
-        type: "success",
-        msg: `Swipe ${nextType} recorded locally at ${nowTimeStr}`
-      });
+      // If network offline or connectivity error, queue punch offline
+      if (!navigator.onLine || err.message?.toLowerCase().includes("network") || !err.response) {
+        queueOfflinePunch(payload);
+        setPunches(prev => [
+          {
+            type: nextType,
+            time: nowTimeStr,
+            ip: "Cached Offline (Local)",
+            verified: false,
+            zone: "Pending Sync"
+          },
+          ...prev
+        ]);
+        setIsClockedIn(nextType === "IN");
+        setFeedback({
+          type: "success",
+          msg: `Offline: Swipe ${nextType} queued locally. Will sync on reconnect.`
+        });
+      } else {
+        const errMsg = err.response?.data?.error || "Geofence boundary mismatch";
+        setErrorBanner(errMsg);
+        // Even if perimeter rejects, update local UI state so demo testing is smooth
+        setPunches(prev => [
+          {
+            type: nextType,
+            time: nowTimeStr,
+            ip: "Remote Gateway",
+            verified: true,
+            zone: "On-Duty Swipe"
+          },
+          ...prev
+        ]);
+        setIsClockedIn(nextType === "IN");
+        setFeedback({
+          type: "success",
+          msg: `Swipe ${nextType} recorded locally at ${nowTimeStr}`
+        });
+      }
     } finally {
       setPunching(false);
       setHoldProgress(0);
       setTimeout(() => setFeedback(null), 4000);
+    }
+  };
+
+  const handleManualSync = async () => {
+    setSyncingOffline(true);
+    try {
+      const result = await syncOfflinePunches();
+      if (result?.synced > 0) {
+        setFeedback({
+          type: "success",
+          msg: `Synced ${result.synced} offline swipe${result.synced > 1 ? "s" : ""} to Staffify Cloud!`
+        });
+        setTimeout(() => setFeedback(null), 4000);
+      }
+    } finally {
+      setSyncingOffline(false);
     }
   };
 
@@ -423,6 +460,39 @@ export default function MobileSwipes() {
         <div className="p-3.5 rounded-xl bg-[#E3FCEF] dark:bg-emerald-950/40 border border-[#00875A]/30 text-[#00875A] dark:text-emerald-400 text-xs font-semibold flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
           <span>{feedback.msg}</span>
+        </div>
+      )}
+
+      {/* Offline Punch Sync Queue Banner */}
+      {offlineQueue?.length > 0 && (
+        <div className="p-3.5 rounded-xl bg-[#FFF0B3] dark:bg-amber-950/40 border border-[#B9770E]/30 text-[#172B4D] dark:text-amber-200 flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#B9770E]/20 text-[#B9770E] dark:text-amber-400 flex items-center justify-center shrink-0">
+              <RotateCcw className={`w-4 h-4 ${syncingOffline ? "animate-spin" : ""}`} />
+            </div>
+            <div>
+              <p className="text-xs font-bold leading-tight text-[#172B4D] dark:text-white">
+                {offlineQueue.length} Offline Swipe{offlineQueue.length > 1 ? "s" : ""} Pending
+              </p>
+              <p className="text-[10px] text-[#6B778C] dark:text-amber-400/80">
+                Cached locally on device • Auto-syncs on reconnect
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleManualSync}
+            disabled={syncingOffline}
+            className="px-3 py-1.5 rounded-lg bg-[#0052CC] hover:bg-[#0747A6] active:bg-[#00388B] text-white text-xs font-bold transition-all shadow-xs shrink-0 flex items-center gap-1.5 disabled:opacity-50"
+          >
+            {syncingOffline ? (
+              <>
+                <RotateCcw className="w-3 h-3 animate-spin" />
+                <span>Syncing...</span>
+              </>
+            ) : (
+              <span>Sync Now</span>
+            )}
+          </button>
         </div>
       )}
 
